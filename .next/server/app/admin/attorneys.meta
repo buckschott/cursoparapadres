@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/admin/layout,_N_T_/admin/attorneys/layout,_N_T_/admin/attorneys/page,_N_T_/admin/attorneys"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/admin/attorneys/__PAGE__",
+    "/admin/attorneys",
+    "/admin",
+    "/_index",
+    "/_head"
+  ]
+}

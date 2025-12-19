@@ -1,0 +1,261 @@
+{
+  "version": 3,
+  "pages404": true,
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [
+      {
+        "source": "/curso/coparentalidad",
+        "destination": "/curso/coparenting",
+        "regex": "^/curso/coparentalidad(?:/)?$"
+      },
+      {
+        "source": "/curso/coparentalidad/:path*",
+        "destination": "/curso/coparenting/:path*",
+        "regex": "^/curso/coparentalidad(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+      },
+      {
+        "source": "/curso/crianza",
+        "destination": "/curso/parenting",
+        "regex": "^/curso/crianza(?:/)?$"
+      },
+      {
+        "source": "/curso/crianza/:path*",
+        "destination": "/curso/parenting/:path*",
+        "regex": "^/curso/crianza(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+      }
+    ],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/api/certificate/[id]",
+      "regex": "^/api/certificate/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/certificate/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/certificado/[id]",
+      "regex": "^/certificado/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/certificado/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/curso/[courseType]",
+      "regex": "^/curso/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPcourseType": "nxtPcourseType"
+      },
+      "namedRegex": "^/curso/(?<nxtPcourseType>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/curso/[courseType]/examen",
+      "regex": "^/curso/([^/]+?)/examen(?:/)?$",
+      "routeKeys": {
+        "nxtPcourseType": "nxtPcourseType"
+      },
+      "namedRegex": "^/curso/(?<nxtPcourseType>[^/]+?)/examen(?:/)?$"
+    },
+    {
+      "page": "/curso/[courseType]/[leccion]",
+      "regex": "^/curso/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPcourseType": "nxtPcourseType",
+        "nxtPleccion": "nxtPleccion"
+      },
+      "namedRegex": "^/curso/(?<nxtPcourseType>[^/]+?)/(?<nxtPleccion>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/estados/[slug]",
+      "regex": "^/estados/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/estados/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/verificar/[code]",
+      "regex": "^/verificar/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPcode": "nxtPcode"
+      },
+      "namedRegex": "^/verificar/(?<nxtPcode>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/aceptacion-de-la-corte",
+      "regex": "^/aceptacion\\-de\\-la\\-corte(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/aceptacion\\-de\\-la\\-corte(?:/)?$"
+    },
+    {
+      "page": "/admin/attorneys",
+      "regex": "^/admin/attorneys(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/attorneys(?:/)?$"
+    },
+    {
+      "page": "/api/attorney-match",
+      "regex": "^/api/attorney\\-match(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/attorney\\-match(?:/)?$"
+    },
+    {
+      "page": "/api/create-checkout",
+      "regex": "^/api/create\\-checkout(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/create\\-checkout(?:/)?$"
+    },
+    {
+      "page": "/api/send-attorney-email",
+      "regex": "^/api/send\\-attorney\\-email(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/send\\-attorney\\-email(?:/)?$"
+    },
+    {
+      "page": "/api/send-email",
+      "regex": "^/api/send\\-email(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/send\\-email(?:/)?$"
+    },
+    {
+      "page": "/api/webhook",
+      "regex": "^/api/webhook(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/webhook(?:/)?$"
+    },
+    {
+      "page": "/auth/callback",
+      "regex": "^/auth/callback(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/auth/callback(?:/)?$"
+    },
+    {
+      "page": "/completar-perfil",
+      "regex": "^/completar\\-perfil(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/completar\\-perfil(?:/)?$"
+    },
+    {
+      "page": "/exito",
+      "regex": "^/exito(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/exito(?:/)?$"
+    },
+    {
+      "page": "/favicon.ico",
+      "regex": "^/favicon\\.ico(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/favicon\\.ico(?:/)?$"
+    },
+    {
+      "page": "/garantia",
+      "regex": "^/garantia(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/garantia(?:/)?$"
+    },
+    {
+      "page": "/iniciar-sesion",
+      "regex": "^/iniciar\\-sesion(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/iniciar\\-sesion(?:/)?$"
+    },
+    {
+      "page": "/panel",
+      "regex": "^/panel(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/panel(?:/)?$"
+    },
+    {
+      "page": "/politica-de-privacidad",
+      "regex": "^/politica\\-de\\-privacidad(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/politica\\-de\\-privacidad(?:/)?$"
+    },
+    {
+      "page": "/preguntas-frecuentes",
+      "regex": "^/preguntas\\-frecuentes(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/preguntas\\-frecuentes(?:/)?$"
+    },
+    {
+      "page": "/recuperar-contrasena",
+      "regex": "^/recuperar\\-contrasena(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/recuperar\\-contrasena(?:/)?$"
+    },
+    {
+      "page": "/restablecer-contrasena",
+      "regex": "^/restablecer\\-contrasena(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/restablecer\\-contrasena(?:/)?$"
+    },
+    {
+      "page": "/sitemap.xml",
+      "regex": "^/sitemap\\.xml(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/sitemap\\.xml(?:/)?$"
+    },
+    {
+      "page": "/terminos-de-servicio",
+      "regex": "^/terminos\\-de\\-servicio(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/terminos\\-de\\-servicio(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSuffix": ".prefetch.rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

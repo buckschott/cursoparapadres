@@ -99,14 +99,13 @@ export default function Home() {
 
   return (
     <>
+      <Header />
+      
       <main className="min-h-screen bg-white">
-<Header />
-
-        {/* HERO SECTION - RESTRUCTURED */}
+        {/* HERO SECTION */}
         <section className="relative w-full overflow-hidden bg-gradient-to-b from-blue-600 via-sky-400 to-sky-200 hero-section flex justify-center z-0">
           <div className="relative w-full max-w-7xl mx-auto px-4 md:px-6 text-center z-10 flex flex-col justify-between hero-content">
             
-            {/* 1. Title */}
             <div>
               <h1 className="hero-title text-5xl md:text-[54px] lg:text-[71px] font-bold text-white leading-[1.1] tracking-wide">
                 <span className="hero-line-1">Curso Para Padres</span><br />
@@ -114,7 +113,6 @@ export default function Home() {
               </h1>
             </div>
 
-            {/* 2. Subtext - staggered reveal */}
             <div>
               <p className="hero-subheadline text-xl md:text-2xl lg:text-3xl font-normal text-white/90 max-w-4xl mx-auto leading-relaxed">
                 <span className="subtext-line subtext-line-1 inline-block opacity-0">Un precio.</span><br />
@@ -123,7 +121,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* 3. Trust badge - sizes naturally to fit text */}
             <div className="flex justify-center">
               <div className="trust-badge-pill inline-flex items-center justify-center gap-2 bg-white/30 backdrop-blur-md border border-white/30 rounded-full px-4 py-3 shadow-[0_0_20px_rgba(125,211,252,0.25)]">
                 <span className="relative flex h-4 w-4 flex-shrink-0">
@@ -137,7 +134,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 4. CTA Button */}
             <div>
               <a 
                 href="#precios"
@@ -152,7 +148,6 @@ export default function Home() {
               </a>
             </div>
 
-            {/* 5. Garantía link */}
             <div>
               <a 
                 href="/garantia"
@@ -164,6 +159,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* FEATURES SECTION */}
         <section id="caracteristicas" className="relative pt-8 pb-24 bg-white overflow-hidden z-20" aria-labelledby="features-heading">
           <div className="absolute inset-0 opacity-40 pointer-events-none">
             <div className="absolute inset-0 ruled-paper-lines"></div>
@@ -276,6 +272,7 @@ export default function Home() {
           </div>
         </section>
         
+        {/* DEVICES SECTION */}
         <section className="relative bg-gradient-to-b from-gray-50 to-white overflow-hidden z-20 py-24 pt-32" aria-labelledby="devices-heading">
           <div className="relative max-w-7xl mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
@@ -312,6 +309,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* PRICING SECTION */}
         <section id="precios" className="relative bg-white z-20 overflow-hidden py-24" aria-labelledby="pricing-heading">
           <div className="max-w-6xl mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
@@ -465,6 +463,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* TESTIMONIALS SECTION */}
         <section id="testimonios" className="py-24 bg-white relative z-20" aria-labelledby="testimonials-heading">
           <div className="max-w-7xl mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
@@ -497,6 +496,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* FAQ SECTION */}
         <section id="preguntas-frecuentes" className="py-24 bg-gradient-to-b from-white to-gray-50 relative z-20" aria-labelledby="faq-heading">
           <div className="max-w-4xl mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
@@ -525,9 +525,9 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        <Footer />
       </main>
+
+      <Footer />
 
       <style jsx global>{`
         #mobile-menu-toggle {
@@ -763,7 +763,6 @@ export default function Home() {
           }
         }
 
-        /* Hero section sizing */
         .hero-section {
           min-height: calc(100vh - 73px);
           min-height: calc(100svh - 73px);
@@ -777,7 +776,6 @@ export default function Home() {
           gap: 1rem;
         }
 
-        /* Trust badge text rotation - El Curso shows first */
         .trust-badge-text {
           position: relative;
         }
@@ -811,7 +809,6 @@ export default function Home() {
           animation: trustRotate2 8s ease-in-out infinite;
         }
 
-        /* Staggered subtext reveal */
         @keyframes subtextReveal {
           from { 
             opacity: 0; 
@@ -831,12 +828,10 @@ export default function Home() {
         .subtext-line-2 { animation-delay: 0.7s; }
         .subtext-line-3 { animation-delay: 1.1s; }
 
-        /* Trust badge - auto-size text to fit */
         .trust-badge-text {
           font-size: clamp(0.875rem, 4.5vw, 1.25rem);
         }
 
-        /* Mobile portrait specific */
         @media (orientation: portrait) and (max-width: 767px) {
           .header-title { font-size: 1.25rem !important; }
           .hero-title { font-size: 1.75rem !important; line-height: 1.1; }

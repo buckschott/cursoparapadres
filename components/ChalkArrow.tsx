@@ -43,7 +43,7 @@ export default function ChalkArrow() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-visible" aria-hidden="true">
       {/* Position the arrow above the CTA button, pointing down to its right corner */}
-      <div className="absolute left-1/2 top-0 -translate-x-[80%] -translate-y-[85%] w-[180px] h-[140px] md:w-[240px] md:h-[180px]">
+      <div className="absolute left-1/2 top-0 -translate-x-[80%] -translate-y-[100%] w-[180px] h-[140px] md:w-[240px] md:h-[180px]">
         <svg
           viewBox="0 0 280 200"
           fill="none"
@@ -81,7 +81,7 @@ export default function ChalkArrow() {
           
           <g mask="url(#eraserMask)" filter="url(#chalkTexture)">
             {/* Main arrow path with pigtail curls */}
-            {/* Path: starts top-left, first pigtail curl, second pigtail curl, swoops down to bottom-right */}
+            {/* Path: starts top-left, first pigtail curl, second pigtail curl, straighter line to bottom */}
             <path
               d="M 30 25
                  C 40 35, 50 55, 45 75
@@ -89,8 +89,8 @@ export default function ChalkArrow() {
                  C 30 55, 55 50, 70 65
                  C 85 80, 80 105, 70 115
                  C 60 125, 45 120, 55 105
-                 C 65 90, 95 85, 120 100
-                 C 150 118, 180 145, 210 170"
+                 C 65 90, 95 85, 130 95
+                 L 200 155"
               stroke="#FFFFFF"
               strokeWidth="3"
               strokeLinecap="round"
@@ -103,30 +103,14 @@ export default function ChalkArrow() {
               }}
             />
             
-            {/* Arrowhead - two lines forming the point */}
+            {/* Arrowhead - filled triangle */}
             <path
-              d="M 195 158 L 215 172"
+              d="M 200 155 L 185 150 L 192 165 Z"
+              fill="#FFFFFF"
               stroke="#FFFFFF"
-              strokeWidth="3"
-              strokeLinecap="round"
-              fill="none"
-              className={`chalk-line arrowhead ${animationState === 'drawing' ? 'drawing-arrowhead' : ''} ${animationState === 'holding' || animationState === 'erasing' ? 'drawn' : ''}`}
-              style={{
-                strokeDasharray: 30,
-                strokeDashoffset: animationState === 'paused' ? 30 : undefined,
-              }}
-            />
-            <path
-              d="M 215 185 L 215 172"
-              stroke="#FFFFFF"
-              strokeWidth="3"
-              strokeLinecap="round"
-              fill="none"
-              className={`chalk-line arrowhead ${animationState === 'drawing' ? 'drawing-arrowhead' : ''} ${animationState === 'holding' || animationState === 'erasing' ? 'drawn' : ''}`}
-              style={{
-                strokeDasharray: 30,
-                strokeDashoffset: animationState === 'paused' ? 30 : undefined,
-              }}
+              strokeWidth="2"
+              strokeLinejoin="round"
+              className={`chalk-arrow-head ${animationState === 'drawing' ? 'drawing-arrowhead' : ''} ${animationState === 'holding' || animationState === 'erasing' ? 'drawn' : ''} ${animationState === 'paused' ? 'hidden-arrow' : ''}`}
             />
           </g>
         </svg>
@@ -145,16 +129,24 @@ export default function ChalkArrow() {
           stroke-dashoffset: 0;
         }
         
-        .arrowhead {
-          stroke-dashoffset: 30;
+        .chalk-arrow-head {
+          opacity: 0;
+          transform: scale(0);
+          transform-origin: center;
         }
         
-        .arrowhead.drawing-arrowhead {
-          animation: drawArrowhead 0.4s ease-out 2.5s forwards;
+        .chalk-arrow-head.drawing-arrowhead {
+          animation: popArrowhead 0.3s ease-out 2.5s forwards;
         }
         
-        .arrowhead.drawn {
-          stroke-dashoffset: 0;
+        .chalk-arrow-head.drawn {
+          opacity: 1;
+          transform: scale(1);
+        }
+        
+        .chalk-arrow-head.hidden-arrow {
+          opacity: 0;
+          transform: scale(0);
         }
         
         @keyframes drawLine {
@@ -166,12 +158,17 @@ export default function ChalkArrow() {
           }
         }
         
-        @keyframes drawArrowhead {
-          from {
-            stroke-dashoffset: 30;
+        @keyframes popArrowhead {
+          0% {
+            opacity: 0;
+            transform: scale(0);
           }
-          to {
-            stroke-dashoffset: 0;
+          70% {
+            transform: scale(1.2);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
           }
         }
         
@@ -197,9 +194,11 @@ export default function ChalkArrow() {
         
         @media (prefers-reduced-motion: reduce) {
           .chalk-line,
-          .arrowhead {
+          .chalk-arrow-head {
             animation: none !important;
             stroke-dashoffset: 0 !important;
+            opacity: 1 !important;
+            transform: scale(1) !important;
           }
           .eraser-wipe {
             animation: none !important;

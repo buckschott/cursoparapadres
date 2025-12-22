@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import ChalkArrow from '@/components/ChalkArrow';
 
 export default function Home() {
   const [loading, setLoading] = useState<string | null>(null);
@@ -134,7 +135,8 @@ export default function Home() {
               </div>
             </div>
 
-            <div>
+            <div className="relative">
+              <ChalkArrow />
               <a 
                 href="#precios"
                 className="cta-button inline-flex items-center justify-center group px-12 py-5 rounded-full text-2xl font-bold transition-all hover:scale-105 active:scale-95 bg-[#77DD77] text-[#1C1C1C] hover:bg-[#88EE88]"

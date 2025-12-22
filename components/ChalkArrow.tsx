@@ -42,8 +42,8 @@ export default function ChalkArrow() {
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-visible" aria-hidden="true">
-      {/* Position the arrow above and to the right of center, pointing to right side of CTA */}
-      <div className="absolute left-1/2 bottom-0 -translate-x-[10%] translate-y-[-100%] w-[200px] h-[150px] md:w-[280px] md:h-[200px]">
+      {/* Position the arrow above the CTA button, pointing down to its right corner */}
+      <div className="absolute left-1/2 top-0 -translate-x-[80%] -translate-y-[85%] w-[180px] h-[140px] md:w-[240px] md:h-[180px]">
         <svg
           viewBox="0 0 280 200"
           fill="none"
@@ -81,17 +81,16 @@ export default function ChalkArrow() {
           
           <g mask="url(#eraserMask)" filter="url(#chalkTexture)">
             {/* Main arrow path with pigtail curls */}
-            {/* Path: starts top-center, first pigtail curl, second pigtail curl, swoops to bottom-right */}
+            {/* Path: starts top-left, first pigtail curl, second pigtail curl, swoops down to bottom-right */}
             <path
-              d="M 80 15
-                 C 85 25, 90 40, 85 55
-                 C 80 75, 55 80, 50 60
-                 C 45 40, 55 25, 75 35
-                 C 95 45, 105 70, 100 90
-                 C 95 115, 70 125, 65 105
-                 C 60 85, 75 70, 100 80
-                 C 125 90, 150 110, 175 135
-                 C 200 155, 225 170, 250 180"
+              d="M 30 25
+                 C 40 35, 50 55, 45 75
+                 C 40 95, 20 95, 25 75
+                 C 30 55, 55 50, 70 65
+                 C 85 80, 80 105, 70 115
+                 C 60 125, 45 120, 55 105
+                 C 65 90, 95 85, 120 100
+                 C 150 118, 180 145, 210 170"
               stroke="#FFFFFF"
               strokeWidth="3"
               strokeLinecap="round"
@@ -106,7 +105,7 @@ export default function ChalkArrow() {
             
             {/* Arrowhead - two lines forming the point */}
             <path
-              d="M 235 168 L 255 182"
+              d="M 195 158 L 215 172"
               stroke="#FFFFFF"
               strokeWidth="3"
               strokeLinecap="round"
@@ -118,7 +117,7 @@ export default function ChalkArrow() {
               }}
             />
             <path
-              d="M 248 195 L 255 182"
+              d="M 215 185 L 215 172"
               stroke="#FFFFFF"
               strokeWidth="3"
               strokeLinecap="round"

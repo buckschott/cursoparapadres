@@ -89,30 +89,30 @@ export default function VerifyPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <main className="min-h-screen bg-[#1a2421] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Verifying certificate...</p>
+          <p className="text-gray-400">Verifying certificate...</p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 py-12 px-6">
+    <main className="min-h-screen bg-gray-900 py-12 px-6">
       <div className="max-w-lg mx-auto">
         <div className="text-center mb-8">
           <div className="inline-block mb-4">
             <img src="/logo.svg" alt="Putting Kids First" className="h-16 mx-auto" onError={(e) => { e.currentTarget.style.display = 'none' }} />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">Certificate Verification</h1>
-          <p className="text-gray-600 font-brand">Putting Kids First®</p>
+          <h1 className="text-2xl font-bold text-white mb-1">Certificate Verification</h1>
+          <p className="text-gray-400 font-brand">Putting Kids First®</p>
         </div>
 
         {error ? (
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="bg-[#1a2421] rounded-2xl shadow-lg shadow-black/30 overflow-hidden">
             <div className="bg-red-500 px-6 py-4 flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#1a2421]/20 rounded-full flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </div>
               <div>
@@ -121,19 +121,19 @@ export default function VerifyPage() {
               </div>
             </div>
             <div className="p-6">
-              <p className="text-gray-600 mb-4">The verification code entered does not match any certificate in our system. This could mean:</p>
-              <ul className="text-sm text-gray-600 space-y-2 mb-6">
+              <p className="text-gray-400 mb-4">The verification code entered does not match any certificate in our system. This could mean:</p>
+              <ul className="text-sm text-gray-400 space-y-2 mb-6">
                 <li className="flex items-start gap-2"><span className="text-red-500">•</span>The code was entered incorrectly</li>
                 <li className="flex items-start gap-2"><span className="text-red-500">•</span>The certificate does not exist</li>
                 <li className="flex items-start gap-2"><span className="text-red-500">•</span>The document may be fraudulent</li>
               </ul>
-              <p className="text-sm text-gray-500">Verification code attempted: <span className="font-mono bg-gray-100 px-2 py-1 rounded">{code}</span></p>
+              <p className="text-sm text-gray-500">Verification code attempted: <span className="font-mono bg-gray-900 px-2 py-1 rounded">{code}</span></p>
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="bg-[#1a2421] rounded-2xl shadow-lg shadow-black/30 overflow-hidden">
             <div className="bg-green-500 px-6 py-4 flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#1a2421]/20 rounded-full flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
               </div>
               <div>
@@ -145,24 +145,24 @@ export default function VerifyPage() {
             <div className="p-6 space-y-4">
               <div>
                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Course Completed</label>
-                <p className="text-lg font-semibold text-gray-900">{getCourseNameEn(certificate?.course_type || '', certificate?.court_state || '')}</p>
+                <p className="text-lg font-semibold text-white">{getCourseNameEn(certificate?.course_type || '', certificate?.court_state || '')}</p>
               </div>
 
               <div>
                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Participant Name</label>
-                <p className="text-lg font-semibold text-gray-900">{certificate?.legal_name}</p>
+                <p className="text-lg font-semibold text-white">{certificate?.legal_name}</p>
               </div>
 
               {certificate?.court_state && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">State</label>
-                    <p className="text-gray-900 font-medium">{certificate.court_state}</p>
+                    <p className="text-white font-medium">{certificate.court_state}</p>
                   </div>
                   {certificate?.court_county && (
                     <div>
                       <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Filed</label>
-                      <p className="text-gray-900 font-medium">{certificate.court_county}</p>
+                      <p className="text-white font-medium">{certificate.court_county}</p>
                     </div>
                   )}
                 </div>
@@ -171,31 +171,31 @@ export default function VerifyPage() {
               {certificate?.case_number && (
                 <div>
                   <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">File Number</label>
-                  <p className="text-gray-900 font-medium">{certificate.case_number}</p>
+                  <p className="text-white font-medium">{certificate.case_number}</p>
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Date Registered</label>
-                  <p className="text-gray-900 font-medium">{formatDate(certificate?.purchased_at || '')}</p>
+                  <p className="text-white font-medium">{formatDate(certificate?.purchased_at || '')}</p>
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Date Completed</label>
-                  <p className="text-gray-900 font-medium">{formatDate(certificate?.completed_at || '')}</p>
+                  <p className="text-white font-medium">{formatDate(certificate?.completed_at || '')}</p>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-200">
+              <div className="pt-4 border-t border-gray-700">
                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Certificate Number</label>
-                <p className="font-mono text-gray-900">{certificate?.certificate_number}</p>
+                <p className="font-mono text-white">{certificate?.certificate_number}</p>
               </div>
 
-              <div className="pt-4 border-t border-gray-200">
+              <div className="pt-4 border-t border-gray-700">
                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Issuing Provider</label>
-                <p className="text-gray-900 font-medium font-brand">Putting Kids First®</p>
-                <p className="text-sm text-gray-600">info@cursoparapadres.org</p>
-                <p className="text-sm text-gray-600">888-777-2298</p>
+                <p className="text-white font-medium font-brand">Putting Kids First®</p>
+                <p className="text-sm text-gray-400">info@cursoparapadres.org</p>
+                <p className="text-sm text-gray-400">888-777-2298</p>
               </div>
             </div>
           </div>

@@ -123,25 +123,25 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <main className="min-h-screen bg-[#1a2421] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
+          <p className="text-gray-400">Cargando...</p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+    <main className="min-h-screen bg-[#1a2421]">
+      <header className="bg-[#1a2421] border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-semibold text-gray-900">
+          <Link href="/" className="text-xl font-semibold text-white">
             Putting Kids First <sup className="text-xs">®</sup>
           </Link>
           <button
             onClick={handleLogout}
-            className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+            className="text-gray-400 hover:text-white text-sm font-medium"
            
           >
             Cerrar Sesión
@@ -151,10 +151,10 @@ export default function DashboardPage() {
 
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-white mb-2">
             Bienvenido{profile?.legal_name ? `, ${profile.legal_name}` : ''}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-400">
             Aquí puede acceder a sus cursos y certificados.
           </p>
         </div>
@@ -162,8 +162,8 @@ export default function DashboardPage() {
         <div className="grid md:grid-cols-2 gap-8">
           {/* Co-Parenting Class - Active */}
           {hasCourse('coparenting') && (
-            <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            <div className="bg-[#1a2421] rounded-2xl shadow-lg shadow-black/30 p-8 border border-gray-700">
+              <h2 className="text-2xl font-bold text-white mb-4">
                 Clase de Coparentalidad
               </h2>
               
@@ -189,8 +189,8 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex justify-between text-sm text-gray-600 mb-2">
+                  <div className="bg-[#1a2421] rounded-lg p-4">
+                    <div className="flex justify-between text-sm text-gray-400 mb-2">
                       <span>Progreso</span>
                       <span>{getCourseProgress('coparenting')?.lessons_completed.length || 0} de {TOTAL_LESSONS} lecciones</span>
                     </div>
@@ -214,9 +214,9 @@ export default function DashboardPage() {
 
           {/* Parenting Class - Coming Soon */}
           {hasCourse('parenting') && (
-            <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+            <div className="bg-[#1a2421] rounded-2xl shadow-lg shadow-black/30 p-8 border border-gray-700">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-bold text-white">
                   Clase de Crianza
                 </h2>
                 {PARENTING_COMING_SOON && (
@@ -262,8 +262,8 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex justify-between text-sm text-gray-600 mb-2">
+                  <div className="bg-[#1a2421] rounded-lg p-4">
+                    <div className="flex justify-between text-sm text-gray-400 mb-2">
                       <span>Progreso</span>
                       <span>{getCourseProgress('parenting')?.lessons_completed.length || 0} de {TOTAL_LESSONS} lecciones</span>
                     </div>
@@ -287,11 +287,11 @@ export default function DashboardPage() {
         </div>
 
         {purchases.length === 0 && (
-          <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <div className="bg-[#1a2421] rounded-2xl shadow-lg shadow-black/30 p-12 text-center">
+            <h2 className="text-2xl font-bold text-white mb-4">
               No tiene cursos activos
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-400 mb-6">
               Adquiera un curso para comenzar su educación parental.
             </p>
             <Link 

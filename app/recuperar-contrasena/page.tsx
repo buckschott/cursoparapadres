@@ -258,7 +258,7 @@ export default function ExamPage() {
   };
 
   if (loading) {
-    return <main className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></main>;
+    return <main className="min-h-screen bg-[#1a2421] flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></main>;
   }
 
   if (phase === 'done') {
@@ -266,8 +266,8 @@ export default function ExamPage() {
     const score = Math.round((correctCount / QUESTIONS_PER_EXAM) * 100);
     
     return (
-      <main className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-        <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
+      <main className="min-h-screen bg-[#1a2421] flex items-center justify-center p-6">
+        <div className="bg-[#1a2421] rounded-2xl shadow-lg shadow-black/30 p-8 max-w-md w-full text-center">
           {passed ? (
             <>
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -275,8 +275,8 @@ export default function ExamPage() {
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">¡Felicitaciones!</h1>
-              <p className="text-gray-600 mb-6">Ha aprobado con {score}% ({correctCount}/{QUESTIONS_PER_EXAM})</p>
+              <h1 className="text-2xl font-bold text-white mb-2">¡Felicitaciones!</h1>
+              <p className="text-gray-400 mb-6">Ha aprobado con {score}% ({correctCount}/{QUESTIONS_PER_EXAM})</p>
               
               <Link 
                 href="/completar-perfil"
@@ -287,7 +287,7 @@ export default function ExamPage() {
               
               <Link 
                 href="/panel" 
-                className="block w-full bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-colors"
+                className="block w-full bg-gray-900 text-gray-300 py-3 rounded-lg hover:bg-gray-700 transition-colors"
               >
                 Volver a los Cursos
               </Link>
@@ -299,8 +299,8 @@ export default function ExamPage() {
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">No Aprobó</h1>
-              <p className="text-gray-600 mb-6">Obtuvo {score}% — necesita 70%</p>
+              <h1 className="text-2xl font-bold text-white mb-2">No Aprobó</h1>
+              <p className="text-gray-400 mb-6">Obtuvo {score}% — necesita 70%</p>
               <button 
                 onClick={handleRetry}
                 className="block w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 mb-3"
@@ -309,7 +309,7 @@ export default function ExamPage() {
               </button>
               <Link 
                 href={`/curso/${courseType}`} 
-                className="block w-full bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200"
+                className="block w-full bg-gray-900 text-gray-300 py-3 rounded-lg hover:bg-gray-700"
               >
                 Revisar el Curso
               </Link>
@@ -322,25 +322,25 @@ export default function ExamPage() {
 
   if (phase === 'intro') {
     return (
-      <main className="min-h-screen bg-gray-50">
-        <header className="bg-white border-b">
+      <main className="min-h-screen bg-[#1a2421]">
+        <header className="bg-[#1a2421] border-b">
           <div className="max-w-4xl mx-auto px-6 py-4">
             <Link href={`/curso/${courseType}`} className="text-blue-600 text-sm">← Volver al Curso</Link>
           </div>
         </header>
         <div className="max-w-2xl mx-auto px-6 py-12">
-          <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Examen Final</h1>
+          <div className="bg-[#1a2421] rounded-2xl shadow-lg shadow-black/30 p-8">
+            <h1 className="text-2xl font-bold text-white mb-6">Examen Final</h1>
             {hasResumable && (
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
                 <p className="font-semibold text-amber-800 mb-2">Examen en progreso</p>
                 <div className="flex gap-3">
                   <button onClick={resume} className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700">Continuar</button>
-                  <button onClick={start} className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Empezar de Nuevo</button>
+                  <button onClick={start} className="bg-gray-200 text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-300">Empezar de Nuevo</button>
                 </div>
               </div>
             )}
-            <ul className="space-y-2 text-gray-600 mb-8">
+            <ul className="space-y-2 text-gray-400 mb-8">
               <li>• {QUESTIONS_PER_EXAM} preguntas</li>
               <li>• Necesita 70% ({PASS_SCORE} correctas)</li>
               <li>• Progreso guardado automáticamente</li>
@@ -356,10 +356,10 @@ export default function ExamPage() {
   if (!q) return null;
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b">
+    <main className="min-h-screen bg-[#1a2421]">
+      <div className="bg-[#1a2421] border-b">
         <div className="max-w-4xl mx-auto px-6 py-4">
-          <div className="flex justify-between text-sm text-gray-600 mb-2">
+          <div className="flex justify-between text-sm text-gray-400 mb-2">
             <span>Pregunta {currentIndex + 1} de {QUESTIONS_PER_EXAM}</span>
             <span>{correctCount} correctas</span>
           </div>
@@ -370,8 +370,8 @@ export default function ExamPage() {
       </div>
 
       <div className="max-w-2xl mx-auto px-6 py-8">
-        <div className="bg-white rounded-2xl shadow-lg p-8" key={currentIndex}>
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">{q.question_text}</h2>
+        <div className="bg-[#1a2421] rounded-2xl shadow-lg shadow-black/30 p-8" key={currentIndex}>
+          <h2 className="text-lg font-semibold text-white mb-6">{q.question_text}</h2>
           <div className="space-y-3 mb-6">
             {q.shuffledAnswers.map((ans) => {
               const isSel = selectedAnswer === ans.label;
@@ -381,7 +381,7 @@ export default function ExamPage() {
                   key={`q${currentIndex}-${ans.label}`} 
                   onClick={() => !submitted && setSelectedAnswer(ans.label)} 
                   disabled={submitted}
-                  className={`w-full p-4 rounded-lg border-2 text-left text-gray-900 transition-colors ${showR ? 'border-red-500 bg-red-50' : isSel ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'} ${submitted ? 'cursor-default' : 'cursor-pointer'}`}
+                  className={`w-full p-4 rounded-lg border-2 text-left text-white transition-colors ${showR ? 'border-red-500 bg-red-50' : isSel ? 'border-blue-500 bg-blue-50' : 'border-gray-700 hover:border-gray-600'} ${submitted ? 'cursor-default' : 'cursor-pointer'}`}
                 >
                   <span className="font-semibold mr-2">{ans.label}.</span>{ans.text}
                 </button>

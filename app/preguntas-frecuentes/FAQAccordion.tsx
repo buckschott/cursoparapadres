@@ -279,12 +279,12 @@ function FAQItem({ question, answer, isOpen, onClick }: {
   onClick: () => void;
 }) {
   return (
-    <div className="border-b border-gray-200">
+    <div className="border-b border-gray-700">
       <button
         onClick={onClick}
-        className="w-full py-5 px-4 flex justify-between items-center text-left hover:bg-gray-50 transition-colors"
+        className="w-full py-5 px-4 flex justify-between items-center text-left hover:bg-[#1a2421] transition-colors"
       >
-        <span className="font-semibold text-gray-900 pr-4">{question}</span>
+        <span className="font-semibold text-white pr-4">{question}</span>
         <svg
           className={`w-5 h-5 text-gray-500 flex-shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
@@ -295,7 +295,7 @@ function FAQItem({ question, answer, isOpen, onClick }: {
         </svg>
       </button>
       {isOpen && (
-        <div className="px-4 pb-5 text-gray-600 whitespace-pre-line">
+        <div className="px-4 pb-5 text-gray-400 whitespace-pre-line">
           {answer}
         </div>
       )}
@@ -322,7 +322,7 @@ export default function FAQAccordion() {
           <a
             key={category.id}
             href={`#${category.id}`}
-            className="px-4 py-2 bg-white rounded-full text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-sm"
+            className="px-4 py-2 bg-[#1a2421] rounded-full text-sm font-medium text-gray-300 hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-sm shadow-black/20"
           >
             {category.category}
           </a>
@@ -332,10 +332,10 @@ export default function FAQAccordion() {
       {/* FAQ Categories */}
       {faqData.map(category => (
         <div key={category.id} id={category.id} className="mb-10 scroll-mt-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 px-4">
+          <h2 className="text-2xl font-bold text-white mb-4 px-4">
             {category.category}
           </h2>
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-[#1a2421] rounded-xl shadow-sm shadow-black/20 overflow-hidden">
             {category.questions.map((item, index) => (
               <FAQItem
                 key={index}

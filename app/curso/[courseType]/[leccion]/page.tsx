@@ -125,10 +125,10 @@ export default function ModulePage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <main className="min-h-screen bg-[#1a2421] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
+          <p className="text-gray-400">Cargando...</p>
         </div>
       </main>
     );
@@ -138,7 +138,7 @@ export default function ModulePage() {
   const prevModule = getPrevModule();
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-[#1a2421]">
       <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
         <div 
           className="h-full bg-blue-600 transition-all duration-150"
@@ -146,7 +146,7 @@ export default function ModulePage() {
         ></div>
       </div>
 
-      <header className="bg-white border-b border-gray-200 sticky top-1 z-40">
+      <header className="bg-[#1a2421] border-b border-gray-700 sticky top-1 z-40">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href={`/curso/${courseType}`} className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,7 +169,7 @@ export default function ModulePage() {
         {moduleId && (
           <div className="mb-8">
             <p className="text-blue-600 font-semibold text-sm mb-2">LECCIÓN {moduleId}</p>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-white mb-2">
               {title}
             </h1>
             {estimatedTime && (
@@ -185,11 +185,11 @@ export default function ModulePage() {
         </article>
 
         {moduleId && !isSupplemental && (
-          <div className="mt-12 pt-8 border-t border-gray-200">
+          <div className="mt-12 pt-8 border-t border-gray-700">
             {!isCompleted ? (
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
-                <h3 className="font-bold text-gray-900 mb-2">¿Terminó de leer esta lección?</h3>
-                <p className="text-gray-600 mb-4 text-sm">
+                <h3 className="font-bold text-white mb-2">¿Terminó de leer esta lección?</h3>
+                <p className="text-gray-400 mb-4 text-sm">
                   Márquelo como completado para desbloquear el siguiente lección.
                 </p>
                 <button

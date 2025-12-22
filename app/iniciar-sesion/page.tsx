@@ -31,14 +31,14 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center px-6 py-12">
+    <main className="min-h-screen bg-[#1a2421] flex items-center justify-center px-6 py-12">
       <div className="max-w-md w-full">
         {/* Login Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <div className="bg-[#1a2421] rounded-2xl shadow-xl shadow-black/40 p-8 border border-gray-700">
+          <h2 className="text-2xl font-bold text-white mb-2">
             Iniciar Sesión
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-400 mb-6">
             Acceda a su cuenta para continuar su curso
           </p>
 
@@ -50,7 +50,7 @@ export default function LoginPage() {
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
                 Correo Electrónico
               </label>
               <input
@@ -58,14 +58,14 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-900"
+                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-white"
                 placeholder="nombre@ejemplo.com"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
                 Contraseña
               </label>
               <div className="relative">
@@ -74,14 +74,14 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-900"
+                  className="w-full px-4 py-3 pr-12 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-white"
                   placeholder="••••••••"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 focus:outline-none"
                 >
                   {showPassword ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,7 +120,7 @@ export default function LoginPage() {
         <div className="text-center mt-6">
           <Link
             href="/"
-            className="text-gray-600 hover:text-gray-900 text-sm"
+            className="text-gray-400 hover:text-white text-sm"
           >
             ← Volver al inicio
           </Link>

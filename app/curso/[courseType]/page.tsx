@@ -92,10 +92,10 @@ export default function CourseOverviewPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <main className="min-h-screen bg-[#1a2421] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
+          <p className="text-gray-400">Cargando...</p>
         </div>
       </main>
     );
@@ -104,8 +104,8 @@ export default function CourseOverviewPage() {
   const courseName = courseTypeNames[courseType as keyof typeof courseTypeNames]?.es || 'Curso';
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+    <main className="min-h-screen bg-[#1a2421]">
+      <header className="bg-[#1a2421] border-b border-gray-700">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <Link href="/panel" className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,17 +118,17 @@ export default function CourseOverviewPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-12">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-white mb-2">
             {courseName}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-400">
             Complete todas las lecciones para desbloquear el examen final.
           </p>
         </div>
 
         {/* Progress Bar */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-          <div className="flex justify-between text-sm text-gray-600 mb-2">
+        <div className="bg-[#1a2421] rounded-xl shadow-sm shadow-black/20 border border-gray-700 p-6 mb-8">
+          <div className="flex justify-between text-sm text-gray-400 mb-2">
             <span>Progreso del Curso</span>
             <span>{completedCount} de {TOTAL_MODULES} lecciones</span>
           </div>
@@ -149,10 +149,10 @@ export default function CourseOverviewPage() {
             return (
               <div 
                 key={module.id}
-                className={`bg-white rounded-xl shadow-sm border p-6 transition-all ${
+                className={`bg-[#1a2421] rounded-xl shadow-sm shadow-black/20 border p-6 transition-all ${
                   completed ? 'border-green-200 bg-green-50/30' :
-                  unlocked ? 'border-gray-200 hover:border-blue-200 hover:shadow-md' :
-                  'border-gray-100 opacity-60'
+                  unlocked ? 'border-gray-700 hover:border-blue-200 hover:shadow-md' :
+                  'border-gray-800 opacity-60'
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -171,7 +171,7 @@ export default function CourseOverviewPage() {
                       )}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 text-sm">
+                      <h3 className="font-semibold text-white text-sm">
                         {module.titleEs}
                       </h3>
                       <p className="text-sm text-gray-500">{module.estimatedTime}</p>
@@ -204,16 +204,16 @@ export default function CourseOverviewPage() {
         </div>
 
         {/* Exam Card */}
-        <div className={`bg-white rounded-xl shadow-sm border p-6 ${
-          allModulesCompleted() ? 'border-blue-200' : 'border-gray-100 opacity-60'
+        <div className={`bg-[#1a2421] rounded-xl shadow-sm shadow-black/20 border p-6 ${
+          allModulesCompleted() ? 'border-blue-200' : 'border-gray-800 opacity-60'
         }`}>
           <div>
-            <h3 className="font-bold text-gray-900 text-lg">
+            <h3 className="font-bold text-white text-lg">
               Examen Final
             </h3>
             {allModulesCompleted() ? (
               <>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-gray-400 mt-1">
                   ¡Ya puede tomar el examen! Necesita 70% para aprobar. Puede retomarlo sin límite.
                 </p>
                 <Link

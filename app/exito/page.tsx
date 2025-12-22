@@ -10,9 +10,9 @@ function SuccessContent() {
   if (!sessionId) {
     return (
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-6">Algo Salió Mal</h1>
-        <p className="text-xl text-gray-600 mb-8">No pudimos verificar su pago.</p>
-        <Link href="/" className="inline-block bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700">
+        <h1 className="text-4xl font-bold text-white mb-6">Algo Salió Mal</h1>
+        <p className="text-xl text-gray-400 mb-8">No pudimos verificar su pago.</p>
+        <Link href="/" className="inline-block bg-white text-black px-8 py-3 rounded-full font-semibold hover:bg-gray-200">
           Volver al Inicio
         </Link>
       </div>
@@ -28,11 +28,11 @@ function SuccessContent() {
           </svg>
         </div>
       </div>
-      <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">¡Todo listo!</h1>
-      <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+      <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">¡Todo listo!</h1>
+      <p className="text-xl text-gray-400 mb-8 leading-relaxed">
         Su curso está listo. Puede comenzar ahora o regresar en cualquier momento — su progreso se guardará automáticamente.
       </p>
-      <Link href="/panel" className="inline-block bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors mb-6">
+      <Link href="/panel" className="inline-block bg-white text-black px-8 py-3 rounded-full font-semibold hover:bg-gray-200 transition-colors mb-6">
         Comenzar el Curso
       </Link>
       <p className="text-sm text-gray-500">Un correo de confirmación está en camino. Si no lo ve, revise su carpeta de correo no deseado (spam o junk).</p>
@@ -42,8 +42,8 @@ function SuccessContent() {
 
 export default function SuccessPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center px-6 py-12">
-      <Suspense fallback={<div>Cargando...</div>}>
+    <main className="min-h-screen bg-[#1a2421] flex items-center justify-center px-6 py-12">
+      <Suspense fallback={<div className="text-white">Cargando...</div>}>
         <SuccessContent />
       </Suspense>
     </main>

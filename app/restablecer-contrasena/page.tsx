@@ -42,19 +42,19 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center px-6 py-12">
+    <main className="min-h-screen bg-[#1a2421] flex items-center justify-center px-6 py-12">
       <div className="max-w-md w-full">
         {/* Logo/Brand */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
-            <h1 className="text-2xl font-semibold text-gray-900">
+            <h1 className="text-2xl font-semibold text-white">
               Putting Kids First <sup className="text-xs">®</sup>
             </h1>
           </Link>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
+        <div className="bg-[#1a2421] rounded-2xl shadow-xl shadow-black/40 p-8 border border-gray-700">
           {success ? (
             <>
               <div className="text-center">
@@ -63,10 +63,10 @@ export default function ResetPasswordPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl font-bold text-white mb-2">
                   Contraseña Actualizada
                 </h2>
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-400 mb-6">
                   Su contraseña ha sido restablecida exitosamente. Ahora puede iniciar sesión con su nueva contraseña.
                 </p>
                 <Link 
@@ -80,10 +80,10 @@ export default function ResetPasswordPage() {
             </>
           ) : (
             <>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold text-white mb-2">
                 Nueva Contraseña
               </h2>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-400 mb-6">
                 Ingrese su nueva contraseña a continuación.
               </p>
 
@@ -95,7 +95,7 @@ export default function ResetPasswordPage() {
 
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
                     Nueva Contraseña
                   </label>
                   <input
@@ -103,14 +103,14 @@ export default function ResetPasswordPage() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-900"
+                    className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-white"
                     placeholder="••••••••"
                     required
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-1">
                     Confirmar Contraseña
                   </label>
                   <input
@@ -118,7 +118,7 @@ export default function ResetPasswordPage() {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-900"
+                    className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-white"
                     placeholder="••••••••"
                     required
                   />

@@ -3,11 +3,11 @@
 export default function PoliticaDePrivacidad() {
   return (
     <>
-      <main className="min-h-screen bg-white">
+      <main className="min-h-screen bg-[#1a2421]">
         {/* Header */}
-        <header className="border-b border-gray-100 bg-white sticky top-0 z-[110]">
+        <header className="border-b border-gray-800 bg-[#1a2421] sticky top-0 z-[110]">
           <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 flex items-center justify-between">
-            <a href="/" className="header-title text-lg font-semibold text-gray-900 tracking-tight font-brand">
+            <a href="/" className="header-title text-lg font-semibold text-white tracking-tight font-brand">
               Putting Kids First <sup className="text-xs">®</sup>
             </a>
             <a href="/#precios" className="bg-blue-600 text-white px-3 md:px-6 py-2 rounded-full hover:bg-blue-700 transition-colors font-semibold text-[10px] md:text-sm whitespace-nowrap">
@@ -17,20 +17,20 @@ export default function PoliticaDePrivacidad() {
         </header>
 
         {/* Content */}
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-[#1a2421]">
           <div className="max-w-3xl mx-auto px-4 md:px-6">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-8">
               Política de Privacidad
             </h1>
             
-            <p className="text-gray-600 mb-8">
+            <p className="text-gray-400 mb-8">
               Última actualización: 9 de diciembre de 2025
             </p>
 
-            <div className="space-y-8 text-gray-700">
+            <div className="space-y-8 text-gray-300">
               
               <section>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Información Que Recopilamos</h2>
+                <h2 className="text-xl font-bold text-white mb-4">Información Que Recopilamos</h2>
                 <p className="mb-4">Cuando utiliza nuestros servicios, recopilamos la siguiente información:</p>
                 <ul className="list-disc pl-6 space-y-2">
                   <li><strong>Información de cuenta:</strong> Correo electrónico y contraseña para crear su cuenta.</li>
@@ -42,7 +42,7 @@ export default function PoliticaDePrivacidad() {
               </section>
 
               <section>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Cómo Usamos Su Información</h2>
+                <h2 className="text-xl font-bold text-white mb-4">Cómo Usamos Su Información</h2>
                 <p className="mb-4">Utilizamos su información para:</p>
                 <ul className="list-disc pl-6 space-y-2">
                   <li>Proporcionar acceso a nuestros cursos en línea.</li>
@@ -54,21 +54,21 @@ export default function PoliticaDePrivacidad() {
               </section>
 
               <section>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Procesamiento de Pagos</h2>
+                <h2 className="text-xl font-bold text-white mb-4">Procesamiento de Pagos</h2>
                 <p>
                   Utilizamos Stripe para procesar pagos de forma segura. <strong>No almacenamos información de tarjetas de crédito en nuestros servidores.</strong> Toda la información de pago es manejada directamente por Stripe, que cumple con los estándares de seguridad PCI-DSS.
                 </p>
               </section>
 
               <section>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Cookies</h2>
+                <h2 className="text-xl font-bold text-white mb-4">Cookies</h2>
                 <p>
                   Utilizamos cookies esenciales únicamente para mantener su sesión de inicio de sesión activa. No utilizamos cookies de seguimiento, publicidad ni análisis de terceros.
                 </p>
               </section>
 
               <section>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Servicios de Terceros</h2>
+                <h2 className="text-xl font-bold text-white mb-4">Servicios de Terceros</h2>
                 <p className="mb-4">Utilizamos los siguientes servicios para operar nuestra plataforma:</p>
                 <ul className="list-disc pl-6 space-y-2">
                   <li><strong>Supabase:</strong> Almacenamiento seguro de datos y autenticación.</li>
@@ -78,21 +78,21 @@ export default function PoliticaDePrivacidad() {
               </section>
 
               <section>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Verificación de Certificados</h2>
+                <h2 className="text-xl font-bold text-white mb-4">Verificación de Certificados</h2>
                 <p>
                   Su certificado incluye un código QR y un código de verificación que permite a las cortes y abogados confirmar la autenticidad de su certificado. La página de verificación muestra solo su nombre legal, el curso completado, las fechas y la información del caso que usted proporcionó.
                 </p>
               </section>
 
               <section>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Seguridad de Datos</h2>
+                <h2 className="text-xl font-bold text-white mb-4">Seguridad de Datos</h2>
                 <p>
                   Protegemos su información utilizando conexiones cifradas (SSL/TLS), almacenamiento seguro en la nube y acceso restringido a datos personales. Sin embargo, ningún método de transmisión por Internet es 100% seguro.
                 </p>
               </section>
 
               <section>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Sus Derechos</h2>
+                <h2 className="text-xl font-bold text-white mb-4">Sus Derechos</h2>
                 <p className="mb-4">Usted tiene derecho a:</p>
                 <ul className="list-disc pl-6 space-y-2">
                   <li>Acceder a la información personal que tenemos sobre usted.</li>
@@ -105,21 +105,21 @@ export default function PoliticaDePrivacidad() {
               </section>
 
               <section>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Retención de Datos</h2>
+                <h2 className="text-xl font-bold text-white mb-4">Retención de Datos</h2>
                 <p>
                   Conservamos su información mientras su cuenta esté activa y durante el tiempo necesario para cumplir con obligaciones legales y permitir la verificación de certificados emitidos.
                 </p>
               </section>
 
               <section>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Cambios a Esta Política</h2>
+                <h2 className="text-xl font-bold text-white mb-4">Cambios a Esta Política</h2>
                 <p>
                   Podemos actualizar esta política ocasionalmente. Publicaremos cualquier cambio en esta página con una nueva fecha de actualización.
                 </p>
               </section>
 
               <section>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Contáctenos</h2>
+                <h2 className="text-xl font-bold text-white mb-4">Contáctenos</h2>
                 <p>
                   Si tiene preguntas sobre esta política de privacidad, contáctenos:
                 </p>
@@ -135,9 +135,9 @@ export default function PoliticaDePrivacidad() {
         </section>
 
         {/* Footer */}
-        <footer className="border-t border-gray-200 bg-gray-50">
+        <footer className="border-t border-gray-700 bg-[#1a2421]">
           <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
-            <div className="text-center text-xs text-gray-600">
+            <div className="text-center text-xs text-gray-400">
               <p>© 2025 <span className="font-brand">Putting Kids First ®</span>.<br className="md:hidden" /> Todos los derechos reservados.</p>
               <p className="mt-2">info@cursoparapadres.org • 888-777-2298</p>
             </div>

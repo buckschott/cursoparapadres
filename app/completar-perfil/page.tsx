@@ -327,13 +327,13 @@ export default function CompleteProfilePage() {
   const isEmailVerified = selectedAttorney && verifiedEmail === formData.attorney_email;
 
   return (
-    <main className="min-h-screen bg-gray-50 py-12 px-4 md:px-6">
+    <main className="min-h-screen bg-[#1a2421] py-12 px-4 md:px-6">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-white mb-2">
             Información del Certificado
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-400">
             Ingrese su nombre exactamente como aparece en sus documentos legales. Esta información aparecerá en su certificado oficial.
           </p>
           <p className="text-sm text-blue-700 bg-blue-50 rounded-lg px-4 py-3 mt-4 inline-block">
@@ -341,17 +341,17 @@ export default function CompleteProfilePage() {
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-3 md:p-8 border border-gray-200">
+        <div className="bg-[#1a2421] rounded-2xl shadow-xl shadow-black/40 p-3 md:p-8 border border-gray-700">
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2" style={{ fontSize: '22px' }}>
+              <label className="block text-sm font-semibold text-white mb-2" style={{ fontSize: '22px' }}>
                 Nombre Legal Completo *
               </label>
               <input
                 type="text"
                 value={formData.legal_name}
                 onChange={(e) => setFormData({...formData, legal_name: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
                 placeholder="Este nombre aparecerá en su certificado"
                 style={{ fontSize: '14px' }}
                 required
@@ -360,13 +360,13 @@ export default function CompleteProfilePage() {
             </div>
 
             <div>
-              <label className="block font-semibold text-gray-900 mb-2" style={{ fontSize: '14px' }}>
+              <label className="block font-semibold text-white mb-2" style={{ fontSize: '14px' }}>
                 Estado Donde se Presentó el Caso
               </label>
               <select
                 value={formData.court_state}
                 onChange={(e) => setFormData({...formData, court_state: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white bg-[#1a2421]"
                 style={{ fontSize: '16px' }}
               >
                 <option value="">Seleccionar Estado (Opcional)</option>
@@ -377,69 +377,69 @@ export default function CompleteProfilePage() {
             </div>
 
             <div>
-              <label className="block font-semibold text-gray-900 mb-2" style={{ fontSize: '14px' }}>
+              <label className="block font-semibold text-white mb-2" style={{ fontSize: '14px' }}>
                 Condado / Parroquia / Distrito / Ciudad
               </label>
               <input
                 type="text"
                 value={formData.court_county}
                 onChange={(e) => setFormData({...formData, court_county: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
                 placeholder="Opcional"
                 style={{ fontSize: '16px' }}
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-gray-900 mb-2" style={{ fontSize: '14px' }}>
+              <label className="block font-semibold text-white mb-2" style={{ fontSize: '14px' }}>
                 Número de Caso / Expediente / Causa
               </label>
               <input
                 type="text"
                 value={formData.case_number}
                 onChange={(e) => setFormData({...formData, case_number: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
                 placeholder="Opcional"
                 style={{ fontSize: '16px' }}
               />
             </div>
 
-            <div className="border-t border-gray-200 pt-6">
-              <h3 className="font-semibold text-gray-900 mb-4" style={{ fontSize: '14px' }}>
+            <div className="border-t border-gray-700 pt-6">
+              <h3 className="font-semibold text-white mb-4" style={{ fontSize: '14px' }}>
                 Información del Abogado (Opcional)
               </h3>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1" style={{ fontSize: '11px' }}>
+                  <label className="block text-sm font-medium text-gray-300 mb-1" style={{ fontSize: '11px' }}>
                     Nombre del Abogado
                   </label>
                   <input
                     type="text"
                     value={formData.attorney_name}
                     onChange={(e) => setFormData({...formData, attorney_name: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                    className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
                     placeholder="Nombre completo del abogado"
                     style={{ fontSize: '14px' }}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1" style={{ fontSize: '11px' }}>
+                  <label className="block text-sm font-medium text-gray-300 mb-1" style={{ fontSize: '11px' }}>
                     Correo Electrónico del Abogado
                   </label>
                   <input
                     type="email"
                     value={formData.attorney_email}
                     onChange={(e) => setFormData({...formData, attorney_email: e.target.value})}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white ${
                       isEmailVerified 
                         ? 'border-green-400 bg-green-50' 
                         : hasMultipleMatches
                           ? 'border-blue-400 bg-blue-50'
                           : verifiedEmail && verifiedEmail !== formData.attorney_email 
                             ? 'border-amber-400 bg-amber-50' 
-                            : 'border-gray-300'
+                            : 'border-gray-600'
                     }`}
                     placeholder="abogado@ejemplo.com"
                     style={{ fontSize: '14px' }}
@@ -450,7 +450,7 @@ export default function CompleteProfilePage() {
                 {/* Attorney Match Notification */}
                 {searchingAttorney && (
                   <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-gray-600 border-t-blue-500 rounded-full animate-spin"></div>
                     Buscando abogado...
                   </div>
                 )}
@@ -470,14 +470,14 @@ export default function CompleteProfilePage() {
                           className={`w-full text-left p-3 rounded-lg border-2 transition-colors ${
                             selectedAttorney?.id === attorney.id
                               ? 'border-green-500 bg-green-50'
-                              : 'border-gray-200 bg-white hover:border-blue-300'
+                              : 'border-gray-700 bg-[#1a2421] hover:border-blue-300'
                           }`}
                         >
                           <div className="flex items-center gap-3">
                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                               selectedAttorney?.id === attorney.id
                                 ? 'border-green-500 bg-green-500'
-                                : 'border-gray-300'
+                                : 'border-gray-600'
                             }`}>
                               {selectedAttorney?.id === attorney.id && (
                                 <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -486,9 +486,9 @@ export default function CompleteProfilePage() {
                               )}
                             </div>
                             <div>
-                              <p className="font-medium text-gray-900">{getAttorneyDisplayName(attorney)}</p>
+                              <p className="font-medium text-white">{getAttorneyDisplayName(attorney)}</p>
                               {attorney.firm_name && (
-                                <p className="text-sm text-gray-600">{attorney.firm_name}</p>
+                                <p className="text-sm text-gray-400">{attorney.firm_name}</p>
                               )}
                             </div>
                           </div>

@@ -101,9 +101,9 @@ export default function Home() {
     <>
       <Header />
       
-      <main className="min-h-screen bg-[#1a2421]">
+      <main className="min-h-screen bg-background">
         {/* HERO SECTION */}
-        <section className="relative w-full overflow-hidden bg-[#1a2421] hero-section flex justify-center z-0">
+        <section className="relative w-full overflow-hidden bg-background hero-section flex justify-center z-0">
           <div className="relative w-full max-w-7xl mx-auto px-4 md:px-6 text-center z-10 flex flex-col justify-between hero-content">
             
             <div>
@@ -114,7 +114,7 @@ export default function Home() {
             </div>
 
             <div>
-              <p className="hero-subheadline text-xl md:text-2xl lg:text-3xl font-normal text-gray-400 max-w-4xl mx-auto leading-relaxed">
+              <p className="hero-subheadline text-xl md:text-2xl lg:text-3xl font-normal text-white/70 max-w-4xl mx-auto leading-relaxed">
                 <span className="subtext-line subtext-line-1 inline-block opacity-0">Un precio.</span><br />
                 <span className="subtext-line subtext-line-2 inline-block opacity-0">Todos los estados.</span><br />
                 <span className="subtext-line subtext-line-3 inline-block opacity-0">Sin sorpresas.</span>
@@ -124,8 +124,8 @@ export default function Home() {
             <div className="flex justify-center">
               <div className="trust-badge-pill inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-3">
                 <span className="relative flex h-4 w-4 flex-shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#77DD77] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-4 w-4 bg-[#77DD77]"></span>
                 </span>
                 <span className="trust-badge-text font-semibold text-white">
                   <span className="trust-text-1">El Curso Original en Línea</span>
@@ -146,7 +146,7 @@ export default function Home() {
             <div>
               <a 
                 href="/garantia"
-                className="secondary-cta inline-block text-gray-400 hover:text-white text-[19px] font-bold underline decoration-2 underline-offset-4 hover:decoration-white transition-colors"
+                className="secondary-cta inline-block text-white/70 hover:text-white text-[19px] font-bold underline decoration-2 underline-offset-4 hover:decoration-white transition-colors"
               >
                 Garantía de Aceptación del 100%
               </a>
@@ -155,14 +155,14 @@ export default function Home() {
         </section>
 
         {/* FEATURES SECTION - No divider at top (connects to hero) */}
-        <section id="caracteristicas" className="section-divider relative pt-8 pb-24 bg-[#1a2421] overflow-hidden z-20" aria-labelledby="features-heading">
+        <section id="caracteristicas" className="section-divider relative pt-8 pb-24 bg-background overflow-hidden z-20" aria-labelledby="features-heading">
           
           <div className="relative max-w-7xl mx-auto px-4 md:px-6 z-10">
             <div className="text-center mb-16">
               <h2 id="caracteristicas-heading" className="scroll-reveal text-xl md:text-4xl font-bold text-white mb-4">
                 100% Aceptado por la Corte, Entrega Inmediata
               </h2>
-              <p className="scroll-reveal text-base md:text-lg text-gray-400 max-w-2xl mx-auto">
+              <p className="scroll-reveal text-base md:text-lg text-white/70 max-w-2xl mx-auto">
                 Nuestro proceso es simple, rápido y garantizado para cumplir con su fecha límite.
               </p>
             </div>
@@ -194,7 +194,7 @@ export default function Home() {
                   viewBox: "0 0 1016.39 1020"
                 }
               ].map((feature, i) => (
-                <article key={i} className="scroll-reveal group p-8 rounded-2xl border border-gray-700 md:hover:border-blue-200 md:hover:shadow-xl shadow-black/40 transition-all duration-300 md:hover:-translate-y-1 bg-[#1a2421]">
+                <article key={i} className="scroll-reveal group p-8 rounded-2xl border border-[#FFFFFF]/15 md:hover:border-[#7EC8E3]/30 md:hover:shadow-xl shadow-black/40 transition-all duration-300 md:hover:-translate-y-1 bg-background">
                   <div className="w-16 h-16 mb-6 relative overflow-visible">
                     <svg className="draw-svg w-full h-full" viewBox={feature.viewBox} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       {feature.icon.split(' M').map((d, j) => (
@@ -202,10 +202,10 @@ export default function Home() {
                       ))}
                     </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3 md:group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-xl font-bold text-white mb-3 md:group-hover:text-[#7EC8E3] transition-colors">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-400 leading-relaxed">
+                  <p className="text-white/70 leading-relaxed">
                     {feature.description}
                   </p>
                 </article>
@@ -215,13 +215,13 @@ export default function Home() {
         </section>
         
         {/* DEVICES SECTION */}
-        <section className="section-divider relative bg-[#1a2421] overflow-hidden z-20 py-24 pt-32" aria-labelledby="devices-heading">
+        <section className="section-divider relative bg-background overflow-hidden z-20 py-24 pt-32" aria-labelledby="devices-heading">
           <div className="relative max-w-7xl mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
               <h2 id="dispositivos-heading" className="scroll-reveal text-lg md:text-4xl font-bold text-white mb-4">
                 Funciona en cualquier<br className="md:hidden" /> dispositivo
               </h2>
-              <p className="scroll-reveal text-base md:text-lg text-gray-400 max-w-2xl mx-auto">
+              <p className="scroll-reveal text-base md:text-lg text-white/70 max-w-2xl mx-auto">
                 Comience en su teléfono, continúe en su computadora. Su progreso se sincroniza perfectamente en todos los dispositivos.
               </p>
             </div>
@@ -244,33 +244,33 @@ export default function Home() {
         </section>
 
         {/* PRICING SECTION */}
-        <section id="precios" className="section-divider relative bg-[#1a2421] z-20 overflow-hidden py-24" aria-labelledby="pricing-heading">
+        <section id="precios" className="section-divider relative bg-background z-20 overflow-hidden py-24" aria-labelledby="pricing-heading">
           <div className="max-w-6xl mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
               <h2 id="precios-heading" className="scroll-reveal text-lg md:text-4xl font-bold text-white mb-4">Clases de Crianza Aceptadas por la Corte</h2>
-              <p className="scroll-reveal text-lg text-gray-400">Encuentre el programa garantizado y aceptado para sus requisitos específicos.</p>
+              <p className="scroll-reveal text-lg text-white/70">Encuentre el programa garantizado y aceptado para sus requisitos específicos.</p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
               {/* Coparenting Class - Active */}
-              <article className="relative bg-[#1a2421] rounded-2xl border-2 border-gray-600 p-8 transition-all md:hover:shadow-2xl shadow-black/50 md:hover:border-blue-400">
+              <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/20 p-8 transition-all md:hover:shadow-2xl shadow-black/50 md:hover:border-[#FFFFFF]/50">
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold text-white mb-1">Clase de Coparentalidad</h3>
-                  <p className="text-sm text-gray-400">Para Divorcio, Separación y Custodia</p>
+                  <p className="text-sm text-white/70">Para Divorcio, Separación y Custodia</p>
                 </div>
                 <div className="mb-6">
                   <span className="text-5xl font-bold text-white">$60</span>
-                  <p className="text-sm text-gray-500 mt-2">Pago único</p>
+                  <p className="text-sm text-white/60 mt-2">Pago único</p>
                 </div>
                 <div className="mb-6">
                   <h4 className="text-sm font-semibold text-white mb-3">Cumple con los requisitos para:</h4>
                   <ul className="space-y-2">
                     {["Procedimientos de divorcio", "Disputas de custodia", "Casos de derechos parentales", "Modificaciones de custodia"].map((item, i) => (
                       <li key={i} className="flex items-start gap-3">
-                        <svg className="w-5 h-5 mt-0.5 flex-shrink-0 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                        <svg className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#7EC8E3]" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                         </svg>
-                        <span className="text-gray-300 text-sm">{item}</span>
+                        <span className="text-white text-sm">{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -278,74 +278,74 @@ export default function Home() {
                 <button 
                   onClick={() => handleCheckout(process.env.NEXT_PUBLIC_PRICE_COPARENTING!, 'coparenting')}
                   disabled={loading === 'coparenting'}
-                  className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold md:hover:bg-blue-700 transition-all md:hover:shadow-xl shadow-black/40 mb-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#7EC8E3] text-white py-4 rounded-xl font-bold md:hover:bg-[#6BB8D3] transition-all md:hover:shadow-xl shadow-black/40 mb-6 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading === 'coparenting' ? 'Procesando...' : 'Obtener Mi Certificado'}
                 </button>
-                <div className="mb-6 pt-4 border-t border-gray-700">
+                <div className="mb-6 pt-4 border-t border-[#FFFFFF]/15">
                   <h4 className="text-xs font-semibold text-white mb-2">Incluye:</h4>
                   <ul className="space-y-2">
                     {["Garantía de Aceptación del 100%", "El Curso Original en Línea (Desde 1993)", "100% en Línea y a Su Ritmo", "Certificado Instantáneo con Código de Verificación Judicial"].map((item, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <svg className="w-4 h-4 mt-0.5 flex-shrink-0 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                        <svg className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#77DD77]" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                         </svg>
-                        <span className="text-gray-400 text-xs">{item}</span>
+                        <span className="text-white/70 text-xs">{item}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-                <div className="pt-4 border-t border-gray-700">
+                <div className="pt-4 border-t border-[#FFFFFF]/15">
                   <h4 className="text-xs font-semibold text-white mb-2">Detalles del Curso:</h4>
-                  <p className="text-gray-400 text-xs leading-relaxed italic">
+                  <p className="text-white/70 text-xs leading-relaxed italic">
                     "Esta clase proporciona las habilidades esenciales para cambiar su enfoque del conflicto personal del divorcio a las necesidades de su hijo, ayudándole a crear un ambiente de 'dos hogares' estable, de apoyo y sin amenazas."
                   </p>
                 </div>
               </article>
 
               {/* Parenting Class - Coming Soon */}
-              <article className="relative bg-[#1a2421] rounded-2xl border-2 border-gray-700 p-8 opacity-75">
+              <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/15 p-8 opacity-75">
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-amber-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg shadow-black/30">PRÓXIMAMENTE</span>
+                  <span className="bg-[#FFB347] text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg shadow-black/30">PRÓXIMAMENTE</span>
                 </div>
                 <div className="mb-6 mt-6">
                   <h3 className="text-2xl font-bold text-white mb-1">Clase de Crianza</h3>
-                  <p className="text-sm text-gray-400">Para Habilidades Fundamentales y Estabilidad del Hogar</p>
+                  <p className="text-sm text-white/70">Para Habilidades Fundamentales y Estabilidad del Hogar</p>
                 </div>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-gray-400">$60</span>
-                  <p className="text-sm text-gray-500 mt-2">Pago único</p>
+                  <span className="text-5xl font-bold text-white/70">$60</span>
+                  <p className="text-sm text-white/60 mt-2">Pago único</p>
                 </div>
                 <div className="mb-6">
                   <h4 className="text-sm font-semibold text-white mb-3">Cumple con los requisitos para:</h4>
                   <ul className="space-y-2">
                     {["Demostrar crianza positiva en la corte", "Crear un hogar estable y nutritivo", "Desarrollar autoestima infantil y disciplina positiva", "Procedimientos de adopción o cuidado temporal"].map((item, i) => (
                       <li key={i} className="flex items-start gap-3">
-                        <svg className="w-5 h-5 mt-0.5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <svg className="w-5 h-5 mt-0.5 flex-shrink-0 text-white/70" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                         </svg>
-                        <span className="text-gray-500 text-sm">{item}</span>
+                        <span className="text-white/60 text-sm">{item}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-                <button disabled className="w-full bg-gray-700 text-gray-400 py-4 rounded-xl font-bold cursor-not-allowed mb-6">Próximamente</button>
-                <div className="mb-6 pt-4 border-t border-gray-700">
+                <button disabled className="w-full bg-[#333333] text-white/70 py-4 rounded-xl font-bold cursor-not-allowed mb-6">Próximamente</button>
+                <div className="mb-6 pt-4 border-t border-[#FFFFFF]/15">
                   <h4 className="text-xs font-semibold text-white mb-2">Incluye:</h4>
                   <ul className="space-y-2">
                     {["Garantía de Aceptación del 100%", "El Curso Original en Línea (Desde 1993)", "100% en Línea y a Su Ritmo", "Certificado Instantáneo con Código de Verificación Judicial"].map((item, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <svg className="w-4 h-4 mt-0.5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <svg className="w-4 h-4 mt-0.5 flex-shrink-0 text-white/70" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                         </svg>
-                        <span className="text-gray-400 text-xs">{item}</span>
+                        <span className="text-white/70 text-xs">{item}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-                <div className="pt-4 border-t border-gray-700">
+                <div className="pt-4 border-t border-[#FFFFFF]/15">
                   <h4 className="text-xs font-semibold text-white mb-2">Detalles del Curso:</h4>
-                  <p className="text-gray-400 text-xs leading-relaxed italic">
+                  <p className="text-white/70 text-xs leading-relaxed italic">
                     "Esta clase proporciona habilidades fundamentales de crianza para crear un hogar seguro, estable y nutritivo, ayudándole a desarrollar la autoestima de su hijo y manejar la disciplina de manera efectiva."
                   </p>
                 </div>
@@ -354,37 +354,37 @@ export default function Home() {
 
             {/* Bundle - Coming Soon */}
             <div className="max-w-4xl mx-auto mt-16 mb-14">
-              <article className="relative bg-[#1a2421] rounded-2xl border-2 border-gray-700 p-8 opacity-75">
+              <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/15 p-8 opacity-75">
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-amber-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg shadow-black/30">PRÓXIMAMENTE</span>
+                  <span className="bg-[#FFB347] text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg shadow-black/30">PRÓXIMAMENTE</span>
                 </div>
                 <div className="mb-6 mt-6">
                   <h3 className="text-2xl font-bold text-white mb-1">El Paquete Completo</h3>
-                  <p className="text-sm text-gray-400">Demuestre Su Compromiso Total</p>
+                  <p className="text-sm text-white/70">Demuestre Su Compromiso Total</p>
                 </div>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-gray-400">$80</span>
-                  <p className="text-sm text-gray-500 mt-2">Pago único • Ahorre $40</p>
+                  <span className="text-5xl font-bold text-white/70">$80</span>
+                  <p className="text-sm text-white/60 mt-2">Pago único • Ahorre $40</p>
                 </div>
                 <div className="mb-6">
                   <h4 className="text-sm font-semibold text-white mb-3">Incluye ambas clases:</h4>
                   <ul className="space-y-2">
                     {["Clase de Coparentalidad (Para Divorcio y Custodia)", "Clase de Habilidades de Crianza (Para Habilidades Fundamentales y Estabilidad del Hogar)", "Cumple con requisitos combinados o de nivel superior", "Garantía de Aceptación del 100%"].map((item, i) => (
                       <li key={i} className="flex items-start gap-3">
-                        <svg className="w-5 h-5 mt-0.5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <svg className="w-5 h-5 mt-0.5 flex-shrink-0 text-white/70" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                         </svg>
-                        <span className="text-gray-500 text-sm">{item}</span>
+                        <span className="text-white/60 text-sm">{item}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-                <button disabled className="w-full bg-gray-700 text-gray-400 py-4 rounded-xl font-bold cursor-not-allowed">Próximamente</button>
+                <button disabled className="w-full bg-[#333333] text-white/70 py-4 rounded-xl font-bold cursor-not-allowed">Próximamente</button>
               </article>
             </div>
 
             <div className="text-center mt-12">
-              <p className="flex items-center justify-center gap-2 text-sm text-gray-500">
+              <p className="flex items-center justify-center gap-2 text-sm text-white/60">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
@@ -395,11 +395,11 @@ export default function Home() {
         </section>
 
         {/* TESTIMONIALS SECTION */}
-        <section id="testimonios" className="section-divider py-24 bg-[#1a2421] relative z-20" aria-labelledby="testimonials-heading">
+        <section id="testimonios" className="section-divider py-24 bg-background relative z-20" aria-labelledby="testimonials-heading">
           <div className="max-w-7xl mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
               <h2 id="testimonios-heading" className="text-lg md:text-4xl font-bold text-white mb-4">Confiado por Padres, Aceptado por Cortes</h2>
-              <p className="text-lg text-gray-400">Vea cómo padres como usted cumplieron con sus requisitos—rápidamente.</p>
+              <p className="text-lg text-white/70">Vea cómo padres como usted cumplieron con sus requisitos—rápidamente.</p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
@@ -408,18 +408,18 @@ export default function Home() {
                 { name: "Lucía Fernández", location: "Atlanta, Georgia", text: "Como madre soltera con dos trabajos, necesitaba algo flexible. Hice todo el curso en mi teléfono entre turnos. El certificado llegó a mi correo al instante." },
                 { name: "Miguel Torres", location: "Jacksonville, Florida", text: "Esperaba solo cumplir con un requisito del tribunal. Realmente aprendí cosas que me ayudaron a ser mejor padre. Valió la pena." }
               ].map((review, i) => (
-                <article key={i} className="bg-[#1a2421] border-2 border-gray-700 rounded-2xl p-8 md:hover:border-blue-200 md:hover:shadow-xl shadow-black/40 transition-all">
+                <article key={i} className="bg-background border-2 border-[#FFFFFF]/15 rounded-2xl p-8 md:hover:border-[#7EC8E3]/30 md:hover:shadow-xl shadow-black/40 transition-all">
                   <div className="flex mb-4">
                     {[...Array(5)].map((_, j) => (
-                      <svg key={j} className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                      <svg key={j} className="w-5 h-5 text-[#FFE566]" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                       </svg>
                     ))}
                   </div>
-                  <p className="text-gray-300 mb-6 leading-relaxed">"{review.text}"</p>
-                  <div className="border-t border-gray-700 pt-4">
+                  <p className="text-white mb-6 leading-relaxed">"{review.text}"</p>
+                  <div className="border-t border-[#FFFFFF]/15 pt-4">
                     <p className="font-semibold text-white">{review.name}</p>
-                    <p className="text-sm text-gray-500">{review.location}</p>
+                    <p className="text-sm text-white/60">{review.location}</p>
                   </div>
                 </article>
               ))}
@@ -428,11 +428,11 @@ export default function Home() {
         </section>
 
         {/* FAQ SECTION */}
-        <section id="preguntas-frecuentes" className="section-divider py-24 bg-[#1a2421] relative z-20" aria-labelledby="faq-heading">
+        <section id="preguntas-frecuentes" className="section-divider py-24 bg-background relative z-20" aria-labelledby="faq-heading">
           <div className="max-w-4xl mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
               <h2 id="preguntas-frecuentes-heading" className="text-lg md:text-4xl font-bold text-white mb-4">Su Lista de Verificación Final</h2>
-              <p className="text-lg text-gray-400">Detalles clave sobre la aceptación de la corte, su certificado y el acceso al curso.</p>
+              <p className="text-lg text-white/70">Detalles clave sobre la aceptación de la corte, su certificado y el acceso al curso.</p>
             </div>
             
             <div className="space-y-4">
@@ -441,15 +441,15 @@ export default function Home() {
                 { question: "¿Cuándo recibo mi certificado?", answer: "Inmediatamente. En el momento en que complete la revisión final del curso, su certificado está listo para ser descargado, impreso o enviado por correo electrónico directamente a su abogado." },
                 { question: "¿Cuánto tiempo toma el curso?", answer: "Las clases de Coparentalidad y Crianza están diseñadas cada una para cumplir con un requisito de la corte de 4 horas. El Paquete Completo es nuestro programa más completo, diseñado para satisfacer requisitos combinados o de nivel superior.\n\nTodas nuestras clases son 100% a su propio ritmo, por lo que puede iniciar y cerrar sesión según sea necesario para completar el trabajo en su horario." }
               ].map((faq, i) => (
-                <details key={i} className="bg-[#1a2421] border-2 border-gray-700 rounded-xl overflow-hidden group md:hover:border-blue-200 transition-colors">
+                <details key={i} className="bg-background border-2 border-[#FFFFFF]/15 rounded-xl overflow-hidden group md:hover:border-[#7EC8E3]/30 transition-colors">
                   <summary className="flex justify-between items-center cursor-pointer p-6 font-bold text-white text-lg select-none">
                     <span>{faq.question}</span>
-                    <svg className="w-6 h-6 text-gray-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-white/70 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </summary>
                   <div className="px-6 pb-6 pt-2">
-                    <p className="text-gray-400 leading-relaxed whitespace-pre-line">{faq.answer}</p>
+                    <p className="text-white/70 leading-relaxed whitespace-pre-line">{faq.answer}</p>
                   </div>
                 </details>
               ))}

@@ -2,9 +2,9 @@ import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-[#1a2421] flex items-center justify-center px-4">
-      <div className="bg-[#1a2421] rounded-2xl border border-gray-800 p-8 md:p-12 max-w-lg w-full text-center">
-        <div className="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <div className="bg-background rounded-2xl border border-[#FFFFFF]/10 p-8 md:p-12 max-w-lg w-full text-center">
+        <div className="w-20 h-20 bg-[#2A2A2A] rounded-full flex items-center justify-center mx-auto mb-6">
           <span className="text-4xl font-bold text-white">404</span>
         </div>
 
@@ -12,7 +12,7 @@ export default function NotFound() {
           Página No Encontrada
         </h1>
 
-        <p className="text-gray-400 mb-8">
+        <p className="text-white/70 mb-8">
           Lo sentimos, la página que busca no existe o ha sido movida.
         </p>
 
@@ -26,15 +26,15 @@ export default function NotFound() {
 
           <Link
             href="/#precios"
-            className="w-full bg-transparent text-gray-300 py-4 rounded-xl font-bold border border-gray-700 hover:bg-white/5 transition-all block"
+            className="w-full bg-transparent text-white py-4 rounded-xl font-bold border border-[#FFFFFF]/15 hover:bg-white/5 transition-all block"
           >
             Ver Cursos Disponibles
           </Link>
         </div>
 
-        <p className="text-gray-500 text-sm mt-6">
+        <p className="text-white/60 text-sm mt-6">
           ¿Necesita ayuda?{' '}
-          <a href="mailto:info@cursoparapadres.org" className="text-blue-400 hover:underline">
+          <a href="mailto:info@cursoparapadres.org" className="text-[#7EC8E3] hover:underline">
             Contáctenos
           </a>
         </p>

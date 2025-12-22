@@ -3,31 +3,31 @@
 export default function TerminosDeServicio() {
   return (
     <>
-      <main className="min-h-screen bg-[#1a2421]">
+      <main className="min-h-screen bg-background">
         {/* Header */}
-        <header className="border-b border-gray-800 bg-[#1a2421] sticky top-0 z-[110]">
+        <header className="border-b border-[#FFFFFF]/10 bg-background sticky top-0 z-[110]">
           <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 flex items-center justify-between">
             <a href="/" className="header-title text-lg font-semibold text-white tracking-tight font-brand">
               Putting Kids First <sup className="text-xs">®</sup>
             </a>
-            <a href="/#precios" className="bg-blue-600 text-white px-3 md:px-6 py-2 rounded-full hover:bg-blue-700 transition-colors font-semibold text-[10px] md:text-sm whitespace-nowrap">
+            <a href="/#precios" className="bg-[#7EC8E3] text-white px-3 md:px-6 py-2 rounded-full hover:bg-[#6BB8D3] transition-colors font-semibold text-[10px] md:text-sm whitespace-nowrap">
               Obtener Mi Certificado
             </a>
           </div>
         </header>
 
         {/* Content */}
-        <section className="py-16 bg-[#1a2421]">
+        <section className="py-16 bg-background">
           <div className="max-w-3xl mx-auto px-4 md:px-6">
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-8">
               Términos de Servicio
             </h1>
             
-            <p className="text-gray-400 mb-8">
+            <p className="text-white/70 mb-8">
               Última actualización: 9 de diciembre de 2025
             </p>
 
-            <div className="space-y-8 text-gray-300">
+            <div className="space-y-8 text-white">
               
               <section>
                 <h2 className="text-xl font-bold text-white mb-4">Aceptación de los Términos</h2>
@@ -168,7 +168,7 @@ export default function TerminosDeServicio() {
                 </p>
                 <p className="mt-4">
                   <strong>Putting Kids First®</strong><br />
-                  Correo electrónico: <a href="mailto:info@cursoparapadres.org" className="text-blue-600 hover:underline">info@cursoparapadres.org</a><br />
+                  Correo electrónico: <a href="mailto:info@cursoparapadres.org" className="text-[#7EC8E3] hover:underline">info@cursoparapadres.org</a><br />
                   Teléfono: 888-777-2298
                 </p>
               </section>
@@ -178,9 +178,9 @@ export default function TerminosDeServicio() {
         </section>
 
         {/* Footer */}
-        <footer className="border-t border-gray-700 bg-[#1a2421]">
+        <footer className="border-t border-[#FFFFFF]/15 bg-background">
           <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
-            <div className="text-center text-xs text-gray-400">
+            <div className="text-center text-xs text-white/70">
               <p>© 2025 <span className="font-brand">Putting Kids First ®</span>.<br className="md:hidden" /> Todos los derechos reservados.</p>
               <p className="mt-2">info@cursoparapadres.org • 888-777-2298</p>
             </div>

@@ -327,21 +327,21 @@ export default function CompleteProfilePage() {
   const isEmailVerified = selectedAttorney && verifiedEmail === formData.attorney_email;
 
   return (
-    <main className="min-h-screen bg-[#1a2421] py-12 px-4 md:px-6">
+    <main className="min-h-screen bg-background py-12 px-4 md:px-6">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
             Información del Certificado
           </h1>
-          <p className="text-gray-400">
+          <p className="text-white/70">
             Ingrese su nombre exactamente como aparece en sus documentos legales. Esta información aparecerá en su certificado oficial.
           </p>
-          <p className="text-sm text-blue-700 bg-blue-50 rounded-lg px-4 py-3 mt-4 inline-block">
+          <p className="text-sm text-[#FFFFFF] bg-[#7EC8E3]/10 rounded-lg px-4 py-3 mt-4 inline-block">
             Todos los certificados se emiten en inglés para su aceptación por los tribunales de Estados Unidos.
           </p>
         </div>
 
-        <div className="bg-[#1a2421] rounded-2xl shadow-xl shadow-black/40 p-3 md:p-8 border border-gray-700">
+        <div className="bg-background rounded-2xl shadow-xl shadow-black/40 p-3 md:p-8 border border-[#FFFFFF]/15">
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-semibold text-white mb-2" style={{ fontSize: '22px' }}>
@@ -351,12 +351,12 @@ export default function CompleteProfilePage() {
                 type="text"
                 value={formData.legal_name}
                 onChange={(e) => setFormData({...formData, legal_name: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
+                className="w-full px-4 py-3 border border-[#FFFFFF]/20 rounded-lg focus:ring-2 focus:ring-[#FFFFFF] focus:border-[#FFFFFF] text-white"
                 placeholder="Este nombre aparecerá en su certificado"
                 style={{ fontSize: '14px' }}
                 required
               />
-              <p style={{ fontSize: '7px' }} className="text-gray-500 mt-1">Este nombre debe coincidir con sus documentos legales y expedientes judiciales</p>
+              <p style={{ fontSize: '7px' }} className="text-white/60 mt-1">Este nombre debe coincidir con sus documentos legales y expedientes judiciales</p>
             </div>
 
             <div>
@@ -366,7 +366,7 @@ export default function CompleteProfilePage() {
               <select
                 value={formData.court_state}
                 onChange={(e) => setFormData({...formData, court_state: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white bg-[#1a2421]"
+                className="w-full px-4 py-3 border border-[#FFFFFF]/20 rounded-lg focus:ring-2 focus:ring-[#FFFFFF] focus:border-[#FFFFFF] text-white bg-background"
                 style={{ fontSize: '16px' }}
               >
                 <option value="">Seleccionar Estado (Opcional)</option>
@@ -384,7 +384,7 @@ export default function CompleteProfilePage() {
                 type="text"
                 value={formData.court_county}
                 onChange={(e) => setFormData({...formData, court_county: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
+                className="w-full px-4 py-3 border border-[#FFFFFF]/20 rounded-lg focus:ring-2 focus:ring-[#FFFFFF] focus:border-[#FFFFFF] text-white"
                 placeholder="Opcional"
                 style={{ fontSize: '16px' }}
               />
@@ -398,67 +398,67 @@ export default function CompleteProfilePage() {
                 type="text"
                 value={formData.case_number}
                 onChange={(e) => setFormData({...formData, case_number: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
+                className="w-full px-4 py-3 border border-[#FFFFFF]/20 rounded-lg focus:ring-2 focus:ring-[#FFFFFF] focus:border-[#FFFFFF] text-white"
                 placeholder="Opcional"
                 style={{ fontSize: '16px' }}
               />
             </div>
 
-            <div className="border-t border-gray-700 pt-6">
+            <div className="border-t border-[#FFFFFF]/15 pt-6">
               <h3 className="font-semibold text-white mb-4" style={{ fontSize: '14px' }}>
                 Información del Abogado (Opcional)
               </h3>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1" style={{ fontSize: '11px' }}>
+                  <label className="block text-sm font-medium text-white mb-1" style={{ fontSize: '11px' }}>
                     Nombre del Abogado
                   </label>
                   <input
                     type="text"
                     value={formData.attorney_name}
                     onChange={(e) => setFormData({...formData, attorney_name: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
+                    className="w-full px-4 py-3 border border-[#FFFFFF]/20 rounded-lg focus:ring-2 focus:ring-[#FFFFFF] focus:border-[#FFFFFF] text-white"
                     placeholder="Nombre completo del abogado"
                     style={{ fontSize: '14px' }}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1" style={{ fontSize: '11px' }}>
+                  <label className="block text-sm font-medium text-white mb-1" style={{ fontSize: '11px' }}>
                     Correo Electrónico del Abogado
                   </label>
                   <input
                     type="email"
                     value={formData.attorney_email}
                     onChange={(e) => setFormData({...formData, attorney_email: e.target.value})}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white ${
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#FFFFFF] focus:border-[#FFFFFF] text-white ${
                       isEmailVerified 
-                        ? 'border-green-400 bg-green-50' 
+                        ? 'border-[#77DD77] bg-[#77DD77]/10' 
                         : hasMultipleMatches
-                          ? 'border-blue-400 bg-blue-50'
+                          ? 'border-[#FFFFFF]/50 bg-[#7EC8E3]/10'
                           : verifiedEmail && verifiedEmail !== formData.attorney_email 
-                            ? 'border-amber-400 bg-amber-50' 
-                            : 'border-gray-600'
+                            ? 'border-[#FFB347] bg-[#FFB347]/10' 
+                            : 'border-[#FFFFFF]/20'
                     }`}
                     placeholder="abogado@ejemplo.com"
                     style={{ fontSize: '14px' }}
                   />
-                  <p className="text-gray-500 mt-1" style={{ fontSize: '11px' }}>Le enviaremos una copia de su certificado</p>
+                  <p className="text-white/60 mt-1" style={{ fontSize: '11px' }}>Le enviaremos una copia de su certificado</p>
                 </div>
 
                 {/* Attorney Match Notification */}
                 {searchingAttorney && (
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <div className="w-4 h-4 border-2 border-gray-600 border-t-blue-500 rounded-full animate-spin"></div>
+                  <div className="flex items-center gap-2 text-sm text-white/60">
+                    <div className="w-4 h-4 border-2 border-[#FFFFFF]/20 border-t-[#7EC8E3] rounded-full animate-spin"></div>
                     Buscando abogado...
                   </div>
                 )}
 
                 {/* Multiple attorneys found - show selection */}
                 {hasMultipleMatches && !searchingAttorney && (
-                  <div className="rounded-lg p-4 bg-blue-50 border border-blue-200">
-                    <p className="font-semibold text-blue-800 mb-3">
+                  <div className="rounded-lg p-4 bg-[#7EC8E3]/10 border border-[#7EC8E3]/30">
+                    <p className="font-semibold text-[#FFFFFF] mb-3">
                       Se encontraron varios abogados con este correo electrónico:
                     </p>
                     <div className="space-y-2">
@@ -469,15 +469,15 @@ export default function CompleteProfilePage() {
                           onClick={() => handleSelectAttorney(attorney)}
                           className={`w-full text-left p-3 rounded-lg border-2 transition-colors ${
                             selectedAttorney?.id === attorney.id
-                              ? 'border-green-500 bg-green-50'
-                              : 'border-gray-700 bg-[#1a2421] hover:border-blue-300'
+                              ? 'border-[#77DD77]/100 bg-[#77DD77]/10'
+                              : 'border-[#FFFFFF]/15 bg-background hover:border-[#FFFFFF]/50'
                           }`}
                         >
                           <div className="flex items-center gap-3">
                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                               selectedAttorney?.id === attorney.id
-                                ? 'border-green-500 bg-green-500'
-                                : 'border-gray-600'
+                                ? 'border-[#77DD77]/100 bg-[#77DD77]'
+                                : 'border-[#FFFFFF]/20'
                             }`}>
                               {selectedAttorney?.id === attorney.id && (
                                 <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -488,7 +488,7 @@ export default function CompleteProfilePage() {
                             <div>
                               <p className="font-medium text-white">{getAttorneyDisplayName(attorney)}</p>
                               {attorney.firm_name && (
-                                <p className="text-sm text-gray-400">{attorney.firm_name}</p>
+                                <p className="text-sm text-white/70">{attorney.firm_name}</p>
                               )}
                             </div>
                           </div>
@@ -496,7 +496,7 @@ export default function CompleteProfilePage() {
                       ))}
                     </div>
                     {selectedAttorney && (
-                      <p className="mt-3 text-sm text-green-700 flex items-center gap-2">
+                      <p className="mt-3 text-sm text-[#77DD77] flex items-center gap-2">
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
@@ -510,33 +510,33 @@ export default function CompleteProfilePage() {
                 {hasSingleMatch && !searchingAttorney && (
                   <div className={`rounded-lg p-4 ${
                     isEmailVerified 
-                      ? 'bg-green-50 border border-green-200' 
-                      : 'bg-amber-50 border border-amber-200'
+                      ? 'bg-[#77DD77]/10 border border-[#77DD77]/30' 
+                      : 'bg-[#FFB347]/10 border border-[#FFB347]/30'
                   }`}>
                     {isEmailVerified ? (
                       <div className="flex items-start gap-3">
-                        <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <div className="w-5 h-5 bg-[#77DD77] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                           <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                           </svg>
                         </div>
                         <div>
-                          <p className="font-semibold text-green-800">✓ Abogado Verificado</p>
-                          <p className="text-sm text-green-700">
+                          <p className="font-semibold text-[#77DD77]">✓ Abogado Verificado</p>
+                          <p className="text-sm text-[#77DD77]">
                             {getAttorneyDisplayName(selectedAttorney!)}
                             {selectedAttorney!.firm_name && selectedAttorney!.first_name && (
-                              <span className="text-green-600"> - {selectedAttorney!.firm_name}</span>
+                              <span className="text-[#77DD77]"> - {selectedAttorney!.firm_name}</span>
                             )}
                           </p>
-                          <p className="text-sm text-green-600 mt-1">
+                          <p className="text-sm text-[#77DD77] mt-1">
                             {verifiedEmail}
                           </p>
                         </div>
                       </div>
                     ) : (
                       <div>
-                        <p className="font-semibold text-amber-800 mb-2">¿Es este su abogado?</p>
-                        <p className="text-sm text-amber-700 mb-3">
+                        <p className="font-semibold text-[#FFB347] mb-2">¿Es este su abogado?</p>
+                        <p className="text-sm text-[#FFA337] mb-3">
                           Encontramos a <strong>{getAttorneyDisplayName(matchedAttorneys[0])}</strong>
                           {matchedAttorneys[0].firm_name && matchedAttorneys[0].first_name && (
                             <span> de {matchedAttorneys[0].firm_name}</span>
@@ -549,7 +549,7 @@ export default function CompleteProfilePage() {
                           <button
                             type="button"
                             onClick={handleUseVerifiedEmail}
-                            className="bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-amber-700 transition-colors"
+                            className="bg-[#FFB347] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#FFA337] transition-colors"
                           >
                             Usar este correo verificado
                           </button>
@@ -564,7 +564,7 @@ export default function CompleteProfilePage() {
             <button
               onClick={handleSubmit}
               disabled={loading || !formData.legal_name || (hasMultipleMatches && !selectedAttorney)}
-              className="w-full bg-blue-600 text-white py-4 rounded-lg font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+              className="w-full bg-[#7EC8E3] text-white py-4 rounded-lg font-bold hover:bg-[#6BB8D3] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg"
             >
               {loading ? 'Guardando...' : hasMultipleMatches && !selectedAttorney ? 'Seleccione su abogado' : 'Guardar y Continuar'}
             </button>

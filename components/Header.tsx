@@ -19,7 +19,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 bg-[#1a2421] z-[200] border-b border-gray-800">
+      <header className="fixed top-0 left-0 right-0 bg-background z-[200] border-b border-[#FFFFFF]/20">
         <nav className="max-w-7xl mx-auto px-6 h-[73px] flex items-center justify-between">
           <a href="/" className="relative z-[210]">
             <div className="header-title text-lg font-semibold text-white tracking-tight font-brand">
@@ -28,11 +28,11 @@ export default function Header() {
           </a>
           
           <div className="hidden xl:flex items-center gap-8">
-            <a href="/aceptacion-de-la-corte" className="text-gray-400 hover:text-white transition-colors">Aceptación de la Corte</a>
-            <a href="/garantia" className="text-gray-400 hover:text-white transition-colors">Nuestra Garantía</a>
-            <a href="mailto:info@cursoparapadres.org" className="text-gray-400 hover:text-white transition-colors">Contáctenos</a>
+            <a href="/aceptacion-de-la-corte" className="text-white/70 hover:text-white transition-colors">Aceptación de la Corte</a>
+            <a href="/garantia" className="text-white/70 hover:text-white transition-colors">Nuestra Garantía</a>
+            <a href="mailto:info@cursoparapadres.org" className="text-white/70 hover:text-white transition-colors">Contáctenos</a>
             <a href="#precios" className="bg-white text-black px-6 py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors">Inscríbete Ahora</a>
-            <a href="/iniciar-sesion" className="text-gray-400 hover:text-white transition-colors">Iniciar Sesión</a>
+            <a href="/iniciar-sesion" className="text-white/70 hover:text-white transition-colors">Iniciar Sesión</a>
           </div>
 
           <button
@@ -61,7 +61,7 @@ export default function Header() {
       <div className="h-[73px]" />
 
       <div 
-        className="xl:hidden fixed inset-0 top-[73px] bg-[#1a2421] z-[100]"
+        className={`xl:hidden fixed inset-0 top-[73px] bg-background z-[100] ${menuOpen ? "pointer-events-auto" : "pointer-events-none"}`}
         style={{
           transform: menuOpen ? 'translateY(0)' : 'translateY(-100%)',
           transition: 'transform 600ms ease-in-out'
@@ -69,13 +69,13 @@ export default function Header() {
       >
         <div className="h-full overflow-y-auto px-6 py-8">
           <nav className="flex flex-col gap-2">
-            <a href="/aceptacion-de-la-corte" onClick={closeMenu} className="py-4 border-b border-gray-800">
+            <a href="/aceptacion-de-la-corte" onClick={closeMenu} className="py-4 border-b border-[#FFFFFF]/20">
               <span className="text-white font-semibold text-xl">Aceptación de la Corte</span>
             </a>
-            <a href="/garantia" onClick={closeMenu} className="py-4 border-b border-gray-800">
+            <a href="/garantia" onClick={closeMenu} className="py-4 border-b border-[#FFFFFF]/20">
               <span className="text-white font-semibold text-xl">Nuestra Garantía</span>
             </a>
-            <a href="mailto:info@cursoparapadres.org" onClick={closeMenu} className="py-4 border-b border-gray-800">
+            <a href="mailto:info@cursoparapadres.org" onClick={closeMenu} className="py-4 border-b border-[#FFFFFF]/20">
               <span className="text-white font-semibold text-xl">Contáctenos</span>
             </a>
           </nav>

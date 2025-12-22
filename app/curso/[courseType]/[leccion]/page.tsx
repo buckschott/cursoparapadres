@@ -125,10 +125,10 @@ export default function ModulePage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#1a2421] flex items-center justify-center">
+      <main className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-400">Cargando...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7EC8E3] mx-auto mb-4"></div>
+          <p className="text-white/70">Cargando...</p>
         </div>
       </main>
     );
@@ -138,24 +138,24 @@ export default function ModulePage() {
   const prevModule = getPrevModule();
 
   return (
-    <main className="min-h-screen bg-[#1a2421]">
+    <main className="min-h-screen bg-background">
       <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
         <div 
-          className="h-full bg-blue-600 transition-all duration-150"
+          className="h-full bg-[#7EC8E3] transition-all duration-150"
           style={{ width: `${scrollProgress}%` }}
         ></div>
       </div>
 
-      <header className="bg-[#1a2421] border-b border-gray-700 sticky top-1 z-40">
+      <header className="bg-background border-b border-[#FFFFFF]/15 sticky top-1 z-40">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href={`/curso/${courseType}`} className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
+          <Link href={`/curso/${courseType}`} className="text-[#7EC8E3] hover:text-[#FFFFFF] text-sm font-medium flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Volver al Curso
           </Link>
           {isCompleted && (
-            <span className="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1">
+            <span className="bg-[#77DD77]/20 text-[#77DD77] text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
@@ -168,12 +168,12 @@ export default function ModulePage() {
       <div className="max-w-4xl mx-auto px-6 py-8">
         {moduleId && (
           <div className="mb-8">
-            <p className="text-blue-600 font-semibold text-sm mb-2">LECCIÓN {moduleId}</p>
+            <p className="text-[#7EC8E3] font-semibold text-sm mb-2">LECCIÓN {moduleId}</p>
             <h1 className="text-3xl font-bold text-white mb-2">
               {title}
             </h1>
             {estimatedTime && (
-              <p className="text-gray-500">{estimatedTime}</p>
+              <p className="text-white/60">{estimatedTime}</p>
             )}
           </div>
         )}
@@ -185,34 +185,34 @@ export default function ModulePage() {
         </article>
 
         {moduleId && !isSupplemental && (
-          <div className="mt-12 pt-8 border-t border-gray-700">
+          <div className="mt-12 pt-8 border-t border-[#FFFFFF]/15">
             {!isCompleted ? (
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
+              <div className="bg-[#7EC8E3]/10 border border-[#7EC8E3]/30 rounded-xl p-6 text-center">
                 <h3 className="font-bold text-white mb-2">¿Terminó de leer esta lección?</h3>
-                <p className="text-gray-400 mb-4 text-sm">
+                <p className="text-white/70 mb-4 text-sm">
                   Márquelo como completado para desbloquear el siguiente lección.
                 </p>
                 <button
                   onClick={markComplete}
-                  className="bg-blue-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors"
+                  className="bg-[#7EC8E3] text-white px-8 py-3 rounded-lg font-bold hover:bg-[#6BB8D3] transition-colors"
                 >
                   Marcar como Completado
                 </button>
               </div>
             ) : (
-              <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
+              <div className="bg-[#77DD77]/10 border border-[#77DD77]/30 rounded-xl p-6 text-center">
                 <div className="flex items-center justify-center gap-2 mb-4">
-                  <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-6 h-6 text-[#77DD77]" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span className="font-bold text-green-800">¡Lección Completada!</span>
+                  <span className="font-bold text-[#77DD77]">¡Lección Completada!</span>
                 </div>
                 
                 <div className="flex justify-center gap-4">
                   {nextModule && (
                     <Link
                       href={`/curso/${courseType}/${nextModule.slug}`}
-                      className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors"
+                      className="bg-[#7EC8E3] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#6BB8D3] transition-colors"
                     >
                       Siguiente Lección
                     </Link>
@@ -220,7 +220,7 @@ export default function ModulePage() {
                   {moduleId === TOTAL_MODULES && (
                     <Link
                       href={`/curso/${courseType}/examen`}
-                      className="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition-colors"
+                      className="bg-[#77DD77] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#77DD77] transition-colors"
                     >
                       Ir al Examen
                     </Link>
@@ -235,7 +235,7 @@ export default function ModulePage() {
           {prevModule ? (
             <Link
               href={`/curso/${courseType}/${prevModule.slug}`}
-              className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+              className="text-[#7EC8E3] hover:text-[#FFFFFF] font-medium flex items-center gap-1"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -247,7 +247,7 @@ export default function ModulePage() {
           {nextModule && (
             <Link
               href={`/curso/${courseType}/${nextModule.slug}`}
-              className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+              className="text-[#7EC8E3] hover:text-[#FFFFFF] font-medium flex items-center gap-1"
             >
               Siguiente Lección
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

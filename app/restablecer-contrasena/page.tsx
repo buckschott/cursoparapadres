@@ -42,7 +42,7 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#1a2421] flex items-center justify-center px-6 py-12">
+    <main className="min-h-screen bg-background flex items-center justify-center px-6 py-12">
       <div className="max-w-md w-full">
         {/* Logo/Brand */}
         <div className="text-center mb-8">
@@ -54,24 +54,24 @@ export default function ResetPasswordPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-[#1a2421] rounded-2xl shadow-xl shadow-black/40 p-8 border border-gray-700">
+        <div className="bg-background rounded-2xl shadow-xl shadow-black/40 p-8 border border-[#FFFFFF]/15">
           {success ? (
             <>
               <div className="text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-16 h-16 bg-[#77DD77]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-[#77DD77]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
                 <h2 className="text-2xl font-bold text-white mb-2">
                   Contraseña Actualizada
                 </h2>
-                <p className="text-gray-400 mb-6">
+                <p className="text-white/70 mb-6">
                   Su contraseña ha sido restablecida exitosamente. Ahora puede iniciar sesión con su nueva contraseña.
                 </p>
                 <Link 
                   href="/iniciar-sesion"
-                  className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors"
+                  className="inline-block bg-[#7EC8E3] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#6BB8D3] transition-colors"
                  
                 >
                   Iniciar Sesión
@@ -83,19 +83,19 @@ export default function ResetPasswordPage() {
               <h2 className="text-2xl font-bold text-white mb-2">
                 Nueva Contraseña
               </h2>
-              <p className="text-gray-400 mb-6">
+              <p className="text-white/70 mb-6">
                 Ingrese su nueva contraseña a continuación.
               </p>
 
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <div className="bg-[#FF9999]/10 border border-[#FF9999]/30 text-[#FF9999] px-4 py-3 rounded-lg mb-6">
                   {error}
                 </div>
               )}
 
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+                  <label htmlFor="password" className="block text-sm font-medium text-white mb-1">
                     Nueva Contraseña
                   </label>
                   <input
@@ -103,14 +103,14 @@ export default function ResetPasswordPage() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-white"
+                    className="w-full px-4 py-3 border border-[#FFFFFF]/20 rounded-lg focus:ring-2 focus:ring-[#FFFFFF] focus:border-[#FFFFFF] transition-colors text-white"
                     placeholder="••••••••"
                     required
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-1">
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-white mb-1">
                     Confirmar Contraseña
                   </label>
                   <input
@@ -118,7 +118,7 @@ export default function ResetPasswordPage() {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-white"
+                    className="w-full px-4 py-3 border border-[#FFFFFF]/20 rounded-lg focus:ring-2 focus:ring-[#FFFFFF] focus:border-[#FFFFFF] transition-colors text-white"
                     placeholder="••••••••"
                     required
                   />
@@ -127,7 +127,7 @@ export default function ResetPasswordPage() {
                 <button
                   onClick={handleReset}
                   disabled={loading || !password || !confirmPassword}
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#7EC8E3] text-white py-3 rounded-lg font-bold hover:bg-[#6BB8D3] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                  
                 >
                   {loading ? 'Actualizando...' : 'Actualizar Contraseña'}

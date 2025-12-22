@@ -1,6 +1,13 @@
 @import "tailwindcss";
 :root {
-  --background: #1a2421;
+  --chalk-white: #FFFFFF;
+  --chalk-yellow: #FFE566;
+  --chalk-pink: #FF9999;
+  --chalk-blue: #7EC8E3;
+  --chalk-green: #77DD77;
+  --chalk-orange: #FFB347;
+  --chalk-purple: #B19CD9;
+  --background: #1C1C1C;
   --foreground: #ffffff;
 }
 @theme inline {
@@ -10,7 +17,7 @@
   --font-mono: var(--font-courier-prime);
 }
 .bg-chalkboard {
-  background-color: #1a2421;
+  background-color: #1C1C1C;
 }
 
 body {
@@ -263,3 +270,4 @@ body {
   .secondary-cta { font-size: 1.125rem !important; }
   .hero-content { gap: 1.25rem; padding-top: 50px; padding-bottom: 50px; }
 }
+

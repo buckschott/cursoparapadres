@@ -283,7 +283,7 @@ export default function ExamPage() {
   };
 
   if (loading) {
-    return <main className="min-h-screen bg-[#1a2421] flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></main>;
+    return <main className="min-h-screen bg-background flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7EC8E3]"></div></main>;
   }
 
   if (phase === 'done') {
@@ -291,50 +291,50 @@ export default function ExamPage() {
     const score = Math.round((correctCount / QUESTIONS_PER_EXAM) * 100);
     
     return (
-      <main className="min-h-screen bg-[#1a2421] flex items-center justify-center p-6">
-        <div className="bg-[#1a2421] rounded-2xl shadow-lg shadow-black/30 p-8 max-w-md w-full text-center">
+      <main className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="bg-background rounded-2xl shadow-lg shadow-black/30 p-8 max-w-md w-full text-center">
           {passed ? (
             <>
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="w-10 h-10 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <div className="w-20 h-20 bg-[#77DD77]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg className="w-10 h-10 text-[#77DD77]" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </div>
               <h1 className="text-2xl font-bold text-white mb-2">¡Felicitaciones!</h1>
-              <p className="text-gray-400 mb-6">Ha aprobado con {score}% ({correctCount}/{QUESTIONS_PER_EXAM})</p>
+              <p className="text-white/70 mb-6">Ha aprobado con {score}% ({correctCount}/{QUESTIONS_PER_EXAM})</p>
               
               <Link 
                 href="/completar-perfil"
-                className="block w-full bg-blue-600 text-white py-4 rounded-lg font-bold hover:bg-blue-700 transition-colors mb-3"
+                className="block w-full bg-[#7EC8E3] text-white py-4 rounded-lg font-bold hover:bg-[#6BB8D3] transition-colors mb-3"
               >
                 Descargar Certificado
               </Link>
               
               <Link 
                 href="/panel" 
-                className="block w-full bg-gray-900 text-gray-300 py-3 rounded-lg hover:bg-gray-700 transition-colors"
+                className="block w-full bg-[#2A2A2A] text-white py-3 rounded-lg hover:bg-[#333333] transition-colors"
               >
                 Volver a los Cursos
               </Link>
             </>
           ) : (
             <>
-              <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="w-10 h-10 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+              <div className="w-20 h-20 bg-[#FF9999]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg className="w-10 h-10 text-[#FF9999]" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </div>
               <h1 className="text-2xl font-bold text-white mb-2">No Aprobó</h1>
-              <p className="text-gray-400 mb-6">Obtuvo {score}% — necesita 70%</p>
+              <p className="text-white/70 mb-6">Obtuvo {score}% — necesita 70%</p>
               <button 
                 onClick={handleRetry}
-                className="block w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 mb-3"
+                className="block w-full bg-[#7EC8E3] text-white py-3 rounded-lg font-bold hover:bg-[#6BB8D3] mb-3"
               >
                 Reintentar
               </button>
               <Link 
                 href={`/curso/${courseType}`} 
-                className="block w-full bg-gray-900 text-gray-300 py-3 rounded-lg hover:bg-gray-700"
+                className="block w-full bg-[#2A2A2A] text-white py-3 rounded-lg hover:bg-[#333333]"
               >
                 Revisar el Curso
               </Link>
@@ -347,30 +347,30 @@ export default function ExamPage() {
 
   if (phase === 'intro') {
     return (
-      <main className="min-h-screen bg-[#1a2421]">
-        <header className="bg-[#1a2421] border-b">
+      <main className="min-h-screen bg-background">
+        <header className="bg-background border-b">
           <div className="max-w-4xl mx-auto px-6 py-4">
-            <Link href={`/curso/${courseType}`} className="text-blue-600 text-sm">← Volver al Curso</Link>
+            <Link href={`/curso/${courseType}`} className="text-[#7EC8E3] text-sm">← Volver al Curso</Link>
           </div>
         </header>
         <div className="max-w-2xl mx-auto px-6 py-12">
-          <div className="bg-[#1a2421] rounded-2xl shadow-lg shadow-black/30 p-8">
+          <div className="bg-background rounded-2xl shadow-lg shadow-black/30 p-8">
             <h1 className="text-2xl font-bold text-white mb-6">Examen Final</h1>
             {hasResumable && (
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
-                <p className="font-semibold text-amber-800 mb-2">Examen en progreso</p>
+              <div className="bg-[#FFB347]/10 border border-[#FFB347]/30 rounded-lg p-4 mb-6">
+                <p className="font-semibold text-[#FFB347] mb-2">Examen en progreso</p>
                 <div className="flex gap-3">
-                  <button onClick={resume} className="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700">Continuar</button>
-                  <button onClick={start} className="bg-gray-200 text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-300">Empezar de Nuevo</button>
+                  <button onClick={resume} className="bg-[#FFB347] text-white px-4 py-2 rounded-lg hover:bg-[#FFA337]">Continuar</button>
+                  <button onClick={start} className="bg-gray-200 text-white px-4 py-2 rounded-lg hover:bg-gray-300">Empezar de Nuevo</button>
                 </div>
               </div>
             )}
-            <ul className="space-y-2 text-gray-400 mb-8">
+            <ul className="space-y-2 text-white/70 mb-8">
               <li>• {QUESTIONS_PER_EXAM} preguntas</li>
               <li>• Necesita 70% ({PASS_SCORE} correctas)</li>
               <li>• Progreso guardado automáticamente</li>
             </ul>
-            {!hasResumable && <button onClick={start} className="w-full bg-blue-600 text-white py-4 rounded-lg font-bold hover:bg-blue-700 text-lg">Comenzar Examen</button>}
+            {!hasResumable && <button onClick={start} className="w-full bg-[#7EC8E3] text-white py-4 rounded-lg font-bold hover:bg-[#6BB8D3] text-lg">Comenzar Examen</button>}
           </div>
         </div>
       </main>
@@ -381,21 +381,21 @@ export default function ExamPage() {
   if (!q) return null;
 
   return (
-    <main className="min-h-screen bg-[#1a2421]">
-      <div className="bg-[#1a2421] border-b">
+    <main className="min-h-screen bg-background">
+      <div className="bg-background border-b">
         <div className="max-w-4xl mx-auto px-6 py-4">
-          <div className="flex justify-between text-sm text-gray-400 mb-2">
+          <div className="flex justify-between text-sm text-white/70 mb-2">
             <span>Pregunta {currentIndex + 1} de {QUESTIONS_PER_EXAM}</span>
             <span>{correctCount} correctas</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{ width: `${((currentIndex + 1) / QUESTIONS_PER_EXAM) * 100}%` }}></div>
+            <div className="bg-[#7EC8E3] h-2 rounded-full transition-all duration-300" style={{ width: `${((currentIndex + 1) / QUESTIONS_PER_EXAM) * 100}%` }}></div>
           </div>
         </div>
       </div>
 
       <div className="max-w-2xl mx-auto px-6 py-8">
-        <div className="bg-[#1a2421] rounded-2xl shadow-lg shadow-black/30 p-8" key={currentIndex}>
+        <div className="bg-background rounded-2xl shadow-lg shadow-black/30 p-8" key={currentIndex}>
           <h2 className="text-lg font-semibold text-white mb-6">{q.question_text}</h2>
           <div className="space-y-3 mb-6">
             {q.shuffledAnswers.map((ans) => {
@@ -406,7 +406,7 @@ export default function ExamPage() {
                   key={`q${currentIndex}-${ans.label}`} 
                   onClick={() => !submitted && setSelectedAnswer(ans.label)} 
                   disabled={submitted}
-                  className={`w-full p-4 rounded-lg border-2 text-left text-white transition-colors ${showR ? 'border-red-500 bg-red-50' : isSel ? 'border-blue-500 bg-blue-50' : 'border-gray-700 hover:border-gray-600'} ${submitted ? 'cursor-default' : 'cursor-pointer'}`}
+                  className={`w-full p-4 rounded-lg border-2 text-left text-white transition-colors ${showR ? 'border-[#FF9999]/100 bg-[#FF9999]/10' : isSel ? 'border-[#7EC8E3] bg-[#7EC8E3]/10' : 'border-[#FFFFFF]/15 hover:border-[#FFFFFF]/20'} ${submitted ? 'cursor-default' : 'cursor-pointer'}`}
                 >
                   <span className="font-semibold mr-2">{ans.label}.</span>{ans.text}
                 </button>
@@ -414,20 +414,20 @@ export default function ExamPage() {
             })}
           </div>
           {submitted && !isCorrect && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-              <p className="font-semibold text-red-800 mb-2">Incorrecto</p>
-              <p className="text-red-600 text-sm"><strong>Revise:</strong> {wrongRed ? cleanRedirect(wrongRed) : 'el material del curso'}</p>
+            <div className="bg-[#FF9999]/10 border border-[#FF9999]/30 rounded-lg p-4 mb-6">
+              <p className="font-semibold text-[#FF9999] mb-2">Incorrecto</p>
+              <p className="text-[#FF9999] text-sm"><strong>Revise:</strong> {wrongRed ? cleanRedirect(wrongRed) : 'el material del curso'}</p>
             </div>
           )}
           {submitted && isCorrect && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-              <p className="font-semibold text-green-800">¡Correcto!</p>
+            <div className="bg-[#77DD77]/10 border border-[#77DD77]/30 rounded-lg p-4 mb-6">
+              <p className="font-semibold text-[#77DD77]">¡Correcto!</p>
             </div>
           )}
           {!submitted ? (
-            <button onClick={handleSubmit} disabled={!selectedAnswer} className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors">Confirmar</button>
+            <button onClick={handleSubmit} disabled={!selectedAnswer} className="w-full bg-[#7EC8E3] text-white py-3 rounded-lg font-bold hover:bg-[#6BB8D3] disabled:opacity-50 transition-colors">Confirmar</button>
           ) : (
-            <button onClick={handleNext} className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors">{currentIndex < questions.length - 1 ? 'Siguiente Pregunta' : 'Ver Resultados'}</button>
+            <button onClick={handleNext} className="w-full bg-[#7EC8E3] text-white py-3 rounded-lg font-bold hover:bg-[#6BB8D3] transition-colors">{currentIndex < questions.length - 1 ? 'Siguiente Pregunta' : 'Ver Resultados'}</button>
           )}
         </div>
       </div>

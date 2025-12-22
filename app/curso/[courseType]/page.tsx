@@ -92,10 +92,10 @@ export default function CourseOverviewPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#1a2421] flex items-center justify-center">
+      <main className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-400">Cargando...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7EC8E3] mx-auto mb-4"></div>
+          <p className="text-white/70">Cargando...</p>
         </div>
       </main>
     );
@@ -104,10 +104,10 @@ export default function CourseOverviewPage() {
   const courseName = courseTypeNames[courseType as keyof typeof courseTypeNames]?.es || 'Curso';
 
   return (
-    <main className="min-h-screen bg-[#1a2421]">
-      <header className="bg-[#1a2421] border-b border-gray-700">
+    <main className="min-h-screen bg-background">
+      <header className="bg-background border-b border-[#FFFFFF]/15">
         <div className="max-w-4xl mx-auto px-6 py-4">
-          <Link href="/panel" className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
+          <Link href="/panel" className="text-[#7EC8E3] hover:text-[#FFFFFF] text-sm font-medium flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -121,20 +121,20 @@ export default function CourseOverviewPage() {
           <h1 className="text-3xl font-bold text-white mb-2">
             {courseName}
           </h1>
-          <p className="text-gray-400">
+          <p className="text-white/70">
             Complete todas las lecciones para desbloquear el examen final.
           </p>
         </div>
 
         {/* Progress Bar */}
-        <div className="bg-[#1a2421] rounded-xl shadow-sm shadow-black/20 border border-gray-700 p-6 mb-8">
-          <div className="flex justify-between text-sm text-gray-400 mb-2">
+        <div className="bg-background rounded-xl shadow-sm shadow-black/20 border border-[#FFFFFF]/15 p-6 mb-8">
+          <div className="flex justify-between text-sm text-white/70 mb-2">
             <span>Progreso del Curso</span>
             <span>{completedCount} de {TOTAL_MODULES} lecciones</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-3">
             <div 
-              className="bg-blue-600 h-3 rounded-full transition-all"
+              className="bg-[#7EC8E3] h-3 rounded-full transition-all"
               style={{ width: `${(completedCount / TOTAL_MODULES) * 100}%` }}
             ></div>
           </div>
@@ -149,18 +149,18 @@ export default function CourseOverviewPage() {
             return (
               <div 
                 key={module.id}
-                className={`bg-[#1a2421] rounded-xl shadow-sm shadow-black/20 border p-6 transition-all ${
-                  completed ? 'border-green-200 bg-green-50/30' :
-                  unlocked ? 'border-gray-700 hover:border-blue-200 hover:shadow-md' :
-                  'border-gray-800 opacity-60'
+                className={`bg-background rounded-xl shadow-sm shadow-black/20 border p-6 transition-all ${
+                  completed ? 'border-[#77DD77]/30 bg-[#77DD77]/10/30' :
+                  unlocked ? 'border-[#FFFFFF]/15 hover:border-[#7EC8E3]/30 hover:shadow-md' :
+                  'border-[#FFFFFF]/10 opacity-60'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold flex-shrink-0 ${
-                      completed ? 'bg-green-500 text-white' :
-                      unlocked ? 'bg-blue-600 text-white' :
-                      'bg-gray-200 text-gray-400'
+                      completed ? 'bg-[#77DD77] text-white' :
+                      unlocked ? 'bg-[#7EC8E3] text-white' :
+                      'bg-gray-200 text-white/70'
                     }`}>
                       {completed ? (
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -174,7 +174,7 @@ export default function CourseOverviewPage() {
                       <h3 className="font-semibold text-white text-sm">
                         {module.titleEs}
                       </h3>
-                      <p className="text-sm text-gray-500">{module.estimatedTime}</p>
+                      <p className="text-sm text-white/60">{module.estimatedTime}</p>
                     </div>
                   </div>
                   
@@ -183,14 +183,14 @@ export default function CourseOverviewPage() {
                       href={`/curso/${courseType}/${module.slug}`}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors flex-shrink-0 ${
                         completed 
-                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                          : 'bg-blue-600 text-white hover:bg-blue-700'
+                          ? 'bg-[#77DD77]/20 text-[#77DD77] hover:bg-[#77DD77]/30'
+                          : 'bg-[#7EC8E3] text-white hover:bg-[#6BB8D3]'
                       }`}
                     >
                       {completed ? 'Revisar' : 'Comenzar'}
                     </Link>
                   ) : (
-                    <span className="text-sm text-gray-400 flex items-center gap-1 flex-shrink-0">
+                    <span className="text-sm text-white/70 flex items-center gap-1 flex-shrink-0">
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                       </svg>
@@ -204,8 +204,8 @@ export default function CourseOverviewPage() {
         </div>
 
         {/* Exam Card */}
-        <div className={`bg-[#1a2421] rounded-xl shadow-sm shadow-black/20 border p-6 ${
-          allModulesCompleted() ? 'border-blue-200' : 'border-gray-800 opacity-60'
+        <div className={`bg-background rounded-xl shadow-sm shadow-black/20 border p-6 ${
+          allModulesCompleted() ? 'border-[#7EC8E3]/30' : 'border-[#FFFFFF]/10 opacity-60'
         }`}>
           <div>
             <h3 className="font-bold text-white text-lg">
@@ -213,18 +213,18 @@ export default function CourseOverviewPage() {
             </h3>
             {allModulesCompleted() ? (
               <>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-white/70 mt-1">
                   ¡Ya puede tomar el examen! Necesita 70% para aprobar. Puede retomarlo sin límite.
                 </p>
                 <Link
                   href={`/curso/${courseType}/examen`}
-                  className="inline-block mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors"
+                  className="inline-block mt-4 px-6 py-3 bg-[#7EC8E3] text-white rounded-lg font-bold hover:bg-[#6BB8D3] transition-colors"
                 >
                   Comenzar Examen
                 </Link>
               </>
             ) : (
-              <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
+              <p className="text-sm text-white/70 mt-1 flex items-center gap-1">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>

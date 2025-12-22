@@ -7,14 +7,14 @@ export const metadata: Metadata = pageMetadata.preguntasFrecuentes;
 
 export default function PreguntasFrecuentesPage() {
   return (
-    <div className="min-h-screen bg-[#1a2421]">
+    <div className="min-h-screen bg-background">
       {/* Hero */}
-      <section className="bg-[#1a2421] py-16 px-4 border-b border-gray-800">
+      <section className="bg-background py-16 px-4 border-b border-[#FFFFFF]/10">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Preguntas Frecuentes
           </h1>
-          <p className="text-xl text-gray-400">
+          <p className="text-xl text-white/70">
             Respuestas claras a las preguntas más comunes sobre nuestro curso de coparentalidad.
           </p>
         </div>
@@ -28,12 +28,12 @@ export default function PreguntasFrecuentesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="section-divider py-16 px-4 bg-[#1a2421]">
+      <section className="section-divider py-16 px-4 bg-background">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
             ¿Listo para comenzar?
           </h2>
-          <p className="text-gray-400 mb-8">
+          <p className="text-white/70 mb-8">
             Complete su curso de coparentalidad hoy y reciba su certificado al instante.
           </p>
           <Link
@@ -42,7 +42,7 @@ export default function PreguntasFrecuentesPage() {
           >
             Obtener Mi Certificado
           </Link>
-          <p className="mt-4 text-gray-500">
+          <p className="mt-4 text-white/60">
             $60 • 4 horas • Certificado instantáneo • Garantía 100%
           </p>
         </div>

@@ -77,41 +77,41 @@ export default async function StatePage({ params }: Props) {
   if (!state) notFound()
 
   return (
-    <main className="min-h-screen bg-[#1a2421]">
-      <section className="bg-[#1a2421] py-16 md:py-24 px-4 border-b border-gray-800">
+    <main className="min-h-screen bg-background">
+      <section className="bg-background py-16 md:py-24 px-4 border-b border-[#FFFFFF]/10">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-white text-sm font-medium backdrop-blur-sm mb-6 border border-white/20">
             <span>⭐</span><span>Confiable desde 1993 • El Curso Original en Línea</span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">Curso Para Padres en {state.nameEs}</h1>
-          <p className="text-xl md:text-2xl text-gray-400 mb-8">Aceptado por tribunales en todo {state.nameEs}. Certificado instantáneo.</p>
+          <p className="text-xl md:text-2xl text-white/70 mb-8">Aceptado por tribunales en todo {state.nameEs}. Certificado instantáneo.</p>
           <Link href="/#precios" className="inline-block px-10 py-4 rounded-full text-xl font-bold transition-all hover:scale-105 bg-white text-black hover:bg-gray-200">Obtener Mi Certificado</Link>
-          <p className="mt-6"><Link href="/garantia" className="text-gray-400 underline hover:text-white transition-colors">Garantía de Aceptación del 100%</Link></p>
+          <p className="mt-6"><Link href="/garantia" className="text-white/70 underline hover:text-white transition-colors">Garantía de Aceptación del 100%</Link></p>
         </div>
       </section>
 
-      <section className="section-divider py-16 px-4 bg-[#1a2421]">
+      <section className="section-divider py-16 px-4 bg-background">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 text-center">Aceptado por Tribunales en {state.nameEs}</h2>
-          <p className="text-lg text-gray-400 mb-8 text-center">Nuestro curso de coparentalidad es aceptado por tribunales de familia en todos los condados de {state.nameEs}, incluyendo:</p>
+          <p className="text-lg text-white/70 mb-8 text-center">Nuestro curso de coparentalidad es aceptado por tribunales de familia en todos los condados de {state.nameEs}, incluyendo:</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {state.majorCounties.map((county, i) => (
-              <div key={i} className="flex items-center gap-2 p-3 bg-gray-900 rounded-lg border border-gray-800">
-                <span className="text-green-500">✓</span><span className="text-gray-300">{county}</span>
+              <div key={i} className="flex items-center gap-2 p-3 bg-[#2A2A2A] rounded-lg border border-[#FFFFFF]/10">
+                <span className="text-[#77DD77]/100">✓</span><span className="text-white">{county}</span>
               </div>
             ))}
-            <div className="flex items-center gap-2 p-3 bg-blue-900/20 rounded-lg col-span-2 md:col-span-4 border border-blue-800/50">
-              <span className="text-blue-400">+</span><span className="text-blue-300 font-medium">Y todos los demás condados de {state.nameEs}</span>
+            <div className="flex items-center gap-2 p-3 bg-[#7EC8E3]/20 rounded-lg col-span-2 md:col-span-4 border border-[#7EC8E3]/50">
+              <span className="text-[#7EC8E3]">+</span><span className="text-[#7EC8E3] font-medium">Y todos los demás condados de {state.nameEs}</span>
             </div>
           </div>
-          <p className="text-gray-400 mb-8">{state.additionalContent}</p>
-          <div className="bg-green-900/20 border border-green-700/50 rounded-xl p-6 text-center">
-            <p className="text-green-300 font-medium"><span className="font-bold">Garantía:</span> Si su tribunal en {state.nameEs} no acepta nuestro certificado, le devolvemos el 100% de su dinero. Sin preguntas.</p>
+          <p className="text-white/70 mb-8">{state.additionalContent}</p>
+          <div className="bg-[#77DD77]/20 border border-[#77DD77]/50 rounded-xl p-6 text-center">
+            <p className="text-[#77DD77]/50 font-medium"><span className="font-bold">Garantía:</span> Si su tribunal en {state.nameEs} no acepta nuestro certificado, le devolvemos el 100% de su dinero. Sin preguntas.</p>
           </div>
         </div>
       </section>
 
-      <section className="section-divider py-16 px-4 bg-[#1a2421]">
+      <section className="section-divider py-16 px-4 bg-background">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-12 text-center">¿Por Qué Padres en {state.nameEs} Eligen Nuestro Curso?</h2>
           <div className="grid md:grid-cols-2 gap-6">
@@ -123,42 +123,42 @@ export default async function StatePage({ params }: Props) {
               { icon: '🏆', title: 'Desde 1993', desc: `Más de 30 años ayudando a familias en ${state.nameEs} y todo el país.` },
               { icon: '🛡️', title: 'Garantía 100%', desc: 'Si su tribunal no acepta el certificado, le devolvemos su dinero.' },
             ].map((item, i) => (
-              <div key={i} className="flex gap-4 p-4 bg-[#1a2421] rounded-xl border border-gray-800">
+              <div key={i} className="flex gap-4 p-4 bg-background rounded-xl border border-[#FFFFFF]/10">
                 <div className="text-3xl">{item.icon}</div>
-                <div><h3 className="font-bold text-white mb-1">{item.title}</h3><p className="text-gray-400 text-sm">{item.desc}</p></div>
+                <div><h3 className="font-bold text-white mb-1">{item.title}</h3><p className="text-white/70 text-sm">{item.desc}</p></div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section-divider py-16 px-4 bg-[#1a2421]">
+      <section className="section-divider py-16 px-4 bg-background">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-12 text-center">Preguntas Frecuentes — {state.nameEs}</h2>
           <div className="space-y-4">
             {state.faqs.map((faq, i) => (
-              <div key={i} className="bg-[#1a2421] rounded-xl p-6 border border-gray-800">
+              <div key={i} className="bg-background rounded-xl p-6 border border-[#FFFFFF]/10">
                 <h3 className="font-bold text-white mb-2">{faq.q}</h3>
-                <p className="text-gray-400">{faq.a}</p>
+                <p className="text-white/70">{faq.a}</p>
               </div>
             ))}
           </div>
           <div className="mt-8 text-center">
-            <Link href="/preguntas-frecuentes" className="text-blue-400 hover:underline font-medium">Ver todas las preguntas frecuentes →</Link>
+            <Link href="/preguntas-frecuentes" className="text-[#7EC8E3] hover:underline font-medium">Ver todas las preguntas frecuentes →</Link>
           </div>
         </div>
       </section>
 
-      <section className="section-divider py-16 px-4 bg-[#1a2421]">
+      <section className="section-divider py-16 px-4 bg-background">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Comience Su Curso Hoy</h2>
-          <p className="text-xl text-gray-400 mb-8">Únase a miles de padres en {state.nameEs} que han completado nuestro curso.</p>
+          <p className="text-xl text-white/70 mb-8">Únase a miles de padres en {state.nameEs} que han completado nuestro curso.</p>
           <Link href="/#precios" className="inline-block px-10 py-4 rounded-full text-xl font-bold transition-all hover:scale-105 bg-white text-black hover:bg-gray-200">Obtener Mi Certificado</Link>
-          <p className="mt-6 text-gray-500">$60 • 4 horas • Certificado instantáneo • Garantía 100%</p>
+          <p className="mt-6 text-white/60">$60 • 4 horas • Certificado instantáneo • Garantía 100%</p>
         </div>
       </section>
 
-      <footer className="section-divider py-12 bg-[#1a2421] text-gray-400 border-t border-gray-800">
+      <footer className="section-divider py-12 bg-background text-white/70 border-t border-[#FFFFFF]/10">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <div className="text-white font-bold text-lg mb-1 font-brand">Curso Para Padres</div>
           <div className="text-sm mb-4">© 2025 Putting Kids First®. Todos los derechos reservados.</div>

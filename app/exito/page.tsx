@@ -12,7 +12,7 @@ function SuccessContent() {
       <div className="text-center">
         <h1 className="text-4xl font-bold text-white mb-6">Algo Salió Mal</h1>
         <p className="text-xl text-white/70 mb-8">No pudimos verificar su pago.</p>
-        <Link href="/" className="inline-block bg-white text-black px-8 py-3 rounded-full font-semibold hover:bg-gray-200">
+        <Link href="/" className="inline-block bg-[#77DD77] text-[#1C1C1C] px-8 py-3 rounded-full font-semibold hover:bg-[#88EE88]">
           Volver al Inicio
         </Link>
       </div>
@@ -32,7 +32,7 @@ function SuccessContent() {
       <p className="text-xl text-white/70 mb-8 leading-relaxed">
         Su curso está listo. Puede comenzar ahora o regresar en cualquier momento — su progreso se guardará automáticamente.
       </p>
-      <Link href="/panel" className="inline-block bg-white text-black px-8 py-3 rounded-full font-semibold hover:bg-gray-200 transition-colors mb-6">
+      <Link href="/panel" className="inline-block bg-[#77DD77] text-[#1C1C1C] px-8 py-3 rounded-full font-semibold hover:bg-[#88EE88] transition-colors mb-6">
         Comenzar el Curso
       </Link>
       <p className="text-sm text-white/60">Un correo de confirmación está en camino. Si no lo ve, revise su carpeta de correo no deseado (spam o junk).</p>

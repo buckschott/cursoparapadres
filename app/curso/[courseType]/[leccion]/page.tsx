@@ -139,7 +139,7 @@ export default function ModulePage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
+      <div className="fixed top-0 left-0 w-full h-1 bg-white/20 z-50">
         <div 
           className="h-full bg-[#7EC8E3] transition-all duration-150"
           style={{ width: `${scrollProgress}%` }}

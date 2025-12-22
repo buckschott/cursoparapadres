@@ -36,7 +36,7 @@ export default function AceptacionDeLaCorte() {
           <a href="/" className="header-title text-lg font-semibold text-white tracking-tight font-brand">
             Putting Kids First <sup className="text-xs">®</sup>
           </a>
-          <a href="/#precios" className="bg-white text-black px-3 md:px-6 py-2 rounded-full hover:bg-gray-200 transition-colors font-semibold text-[10px] md:text-sm whitespace-nowrap">
+          <a href="/#precios" className="bg-[#77DD77] text-[#1C1C1C] px-3 md:px-6 py-2 rounded-full hover:bg-[#88EE88] transition-colors font-semibold text-[10px] md:text-sm whitespace-nowrap">
             Obtener Mi Certificado
           </a>
         </div>
@@ -101,7 +101,7 @@ export default function AceptacionDeLaCorte() {
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Más de 30 Años de Confianza</h2>
           <p className="text-white/70 text-lg mb-8">Hemos servido a familias desde 1993. Cuando su futuro está en juego, confíe en el original.</p>
-          <a href="/#precios" className="inline-block bg-white text-black px-8 py-4 rounded-xl font-bold hover:bg-gray-200 transition-all text-lg">
+          <a href="/#precios" className="inline-block bg-[#77DD77] text-[#1C1C1C] px-8 py-4 rounded-xl font-bold hover:bg-[#88EE88] transition-all text-lg">
             Obtener Mi Certificado
           </a>
         </div>

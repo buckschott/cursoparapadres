@@ -161,7 +161,7 @@ export default function CertificatePage() {
 
         <button
           onClick={handleDownload}
-          className="w-full bg-white text-black py-4 rounded-xl font-bold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 mb-4"
+          className="w-full bg-[#77DD77] text-[#1C1C1C] py-4 rounded-xl font-bold hover:bg-[#88EE88] transition-colors flex items-center justify-center gap-2 mb-4"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
           Descargar Certificado PDF
@@ -172,7 +172,7 @@ export default function CertificatePage() {
           <p className="text-sm text-[#7EC8E3]/80 mb-3">Comparta este enlace con su abogado o la corte para verificar instantáneamente su certificado:</p>
           <div className="flex items-center gap-2">
             <input type="text" value={verifyUrl} readOnly className="flex-1 px-4 py-2 bg-background border border-[#FFFFFF]/15 rounded-lg text-sm font-mono text-white" />
-            <button onClick={() => { navigator.clipboard.writeText(verifyUrl); alert('¡Enlace copiado!'); }} className="px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-gray-200 transition-colors">Copiar</button>
+            <button onClick={() => { navigator.clipboard.writeText(verifyUrl); alert('¡Enlace copiado!'); }} className="px-4 py-2 bg-[#77DD77] text-[#1C1C1C] rounded-lg font-medium hover:bg-[#88EE88] transition-colors">Copiar</button>
           </div>
         </div>
 

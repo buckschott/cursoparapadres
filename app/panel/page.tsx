@@ -194,7 +194,7 @@ export default function DashboardPage() {
                       <span>Progreso</span>
                       <span>{getCourseProgress('coparenting')?.lessons_completed.length || 0} de {TOTAL_LESSONS} lecciones</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-white/20 rounded-full h-2">
                       <div 
                         className="bg-[#7EC8E3] h-2 rounded-full transition-all"
                         style={{ width: `${((getCourseProgress('coparenting')?.lessons_completed.length || 0) / TOTAL_LESSONS) * 100}%` }}
@@ -235,7 +235,7 @@ export default function DashboardPage() {
                   </div>
                   <button 
                     disabled
-                    className="w-full bg-gray-300 text-white/60 py-3 rounded-lg font-bold cursor-not-allowed"
+                    className="w-full bg-white/10 text-white/40 py-3 rounded-lg font-bold cursor-not-allowed"
                   >
                     Próximamente
                   </button>
@@ -267,7 +267,7 @@ export default function DashboardPage() {
                       <span>Progreso</span>
                       <span>{getCourseProgress('parenting')?.lessons_completed.length || 0} de {TOTAL_LESSONS} lecciones</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-white/20 rounded-full h-2">
                       <div 
                         className="bg-[#7EC8E3] h-2 rounded-full transition-all"
                         style={{ width: `${((getCourseProgress('parenting')?.lessons_completed.length || 0) / TOTAL_LESSONS) * 100}%` }}

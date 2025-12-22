@@ -132,7 +132,7 @@ export default function CourseOverviewPage() {
             <span>Progreso del Curso</span>
             <span>{completedCount} de {TOTAL_MODULES} lecciones</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
+          <div className="w-full bg-white/20 rounded-full h-3">
             <div 
               className="bg-[#7EC8E3] h-3 rounded-full transition-all"
               style={{ width: `${(completedCount / TOTAL_MODULES) * 100}%` }}
@@ -160,7 +160,7 @@ export default function CourseOverviewPage() {
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold flex-shrink-0 ${
                       completed ? 'bg-[#77DD77] text-white' :
                       unlocked ? 'bg-[#7EC8E3] text-white' :
-                      'bg-gray-200 text-white/70'
+                      'bg-white/10 text-white/40'
                     }`}>
                       {completed ? (
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

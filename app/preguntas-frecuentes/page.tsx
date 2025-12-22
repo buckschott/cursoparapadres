@@ -38,7 +38,7 @@ export default function PreguntasFrecuentesPage() {
           </p>
           <Link
             href="/#precios"
-            className="inline-block px-10 py-4 rounded-full text-xl font-bold transition-all hover:scale-105 bg-white text-black hover:bg-gray-200"
+            className="inline-block px-10 py-4 rounded-full text-xl font-bold transition-all hover:scale-105 bg-[#77DD77] text-[#1C1C1C] hover:bg-[#88EE88]"
           >
             Obtener Mi Certificado
           </Link>

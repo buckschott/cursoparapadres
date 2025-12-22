@@ -85,7 +85,7 @@ export default async function StatePage({ params }: Props) {
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">Curso Para Padres en {state.nameEs}</h1>
           <p className="text-xl md:text-2xl text-white/70 mb-8">Aceptado por tribunales en todo {state.nameEs}. Certificado instantáneo.</p>
-          <Link href="/#precios" className="inline-block px-10 py-4 rounded-full text-xl font-bold transition-all hover:scale-105 bg-white text-black hover:bg-gray-200">Obtener Mi Certificado</Link>
+          <Link href="/#precios" className="inline-block px-10 py-4 rounded-full text-xl font-bold transition-all hover:scale-105 bg-[#77DD77] text-[#1C1C1C] hover:bg-[#88EE88]">Obtener Mi Certificado</Link>
           <p className="mt-6"><Link href="/garantia" className="text-white/70 underline hover:text-white transition-colors">Garantía de Aceptación del 100%</Link></p>
         </div>
       </section>
@@ -153,7 +153,7 @@ export default async function StatePage({ params }: Props) {
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Comience Su Curso Hoy</h2>
           <p className="text-xl text-white/70 mb-8">Únase a miles de padres en {state.nameEs} que han completado nuestro curso.</p>
-          <Link href="/#precios" className="inline-block px-10 py-4 rounded-full text-xl font-bold transition-all hover:scale-105 bg-white text-black hover:bg-gray-200">Obtener Mi Certificado</Link>
+          <Link href="/#precios" className="inline-block px-10 py-4 rounded-full text-xl font-bold transition-all hover:scale-105 bg-[#77DD77] text-[#1C1C1C] hover:bg-[#88EE88]">Obtener Mi Certificado</Link>
           <p className="mt-6 text-white/60">$60 • 4 horas • Certificado instantáneo • Garantía 100%</p>
         </div>
       </section>

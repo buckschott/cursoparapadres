@@ -361,7 +361,7 @@ export default function ExamPage() {
                 <p className="font-semibold text-[#FFB347] mb-2">Examen en progreso</p>
                 <div className="flex gap-3">
                   <button onClick={resume} className="bg-[#FFB347] text-white px-4 py-2 rounded-lg hover:bg-[#FFA337]">Continuar</button>
-                  <button onClick={start} className="bg-gray-200 text-white px-4 py-2 rounded-lg hover:bg-gray-300">Empezar de Nuevo</button>
+                  <button onClick={start} className="bg-white/20 text-white px-4 py-2 rounded-lg hover:bg-white/30">Empezar de Nuevo</button>
                 </div>
               </div>
             )}
@@ -388,7 +388,7 @@ export default function ExamPage() {
             <span>Pregunta {currentIndex + 1} de {QUESTIONS_PER_EXAM}</span>
             <span>{correctCount} correctas</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-white/20 rounded-full h-2">
             <div className="bg-[#7EC8E3] h-2 rounded-full transition-all duration-300" style={{ width: `${((currentIndex + 1) / QUESTIONS_PER_EXAM) * 100}%` }}></div>
           </div>
         </div>

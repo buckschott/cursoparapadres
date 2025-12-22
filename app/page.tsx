@@ -137,7 +137,7 @@ export default function Home() {
             <div>
               <a 
                 href="#precios"
-                className="cta-button inline-flex items-center justify-center group px-12 py-5 rounded-full text-2xl font-bold transition-all hover:scale-105 active:scale-95 bg-white text-black hover:bg-gray-200"
+                className="cta-button inline-flex items-center justify-center group px-12 py-5 rounded-full text-2xl font-bold transition-all hover:scale-105 active:scale-95 bg-[#77DD77] text-[#1C1C1C] hover:bg-[#88EE88]"
               >
                 Obtener Mi Certificado
               </a>

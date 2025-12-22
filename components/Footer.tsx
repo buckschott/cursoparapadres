@@ -5,7 +5,7 @@ export default function Footer() {
         <div className="text-center mb-12">
           <p className="text-2xl font-bold text-white mb-4">¿Listo para completar su requisito de la corte?</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="#precios" className="bg-white text-black px-8 py-4 rounded-xl font-bold hover:bg-gray-200 transition-colors text-lg">Comenzar Ahora</a>
+            <a href="#precios" className="bg-[#77DD77] text-[#1C1C1C] px-8 py-4 rounded-xl font-bold hover:bg-[#88EE88] transition-colors text-lg">Comenzar Ahora</a>
             <a href="/iniciar-sesion" className="bg-background text-white text-center px-8 py-4 rounded-xl font-bold border-2 border-white hover:bg-[#2A2A2A] transition-colors text-lg">
               Iniciar Sesión
             </a>

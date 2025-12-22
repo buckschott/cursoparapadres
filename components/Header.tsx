@@ -31,7 +31,7 @@ export default function Header() {
             <a href="/aceptacion-de-la-corte" className="text-white/70 hover:text-white transition-colors">Aceptación de la Corte</a>
             <a href="/garantia" className="text-white/70 hover:text-white transition-colors">Nuestra Garantía</a>
             <a href="mailto:info@cursoparapadres.org" className="text-white/70 hover:text-white transition-colors">Contáctenos</a>
-            <a href="#precios" className="bg-white text-black px-6 py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors">Inscríbete Ahora</a>
+            <a href="#precios" className="bg-[#77DD77] text-[#1C1C1C] px-6 py-2 rounded-lg font-semibold hover:bg-[#88EE88] transition-colors">Inscríbete Ahora</a>
             <a href="/iniciar-sesion" className="text-white/70 hover:text-white transition-colors">Iniciar Sesión</a>
           </div>
 
@@ -81,7 +81,7 @@ export default function Header() {
           </nav>
 
           <div className="mt-auto pt-12 space-y-4">
-            <a href="#precios" onClick={closeMenu} className="block w-full bg-white text-black text-center px-6 py-4 rounded-xl font-semibold hover:bg-gray-200 transition-colors text-lg">
+            <a href="#precios" onClick={closeMenu} className="block w-full bg-[#77DD77] text-[#1C1C1C] text-center px-6 py-4 rounded-xl font-semibold hover:bg-[#88EE88] transition-colors text-lg">
               Inscríbete Ahora
             </a>
             <a href="/iniciar-sesion" onClick={closeMenu} className="block w-full bg-transparent text-white text-center px-6 py-4 rounded-xl font-semibold border-2 border-white hover:bg-white/10 transition-colors text-lg">

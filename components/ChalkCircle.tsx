@@ -55,11 +55,11 @@ export default function ChalkCircle({ children, target, className = '' }: ChalkC
   const getPadding = () => {
     switch (target) {
       case 'title':
-        return 'px-8 py-6 md:px-12 md:py-8';
+        return 'px-10 py-8 md:px-14 md:py-10';
       case 'subtext':
-        return 'px-6 py-5 md:px-10 md:py-7';
+        return 'px-8 py-6 md:px-12 md:py-8';
       default:
-        return 'p-6';
+        return 'p-8';
     }
   };
 
@@ -109,7 +109,7 @@ export default function ChalkCircle({ children, target, className = '' }: ChalkC
           d={getPath()}
           fill="none"
           stroke="#FFFFFF"
-          strokeWidth="2.5"
+          strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
           filter={`url(#chalkTexture-${target})`}

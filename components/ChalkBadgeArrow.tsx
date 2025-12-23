@@ -31,8 +31,8 @@ export default function ChalkBadgeArrow() {
     <div className="absolute inset-0 pointer-events-none overflow-visible" aria-hidden="true">
       {/* SVG positioned to wrap around badge and extend down to CTA */}
       <svg
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[30%] w-[350px] h-[400px] md:w-[450px] md:h-[500px]"
-        viewBox="0 0 450 500"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-[-15%] w-[350px] h-[450px] md:w-[450px] md:h-[550px]"
+        viewBox="0 0 450 550"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         style={{
@@ -52,7 +52,7 @@ export default function ChalkBadgeArrow() {
               x="-20"
               y="-20"
               width="490"
-              height="540"
+              height="590"
               fill="white"
               className={state === 'erasing' ? 'badge-arrow-eraser-wipe' : ''}
               style={{
@@ -65,41 +65,48 @@ export default function ChalkBadgeArrow() {
 
         <g filter="url(#chalkTextureBadgeArrow)" mask="url(#eraserMaskBadgeArrow)">
           {/* 
-            One continuous path matching the hand drawing:
-            1. Start from upper left
-            2. Swoop loosely around/over the badge (not a tight circle)
-            3. Exit lower right of badge
-            4. First pigtail curl
+            One continuous path:
+            1. Start at bottom-left of badge area
+            2. Go counterclockwise around badge (almost closed circle)
+            3. End near start point (small gap)
+            4. Continue into first pigtail curl
             5. Second pigtail curl  
             6. Line going down toward CTA
-            7. Triangle arrowhead (3 connected lines pointing DOWN)
+            7. Triangle arrowhead pointing DOWN (connected triangle)
+               - Go to left point
+               - Go to bottom point (tip pointing at CTA)
+               - Go to right point
+               - Return to start of triangle to close it
           */}
           <path
-            d="M 50 60
-               C 30 40, 50 10, 150 5
-               C 280 0, 400 10, 420 50
-               C 440 90, 380 100, 320 95
-               C 280 92, 260 100, 280 130
+            d="M 175 75
+               C 120 70, 60 55, 45 35
+               C 30 15, 50 0, 120 0
+               C 200 0, 320 0, 380 0
+               C 420 0, 430 20, 415 40
+               C 395 65, 330 75, 275 78
                
-               C 290 160, 260 175, 255 155
-               C 250 135, 275 130, 285 150
-               C 295 170, 280 195, 265 200
-               C 250 205, 245 190, 260 180
+               C 275 100, 290 120, 285 145
+               C 280 170, 260 175, 265 155
+               C 270 135, 295 135, 300 155
+               C 305 175, 290 195, 275 200
+               C 260 205, 255 190, 270 180
                
-               L 240 280
+               L 250 320
                
-               L 200 320
-               L 240 280
-               L 280 320"
+               L 210 380
+               L 250 440
+               L 290 380
+               L 210 380"
             stroke="#FFFFFF"
-            strokeWidth="2.5"
+            strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"
             className={`badge-arrow-path ${state === 'drawing' ? getDrawingClass() : ''} ${state === 'visible' ? 'badge-arrow-visible' : ''}`}
             style={{
-              strokeDasharray: 1600,
-              strokeDashoffset: state === 'hidden' ? 1600 : state === 'visible' ? 0 : 1600,
+              strokeDasharray: 1800,
+              strokeDashoffset: state === 'hidden' ? 1800 : state === 'visible' ? 0 : 1800,
             }}
           />
         </g>
@@ -124,16 +131,16 @@ export default function ChalkBadgeArrow() {
 
         @keyframes drawBadgePortion {
           from {
-            stroke-dashoffset: 1600;
+            stroke-dashoffset: 1800;
           }
           to {
-            stroke-dashoffset: 900;
+            stroke-dashoffset: 1000;
           }
         }
 
         @keyframes drawArrowPortion {
           from {
-            stroke-dashoffset: 900;
+            stroke-dashoffset: 1000;
           }
           to {
             stroke-dashoffset: 0;

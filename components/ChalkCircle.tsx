@@ -5,7 +5,7 @@ import { ReactNode } from 'react';
 
 interface ChalkCircleProps {
   children: ReactNode;
-  target: 'title' | 'subtext' | 'badge';
+  target: 'title' | 'subtext';
   className?: string;
 }
 
@@ -29,12 +29,6 @@ export default function ChalkCircle({ children, target, className = '' }: ChalkC
         if (phase === 'erasing-subtext') return 'erasing';
         return 'hidden';
 
-      case 'badge':
-        if (phase === 'drawing-badge') return 'drawing';
-        if (['drawing-arrow', 'holding-all', 'erasing-title', 'erasing-subtext'].includes(phase)) return 'visible';
-        if (phase === 'erasing-badge') return 'erasing';
-        return 'hidden';
-
       default:
         return 'hidden';
     }
@@ -51,9 +45,6 @@ export default function ChalkCircle({ children, target, className = '' }: ChalkC
       case 'subtext':
         // Medium oval for subtext - slightly different wobble
         return 'M 50 22 C 82 20, 96 32, 98 50 C 100 68, 85 80, 50 82 C 15 84, 1 68, 2 50 C 3 32, 18 21, 50 22 Z';
-      case 'badge':
-        // Pill shape for badge - more horizontal
-        return 'M 50 20 C 80 18, 97 35, 98 50 C 99 65, 82 82, 50 83 C 18 84, 2 65, 2 50 C 2 35, 20 19, 50 20 Z';
       default:
         return '';
     }
@@ -66,8 +57,6 @@ export default function ChalkCircle({ children, target, className = '' }: ChalkC
         return 'p-4 md:p-6';
       case 'subtext':
         return 'p-3 md:p-5';
-      case 'badge':
-        return 'p-2 md:p-3';
       default:
         return 'p-4';
     }

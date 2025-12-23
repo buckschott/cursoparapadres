@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import { ChalkAnimationProvider } from '@/components/ChalkAnimationContext';
 import ChalkCircle from '@/components/ChalkCircle';
 import ChalkArrow from '@/components/ChalkArrow';
+import ChalkBadgeArrow from '@/components/ChalkBadgeArrow';
 
 export default function Home() {
   const [loading, setLoading] = useState<string | null>(null);
@@ -130,8 +131,8 @@ export default function Home() {
             </div>
 
             <div className="flex justify-center">
-              <ChalkCircle target="badge">
-                <div className="trust-badge-pill inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-3">
+              <ChalkBadgeArrow />
+              <div className="trust-badge-pill inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-3">
                 <span className="relative flex h-4 w-4 flex-shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#77DD77] opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-4 w-4 bg-[#77DD77]"></span>
@@ -140,12 +141,10 @@ export default function Home() {
                   <span className="trust-text-1">El Curso Original en Línea</span>
                   <span className="trust-text-2 absolute left-0 right-0 text-center">De confianza desde 1993</span>
                 </span>
-                </div>
-              </ChalkCircle>
+              </div>
             </div>
 
-            <div className="relative">
-              <ChalkArrow />
+            <div>
               <a 
                 href="#precios"
                 className="cta-button inline-flex items-center justify-center group px-12 py-5 rounded-full text-2xl font-bold transition-all hover:scale-105 active:scale-95 bg-[#77DD77] text-[#1C1C1C] hover:bg-[#88EE88]"

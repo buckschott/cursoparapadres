@@ -13,8 +13,7 @@ type AnimationPhase =
   | 'holding-all'
   | 'erasing-title'
   | 'erasing-subtext'
-  | 'erasing-badge'
-  | 'erasing-arrow'
+  | 'erasing-badge-arrow'
   | 'paused';
 
 interface ChalkAnimationContextType {
@@ -37,13 +36,12 @@ const TIMING = {
   holdTitle: 800,
   drawSubtext: 1200,
   holdSubtext: 800,
-  drawBadge: 1000,
-  drawArrow: 1500,      // Badge and arrow are continuous
+  drawBadge: 1000,       // Circle around badge
+  drawArrow: 1500,       // Curls + arrow (continuous from badge)
   holdAll: 3000,
   eraseTitle: 600,
   eraseSubtext: 600,
-  eraseBadge: 600,
-  eraseArrow: 600,
+  eraseBadgeArrow: 800,  // Combined erase
   pauseBeforeRepeat: 1500,
 };
 
@@ -80,11 +78,11 @@ export function ChalkAnimationProvider({ children }: { children: ReactNode }) {
       setTimeout(() => setPhase('holding-subtext'), elapsed);
       elapsed += TIMING.holdSubtext;
 
-      // Phase 5: Draw badge (continuous into arrow)
+      // Phase 5: Draw badge circle (starts the continuous line)
       setTimeout(() => setPhase('drawing-badge'), elapsed);
       elapsed += TIMING.drawBadge;
 
-      // Phase 6: Draw arrow (immediately after badge, no hold)
+      // Phase 6: Draw arrow portion (continues the line - no hold between)
       setTimeout(() => setPhase('drawing-arrow'), elapsed);
       elapsed += TIMING.drawArrow;
 
@@ -100,15 +98,11 @@ export function ChalkAnimationProvider({ children }: { children: ReactNode }) {
       setTimeout(() => setPhase('erasing-subtext'), elapsed);
       elapsed += TIMING.eraseSubtext;
 
-      // Phase 10: Erase badge
-      setTimeout(() => setPhase('erasing-badge'), elapsed);
-      elapsed += TIMING.eraseBadge;
+      // Phase 10: Erase badge+arrow together
+      setTimeout(() => setPhase('erasing-badge-arrow'), elapsed);
+      elapsed += TIMING.eraseBadgeArrow;
 
-      // Phase 11: Erase arrow
-      setTimeout(() => setPhase('erasing-arrow'), elapsed);
-      elapsed += TIMING.eraseArrow;
-
-      // Phase 12: Pause
+      // Phase 11: Pause
       setTimeout(() => setPhase('paused'), elapsed);
       elapsed += TIMING.pauseBeforeRepeat;
 

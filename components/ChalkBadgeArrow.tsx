@@ -28,11 +28,11 @@ export default function ChalkBadgeArrow() {
   };
 
   return (
-    <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-      {/* SVG positioned to wrap around badge and extend down to arrow */}
+    <div className="absolute inset-0 pointer-events-none overflow-visible" aria-hidden="true">
+      {/* SVG positioned to wrap around badge and extend down to CTA */}
       <svg
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[35%] w-[320px] h-[280px] md:w-[400px] md:h-[350px]"
-        viewBox="0 0 400 350"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[30%] w-[350px] h-[400px] md:w-[450px] md:h-[500px]"
+        viewBox="0 0 450 500"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         style={{
@@ -51,8 +51,8 @@ export default function ChalkBadgeArrow() {
             <rect
               x="-20"
               y="-20"
-              width="440"
-              height="390"
+              width="490"
+              height="540"
               fill="white"
               className={state === 'erasing' ? 'badge-arrow-eraser-wipe' : ''}
               style={{
@@ -65,28 +65,35 @@ export default function ChalkBadgeArrow() {
 
         <g filter="url(#chalkTextureBadgeArrow)" mask="url(#eraserMaskBadgeArrow)">
           {/* 
-            One continuous path:
-            1. Start at bottom center of badge area
-            2. Go around the badge (wobbly oval)
-            3. Continue into pigtail curls
-            4. End with arrow pointing down-right
+            One continuous path - no breaks:
+            1. Start at bottom center of badge
+            2. Go LEFT and UP around the badge (counterclockwise)
+            3. Come back to bottom (open circle, doesn't close completely)
+            4. From bottom, continue into first pigtail curl
+            5. Second pigtail curl
+            6. Straight-ish line pointing down toward CTA
+            7. Triangle arrowhead (3 lines connected, pointing DOWN)
           */}
           <path
-            d="M 200 85
-               C 240 87, 290 75, 310 60
-               C 340 40, 350 35, 350 50
-               C 350 70, 320 90, 280 95
-               C 240 100, 160 100, 120 95
-               C 80 90, 50 70, 50 50
-               C 50 30, 80 25, 120 30
-               C 160 35, 200 45, 200 85
-               C 200 110, 180 130, 175 150
-               C 170 175, 155 180, 160 165
-               C 165 150, 185 145, 195 160
-               C 205 175, 200 195, 190 205
-               C 180 215, 165 210, 175 195
-               C 185 180, 210 180, 240 200
-               L 300 250"
+            d="M 225 95
+               C 180 98, 120 95, 80 75
+               C 50 58, 40 40, 55 25
+               C 75 8, 130 0, 225 0
+               C 320 0, 375 8, 395 25
+               C 410 40, 400 58, 370 75
+               C 330 95, 270 98, 235 95
+               
+               C 235 120, 200 140, 195 165
+               C 190 190, 175 195, 180 175
+               C 185 155, 210 150, 220 170
+               C 230 190, 220 215, 210 225
+               C 200 235, 185 230, 195 215
+               C 205 200, 230 200, 250 220
+               L 270 280
+               L 225 350
+               L 225 320
+               L 270 280
+               L 225 280"
             stroke="#FFFFFF"
             strokeWidth="2.5"
             strokeLinecap="round"
@@ -94,34 +101,8 @@ export default function ChalkBadgeArrow() {
             fill="none"
             className={`badge-arrow-path ${state === 'drawing' ? getDrawingClass() : ''} ${state === 'visible' ? 'badge-arrow-visible' : ''}`}
             style={{
-              strokeDasharray: 1200,
-              strokeDashoffset: state === 'hidden' ? 1200 : state === 'visible' ? 0 : 1200,
-            }}
-          />
-
-          {/* Arrowhead - V shape, two separate strokes */}
-          <path
-            d="M 280 235 L 302 252"
-            stroke="#FFFFFF"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            fill="none"
-            className={`arrowhead-line ${state === 'drawing' && phase === 'drawing-arrow' ? 'arrowhead-drawing' : ''} ${state === 'visible' ? 'arrowhead-visible' : ''}`}
-            style={{
-              strokeDasharray: 30,
-              strokeDashoffset: state === 'hidden' ? 30 : state === 'visible' ? 0 : 30,
-            }}
-          />
-          <path
-            d="M 302 252 L 290 272"
-            stroke="#FFFFFF"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            fill="none"
-            className={`arrowhead-line ${state === 'drawing' && phase === 'drawing-arrow' ? 'arrowhead-drawing' : ''} ${state === 'visible' ? 'arrowhead-visible' : ''}`}
-            style={{
-              strokeDasharray: 30,
-              strokeDashoffset: state === 'hidden' ? 30 : state === 'visible' ? 0 : 30,
+              strokeDasharray: 1800,
+              strokeDashoffset: state === 'hidden' ? 1800 : state === 'visible' ? 0 : 1800,
             }}
           />
         </g>
@@ -144,39 +125,18 @@ export default function ChalkBadgeArrow() {
           stroke-dashoffset: 0;
         }
 
-        .arrowhead-line {
-          transition: none;
-        }
-
-        .arrowhead-line.arrowhead-drawing {
-          animation: drawArrowhead 0.2s ease-out 1.4s forwards;
-        }
-
-        .arrowhead-line.arrowhead-visible {
-          stroke-dashoffset: 0;
-        }
-
         @keyframes drawBadgePortion {
           from {
-            stroke-dashoffset: 1200;
+            stroke-dashoffset: 1800;
           }
           to {
-            stroke-dashoffset: 700;
+            stroke-dashoffset: 1100;
           }
         }
 
         @keyframes drawArrowPortion {
           from {
-            stroke-dashoffset: 700;
-          }
-          to {
-            stroke-dashoffset: 0;
-          }
-        }
-
-        @keyframes drawArrowhead {
-          from {
-            stroke-dashoffset: 30;
+            stroke-dashoffset: 1100;
           }
           to {
             stroke-dashoffset: 0;
@@ -199,8 +159,7 @@ export default function ChalkBadgeArrow() {
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .badge-arrow-path,
-          .arrowhead-line {
+          .badge-arrow-path {
             animation: none !important;
             stroke-dashoffset: 0 !important;
           }

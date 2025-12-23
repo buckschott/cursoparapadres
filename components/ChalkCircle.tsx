@@ -36,29 +36,30 @@ export default function ChalkCircle({ children, target, className = '' }: ChalkC
 
   const circleState = getCircleState();
 
-  // Different wobble paths for each target to feel hand-drawn
+  // Open/broken circle paths - gap at bottom, larger padding
+  // These don't close (no Z), leaving a gap
   const getPath = () => {
     switch (target) {
       case 'title':
-        // Wide oval for title - wobbly
-        return 'M 50 25 C 85 22, 95 30, 97 50 C 99 70, 88 78, 50 80 C 12 82, 2 70, 3 50 C 4 30, 15 23, 50 25 Z';
+        // Wide oval for title - open at bottom, starts bottom-left, ends bottom-right
+        return 'M 15 70 C 5 55, 3 35, 10 20 C 18 5, 35 -2, 50 -2 C 65 -2, 82 5, 90 20 C 97 35, 95 55, 85 70';
       case 'subtext':
-        // Medium oval for subtext - slightly different wobble
-        return 'M 50 22 C 82 20, 96 32, 98 50 C 100 68, 85 80, 50 82 C 15 84, 1 68, 2 50 C 3 32, 18 21, 50 22 Z';
+        // Medium oval for subtext - open at bottom
+        return 'M 12 72 C 2 55, 0 35, 8 18 C 16 2, 33 -3, 50 -3 C 67 -3, 84 2, 92 18 C 100 35, 98 55, 88 72';
       default:
         return '';
     }
   };
 
-  // Get padding based on target
+  // Larger padding to ensure circle doesn't touch text
   const getPadding = () => {
     switch (target) {
       case 'title':
-        return 'p-4 md:p-6';
+        return 'px-8 py-6 md:px-12 md:py-8';
       case 'subtext':
-        return 'p-3 md:p-5';
+        return 'px-6 py-5 md:px-10 md:py-7';
       default:
-        return 'p-4';
+        return 'p-6';
     }
   };
 
@@ -90,10 +91,10 @@ export default function ChalkCircle({ children, target, className = '' }: ChalkC
           {/* Eraser mask */}
           <mask id={`eraserMask-${target}`}>
             <rect
-              x="-10"
-              y="-10"
-              width="120"
-              height="120"
+              x="-20"
+              y="-20"
+              width="140"
+              height="140"
               fill="white"
               className={circleState === 'erasing' ? 'chalk-eraser-wipe' : ''}
               style={{
@@ -115,8 +116,8 @@ export default function ChalkCircle({ children, target, className = '' }: ChalkC
           mask={`url(#eraserMask-${target})`}
           className={`chalk-circle-path ${circleState === 'drawing' ? 'chalk-drawing' : ''} ${circleState === 'visible' ? 'chalk-visible' : ''}`}
           style={{
-            strokeDasharray: 320,
-            strokeDashoffset: circleState === 'hidden' ? 320 : circleState === 'drawing' ? 320 : 0,
+            strokeDasharray: 400,
+            strokeDashoffset: circleState === 'hidden' ? 400 : circleState === 'drawing' ? 400 : 0,
           }}
         />
       </svg>
@@ -136,7 +137,7 @@ export default function ChalkCircle({ children, target, className = '' }: ChalkC
 
         @keyframes drawCircle {
           from {
-            stroke-dashoffset: 320;
+            stroke-dashoffset: 400;
           }
           to {
             stroke-dashoffset: 0;

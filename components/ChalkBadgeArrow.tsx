@@ -67,16 +67,11 @@ export default function ChalkBadgeArrow() {
           {/* 
             One continuous path:
             1. Start at bottom-left of badge area
-            2. Go counterclockwise around badge (almost closed circle)
-            3. End near start point (small gap)
-            4. Continue into first pigtail curl
-            5. Second pigtail curl  
-            6. Line going down toward CTA
-            7. Triangle arrowhead pointing DOWN (connected triangle)
-               - Go to left point
-               - Go to bottom point (tip pointing at CTA)
-               - Go to right point
-               - Return to start of triangle to close it
+            2. Go counterclockwise around badge (almost closed)
+            3. Continue down into ONE pigtail curl
+            4. Line going down toward CTA
+            5. Small loop before triangle
+            6. Triangle: left corner → bottom tip → right corner → back to left (hand-drawn, slightly imperfect)
           */}
           <path
             d="M 175 75
@@ -86,20 +81,20 @@ export default function ChalkBadgeArrow() {
                C 420 0, 430 20, 415 40
                C 395 65, 330 75, 275 78
                
-               C 275 100, 290 120, 285 145
-               C 280 170, 260 175, 265 155
-               C 270 135, 295 135, 300 155
-               C 305 175, 290 195, 275 200
-               C 260 205, 255 190, 270 180
+               C 280 110, 300 140, 290 165
+               C 280 190, 255 190, 265 170
+               C 275 150, 290 155, 280 180
                
-               L 250 320
+               L 260 320
                
-               L 210 380
-               L 250 440
-               L 290 380
-               L 210 380"
+               C 255 335, 250 345, 245 350
+               
+               L 200 390
+               L 250 450
+               L 300 390
+               L 200 390"
             stroke="#FFFFFF"
-            strokeWidth="3"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"

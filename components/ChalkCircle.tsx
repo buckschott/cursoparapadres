@@ -72,7 +72,7 @@ export default function ChalkCircle({ children, target, className = '' }: ChalkC
 
       {/* The chalk circle SVG overlay */}
       <svg
-        className="absolute inset-0 w-full h-full pointer-events-none z-0"
+        className="absolute inset-[-15%] w-[130%] h-[130%] pointer-events-none z-0"
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
         aria-hidden="true"
@@ -109,7 +109,7 @@ export default function ChalkCircle({ children, target, className = '' }: ChalkC
           d={getPath()}
           fill="none"
           stroke="#FFFFFF"
-          strokeWidth="1"
+          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
           filter={`url(#chalkTexture-${target})`}

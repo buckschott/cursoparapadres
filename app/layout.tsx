@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Courier_Prime, Short_Stack } from "next/font/google";
 import "./globals.css";
 import AuthRedirectHandler from "./page-wrapper";
+import { Providers } from '@/components/Providers';
 
 const courierPrime = Courier_Prime({
   weight: ["400", "700"],
@@ -36,9 +37,11 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={`${courierPrime.variable} ${shortStack.variable} antialiased`}>
-        <AuthRedirectHandler>
-          {children}
-        </AuthRedirectHandler>
+        <Providers>
+          <AuthRedirectHandler>
+            {children}
+          </AuthRedirectHandler>
+        </Providers>
       </body>
     </html>
   );

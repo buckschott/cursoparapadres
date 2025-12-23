@@ -1,5 +1,8 @@
 @import "tailwindcss";
+
+/* ===== DESIGN TOKENS ===== */
 :root {
+  /* Colors */
   --chalk-white: #FFFFFF;
   --chalk-yellow: #FFE566;
   --chalk-pink: #FF9999;
@@ -9,13 +12,35 @@
   --chalk-purple: #B19CD9;
   --background: #1C1C1C;
   --foreground: #ffffff;
+
+  /* Animation Timing - Single source of truth */
+  --timing-instant: 100ms;
+  --timing-fast: 200ms;
+  --timing-normal: 300ms;
+  --timing-slow: 600ms;
+  --timing-reveal: 800ms;
+
+  /* Animation Easing */
+  --ease-out-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Z-Index Scale - Documented! */
+  --z-base: 0;
+  --z-above: 10;
+  --z-section: 20;
+  --z-mobile-menu: 100;
+  --z-header: 200;
+  --z-toast: 300;
+  --z-modal: 400;
 }
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-courier-prime);
   --font-mono: var(--font-courier-prime);
 }
+
 .bg-chalkboard {
   background-color: #1C1C1C;
 }
@@ -25,6 +50,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-courier-prime), 'Courier Prime', monospace;
 }
+
 .font-brand {
   font-family: var(--font-short-stack), 'Short Stack', cursive;
 }
@@ -33,6 +59,7 @@ body {
 .section-divider {
   position: relative;
 }
+
 .section-divider::before {
   content: '';
   position: absolute;
@@ -53,10 +80,10 @@ body {
   height: 100%;
   background: #000000;
   color: #ffffff;
-  z-index: 100;
+  z-index: var(--z-mobile-menu);
   overflow-y: auto;
   transform: translateY(-100%);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.4s var(--ease-out-smooth);
 }
 
 .mobile-menu-overlay.menu-open {
@@ -66,7 +93,7 @@ body {
 .mobile-menu-content {
   opacity: 0;
   transform: translateY(-20px);
-  transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s;
+  transition: opacity var(--timing-normal) ease 0.1s, transform var(--timing-normal) ease 0.1s;
 }
 
 .mobile-menu-overlay.menu-open .mobile-menu-content {
@@ -77,7 +104,7 @@ body {
 .menu-item {
   opacity: 0;
   transform: translateY(-15px);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s var(--ease-out-smooth);
 }
 
 .mobile-menu-overlay.menu-open .menu-item {
@@ -102,7 +129,7 @@ body {
   width: 100%;
   height: 2px;
   background-color: currentColor;
-  transition: all 0.3s ease-out;
+  transition: all var(--timing-normal) ease-out;
   border-radius: 2px;
 }
 
@@ -129,8 +156,9 @@ body {
 .scroll-reveal {
   opacity: 0;
   transform: translateY(50px);
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  transition: opacity var(--timing-reveal) ease-out, transform var(--timing-reveal) ease-out;
 }
+
 .scroll-reveal-active {
   opacity: 1;
   transform: translateY(0);
@@ -139,19 +167,23 @@ body {
 /* ===== SVG DRAW ANIMATIONS ===== */
 .draw-svg {
   color: #9ca3af;
-  transition: transform 0.3s ease;
+  transition: transform var(--timing-normal) ease;
 }
+
 .draw-svg path {
   stroke-dasharray: 4000;
   stroke-dashoffset: 4000;
   animation: none;
 }
+
 .scroll-reveal-active .draw-svg path {
   animation: draw 4s ease forwards;
 }
+
 @keyframes draw {
   to { stroke-dashoffset: 0; }
 }
+
 .scroll-reveal-active .draw-svg path:nth-child(1) { animation-delay: 0s; }
 .scroll-reveal-active .draw-svg path:nth-child(2) { animation-delay: 0.1s; }
 .scroll-reveal-active .draw-svg path:nth-child(3) { animation-delay: 0.2s; }
@@ -167,6 +199,7 @@ body {
 .scroll-reveal-active .draw-svg path:nth-child(13) { animation-delay: 1.2s; }
 .scroll-reveal-active .draw-svg path:nth-child(14) { animation-delay: 1.3s; }
 .scroll-reveal-active .draw-svg path:nth-child(15) { animation-delay: 1.4s; }
+
 @media (min-width: 768px) {
   .group:hover .draw-svg { transform: scale(1.1); }
 }
@@ -174,24 +207,37 @@ body {
 /* ===== DEVICE ANIMATIONS ===== */
 .device-animate {
   opacity: 1;
-  transition: transform 0.6s ease-out;
+  transition: transform var(--timing-slow) ease-out;
 }
+
 .device-animate .device-img {
   opacity: 0.3;
   filter: grayscale(100%);
-  transition: opacity 0.6s ease-out, filter 0.6s ease-out;
+  transition: opacity var(--timing-slow) ease-out, filter var(--timing-slow) ease-out;
 }
+
 .device-animate.device-active .device-img {
   opacity: 1;
   filter: grayscale(0%);
 }
-.device-text-below { transition: opacity 0.4s ease-out 0.3s; }
-.device-active .device-text-below { opacity: 1 !important; }
-.device-desktop.device-active .sparkles-overlay { opacity: 1; }
+
+.device-text-below { 
+  transition: opacity 0.4s ease-out 0.3s; 
+}
+
+.device-active .device-text-below { 
+  opacity: 1 !important; 
+}
+
+.device-desktop.device-active .sparkles-overlay { 
+  opacity: 1; 
+}
+
 .sparkles-position {
   transform: translate(0, -70%) scale(1);
   transform-origin: center top;
 }
+
 @media (min-width: 768px) {
   .sparkles-position {
     transform: translate(0, -105%) scale(1);
@@ -199,12 +245,12 @@ body {
   }
 }
 
-
 /* ===== HERO SECTION ===== */
 .hero-section {
   min-height: calc(100vh - 73px);
   min-height: calc(100svh - 73px);
 }
+
 .hero-content {
   min-height: calc(100vh - 73px);
   min-height: calc(100svh - 73px);
@@ -218,26 +264,32 @@ body {
   position: relative;
   font-size: clamp(0.875rem, 4.5vw, 1.25rem);
 }
+
 .trust-text-1, .trust-text-2 {
-  transition: opacity 0.6s ease-in-out;
+  transition: opacity var(--timing-slow) ease-in-out;
   white-space: nowrap;
 }
+
 .trust-text-2 {
   opacity: 0;
 }
+
 @keyframes trustRotate1 {
   0%, 42% { opacity: 1; }
   50%, 92% { opacity: 0; }
   100% { opacity: 1; }
 }
+
 @keyframes trustRotate2 {
   0%, 42% { opacity: 0; }
   50%, 92% { opacity: 1; }
   100% { opacity: 0; }
 }
+
 .trust-text-1 {
   animation: trustRotate1 8s ease-in-out infinite;
 }
+
 .trust-text-2 {
   animation: trustRotate2 8s ease-in-out infinite;
 }
@@ -247,12 +299,50 @@ body {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
 .subtext-line {
-  animation: subtextReveal 0.6s ease-out forwards;
+  opacity: 0;
+  animation: subtextReveal var(--timing-slow) ease-out forwards;
 }
-.subtext-line-1 { animation-delay: 0.3s; }
-.subtext-line-2 { animation-delay: 0.7s; }
-.subtext-line-3 { animation-delay: 1.1s; }
+
+.subtext-line-1 { animation-delay: 1s; }
+.subtext-line-2 { animation-delay: 2s; }
+.subtext-line-3 { animation-delay: 3s; }
+
+/* ===== FOOTER ENTRANCE ANIMATION ===== */
+.footer-cta {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity var(--timing-reveal) ease-out, transform var(--timing-reveal) ease-out;
+}
+
+.footer-cta.footer-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.footer-cta-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-cta-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.5s ease-out, height 0.5s ease-out;
+}
+
+.footer-cta-button:hover::after {
+  width: 300%;
+  height: 300%;
+}
 
 /* ===== UTILITIES ===== */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
@@ -271,3 +361,241 @@ body {
   .hero-content { gap: 1.25rem; padding-top: 50px; padding-bottom: 50px; }
 }
 
+/* ===== TOAST ANIMATIONS ===== */
+@keyframes toastShrink {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+/* ===== CTA ARROW ANIMATION ===== */
+.cta-arrow-path {
+  stroke-dasharray: 2800;
+  stroke-dashoffset: 2800;
+  opacity: 0;
+}
+
+/* Looping animation: 1.5s draw + 4s visible pause + 0.5s fade = 6s total */
+.cta-arrow-animate {
+  animation: arrowDraw 6s ease-in-out infinite;
+}
+
+@keyframes arrowDraw {
+  0% {
+    stroke-dashoffset: 2800;
+    opacity: 0;
+  }
+  /* Fade in as draw starts */
+  2% {
+    stroke-dashoffset: 2750;
+    opacity: 1;
+  }
+  /* Draw completes at 25% (1.5s of 6s) */
+  25% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  /* Stay visible until ~92% (1.5s + 4s = 5.5s of 6s) */
+  92% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  /* Quick fade out */
+  97% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+  /* Reset for next loop */
+  100% {
+    stroke-dashoffset: 2800;
+    opacity: 0;
+  }
+}
+
+/* ===== CHALK DUST PARTICLE BURST ===== */
+@keyframes chalkBurst {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: 
+      translate(
+        calc(-50% + cos(var(--angle)) * var(--speed) * 20px),
+        calc(-50% + sin(var(--angle)) * var(--speed) * 20px)
+      ) 
+      scale(0);
+    opacity: 0;
+  }
+}
+
+/* Fallback for browsers without trig functions */
+@supports not (transform: translate(calc(cos(0) * 1px), 0)) {
+  @keyframes chalkBurst {
+    0% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.9;
+    }
+    100% {
+      transform: translate(
+        calc(-50% + var(--speed) * 15px),
+        calc(-50% + var(--speed) * -10px)
+      ) scale(0);
+      opacity: 0;
+    }
+  }
+}
+
+/* ===== REDUCED MOTION - COMPLETE IMPLEMENTATION ===== */
+@media (prefers-reduced-motion: reduce) {
+  /* Disable all transforms and animations globally */
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Scroll reveal - show immediately without animation */
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* SVG draw - show complete, no animation */
+  .draw-svg path {
+    stroke-dashoffset: 0;
+    animation: none !important;
+  }
+
+  /* Device animations - show active state immediately */
+  .device-animate .device-img {
+    opacity: 1;
+    filter: none;
+  }
+
+  /* Trust badge - show first message only, no rotation */
+  .trust-text-1 {
+    animation: none;
+    opacity: 1;
+  }
+  .trust-text-2 {
+    animation: none;
+    opacity: 0;
+    display: none;
+  }
+
+  /* Subtext - show immediately */
+  .subtext-line {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+
+  /* CTA arrow - show static */
+  .cta-arrow-path,
+  .cta-arrow-animate {
+    animation: none;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+
+  /* Chalk dust - disable */
+  @keyframes chalkBurst {
+    0%, 100% {
+      transform: none;
+      opacity: 0;
+    }
+  }
+
+  /* Footer entrance - show immediately */
+  .footer-cta {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Mobile menu - still needs to work, just instant */
+  .mobile-menu-overlay {
+    transition: none;
+  }
+  .mobile-menu-overlay.menu-open {
+    transform: translateY(0);
+  }
+  .mobile-menu-overlay:not(.menu-open) {
+    transform: translateY(-100%);
+  }
+
+  /* Hover effects - keep subtle feedback but no animation */
+  .group:hover .draw-svg {
+    transform: none;
+  }
+
+  /* Checkout overlay - show static */
+  .checkout-spinner,
+  .checkout-ring,
+  .checkout-arc,
+  .checkout-check,
+  .checkout-check-path {
+    animation: none !important;
+  }
+  
+  .checkout-ring {
+    stroke-dashoffset: 0;
+  }
+  
+  .checkout-arc {
+    transform: none;
+  }
+}
+
+/* ===== CHECKOUT OVERLAY ANIMATIONS ===== */
+
+/* Spinner container entrance */
+.checkout-spinner {
+  animation: checkoutFadeIn 0.4s ease-out forwards;
+}
+
+/* Outer ring draws itself */
+.checkout-ring {
+  animation: checkoutRingDraw 1.2s ease-out 0.2s forwards;
+}
+
+@keyframes checkoutRingDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Inner arc spins continuously */
+.checkout-arc {
+  transform-origin: center;
+  animation: checkoutArcSpin 1.2s linear infinite;
+}
+
+@keyframes checkoutArcSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Checkmark - hidden for now, could animate on success */
+.checkout-check {
+  opacity: 0;
+}
+
+.checkout-check-path {
+  animation: none;
+}
+
+/* Fade in entrance */
+@keyframes checkoutFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

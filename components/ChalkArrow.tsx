@@ -1,187 +1,159 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useChalkAnimation } from './ChalkAnimationContext';
 
 export default function ChalkArrow() {
-  const [animationState, setAnimationState] = useState<'drawing' | 'holding' | 'erasing' | 'paused'>('drawing');
-  
-  useEffect(() => {
-    // Check for reduced motion preference
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) {
-      setAnimationState('holding'); // Just show static arrow
-      return;
-    }
+  const { phase, reducedMotion } = useChalkAnimation();
 
-    const runAnimation = () => {
-      setAnimationState('drawing');
-      
-      // Drawing takes 3 seconds
-      setTimeout(() => {
-        setAnimationState('holding');
-      }, 3000);
-      
-      // Hold for 3 seconds, then erase
-      setTimeout(() => {
-        setAnimationState('erasing');
-      }, 6000);
-      
-      // Erasing takes 1 second, then pause
-      setTimeout(() => {
-        setAnimationState('paused');
-      }, 7000);
-      
-      // Pause for 1 second, then restart
-      setTimeout(() => {
-        runAnimation();
-      }, 8000);
-    };
+  // Determine arrow visibility based on current phase
+  const getArrowState = () => {
+    if (reducedMotion) return 'visible';
 
-    runAnimation();
-  }, []);
+    if (phase === 'drawing-arrow') return 'drawing';
+    if (['holding-all', 'erasing-title', 'erasing-subtext', 'erasing-badge'].includes(phase)) return 'visible';
+    if (phase === 'erasing-arrow') return 'erasing';
+    return 'hidden';
+  };
+
+  const arrowState = getArrowState();
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-visible" aria-hidden="true">
-      {/* Position the arrow above the CTA button, pointing down to its right corner */}
-      <div className="absolute left-1/2 top-0 -translate-x-[80%] -translate-y-[100%] w-[180px] h-[140px] md:w-[240px] md:h-[180px]">
+      {/* Position the arrow above the CTA button */}
+      <div className="absolute left-1/2 top-0 -translate-x-[75%] -translate-y-[95%] w-[160px] h-[130px] md:w-[200px] md:h-[160px]">
         <svg
-          viewBox="0 0 280 200"
+          viewBox="0 0 200 160"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className="w-full h-full"
           style={{
-            filter: 'drop-shadow(0 0 2px rgba(255,255,255,0.3))',
+            filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.3))',
           }}
         >
           <defs>
-            {/* Eraser mask - reveals from right to left (erases left to right) */}
-            <mask id="eraserMask">
+            {/* Chalk texture filter */}
+            <filter id="chalkTextureArrow" x="-20%" y="-20%" width="140%" height="140%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="3" result="noise" />
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="1" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+
+            {/* Eraser mask */}
+            <mask id="eraserMaskArrow">
               <rect
-                x="0"
-                y="0"
-                width="280"
-                height="200"
+                x="-10"
+                y="-10"
+                width="220"
+                height="180"
                 fill="white"
-                className={`
-                  ${animationState === 'erasing' ? 'eraser-wipe' : ''}
-                  ${animationState === 'paused' ? 'eraser-complete' : ''}
-                `}
+                className={arrowState === 'erasing' ? 'arrow-eraser-wipe' : ''}
                 style={{
-                  transformOrigin: 'left center',
+                  transformOrigin: 'right center',
+                  transform: arrowState === 'hidden' ? 'scaleX(0)' : 'scaleX(1)',
                 }}
               />
             </mask>
-            
-            {/* Chalk texture filter for hand-drawn feel */}
-            <filter id="chalkTexture" x="-20%" y="-20%" width="140%" height="140%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="3" result="noise" />
-              <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
-            </filter>
           </defs>
-          
-          <g mask="url(#eraserMask)" filter="url(#chalkTexture)">
-            {/* Main arrow path with pigtail curls */}
-            {/* Path: starts top-left, first pigtail curl, second pigtail curl, straighter line to bottom */}
+
+          <g filter="url(#chalkTextureArrow)" mask="url(#eraserMaskArrow)">
+            {/* Main arrow path with pigtail curls - starts top left, curls down */}
             <path
-              d="M 30 25
-                 C 40 35, 50 55, 45 75
-                 C 40 95, 20 95, 25 75
-                 C 30 55, 55 50, 70 65
-                 C 85 80, 80 105, 70 115
-                 C 60 125, 45 120, 55 105
-                 C 65 90, 95 85, 130 95
-                 L 200 155"
+              d="M 25 15
+                 C 35 25, 42 45, 38 62
+                 C 34 80, 18 82, 22 65
+                 C 26 48, 50 45, 62 58
+                 C 74 71, 70 92, 62 100
+                 C 54 108, 42 104, 50 90
+                 C 58 76, 85 72, 115 85
+                 L 165 120"
               stroke="#FFFFFF"
-              strokeWidth="3"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
               fill="none"
-              className={`chalk-line ${animationState === 'drawing' ? 'drawing' : ''} ${animationState === 'holding' || animationState === 'erasing' ? 'drawn' : ''}`}
+              className={`chalk-arrow-line ${arrowState === 'drawing' ? 'arrow-drawing' : ''} ${arrowState === 'visible' ? 'arrow-visible' : ''}`}
               style={{
-                strokeDasharray: 600,
-                strokeDashoffset: animationState === 'paused' ? 600 : undefined,
+                strokeDasharray: 450,
+                strokeDashoffset: arrowState === 'hidden' ? 450 : arrowState === 'drawing' ? 450 : 0,
               }}
             />
-            
-            {/* Arrowhead - filled triangle */}
+
+            {/* Hand-drawn V arrowhead */}
             <path
-              d="M 200 155 L 185 150 L 192 165 Z"
-              fill="#FFFFFF"
+              d="M 150 108 L 168 122"
               stroke="#FFFFFF"
-              strokeWidth="2"
-              strokeLinejoin="round"
-              className={`chalk-arrow-head ${animationState === 'drawing' ? 'drawing-arrowhead' : ''} ${animationState === 'holding' || animationState === 'erasing' ? 'drawn' : ''} ${animationState === 'paused' ? 'hidden-arrow' : ''}`}
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              fill="none"
+              className={`chalk-arrowhead ${arrowState === 'drawing' ? 'arrowhead-drawing' : ''} ${arrowState === 'visible' ? 'arrowhead-visible' : ''}`}
+              style={{
+                strokeDasharray: 25,
+                strokeDashoffset: arrowState === 'hidden' ? 25 : arrowState === 'drawing' ? 25 : 0,
+              }}
+            />
+            <path
+              d="M 168 122 L 160 138"
+              stroke="#FFFFFF"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              fill="none"
+              className={`chalk-arrowhead ${arrowState === 'drawing' ? 'arrowhead-drawing' : ''} ${arrowState === 'visible' ? 'arrowhead-visible' : ''}`}
+              style={{
+                strokeDasharray: 25,
+                strokeDashoffset: arrowState === 'hidden' ? 25 : arrowState === 'drawing' ? 25 : 0,
+              }}
             />
           </g>
         </svg>
       </div>
 
       <style jsx>{`
-        .chalk-line {
-          stroke-dashoffset: 600;
+        .chalk-arrow-line {
+          transition: none;
         }
-        
-        .chalk-line.drawing {
-          animation: drawLine 2.5s ease-out forwards;
+
+        .chalk-arrow-line.arrow-drawing {
+          animation: drawArrowLine 1.3s ease-out forwards;
         }
-        
-        .chalk-line.drawn {
+
+        .chalk-arrow-line.arrow-visible {
           stroke-dashoffset: 0;
         }
-        
-        .chalk-arrow-head {
-          opacity: 0;
-          transform: scale(0);
-          transform-origin: center;
+
+        .chalk-arrowhead {
+          transition: none;
         }
-        
-        .chalk-arrow-head.drawing-arrowhead {
-          animation: popArrowhead 0.3s ease-out 2.5s forwards;
+
+        .chalk-arrowhead.arrowhead-drawing {
+          animation: drawArrowhead 0.2s ease-out 1.3s forwards;
         }
-        
-        .chalk-arrow-head.drawn {
-          opacity: 1;
-          transform: scale(1);
+
+        .chalk-arrowhead.arrowhead-visible {
+          stroke-dashoffset: 0;
         }
-        
-        .chalk-arrow-head.hidden-arrow {
-          opacity: 0;
-          transform: scale(0);
-        }
-        
-        @keyframes drawLine {
+
+        @keyframes drawArrowLine {
           from {
-            stroke-dashoffset: 600;
+            stroke-dashoffset: 450;
           }
           to {
             stroke-dashoffset: 0;
           }
         }
-        
-        @keyframes popArrowhead {
-          0% {
-            opacity: 0;
-            transform: scale(0);
+
+        @keyframes drawArrowhead {
+          from {
+            stroke-dashoffset: 25;
           }
-          70% {
-            transform: scale(1.2);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1);
+          to {
+            stroke-dashoffset: 0;
           }
         }
-        
-        .eraser-wipe {
-          animation: eraseWipe 1s ease-in-out forwards;
+
+        .arrow-eraser-wipe {
+          animation: eraseArrow 0.6s ease-in-out forwards;
         }
-        
-        .eraser-complete {
-          transform: scaleX(0);
-          transform-origin: right center;
-        }
-        
-        @keyframes eraseWipe {
+
+        @keyframes eraseArrow {
           from {
             transform: scaleX(1);
             transform-origin: right center;
@@ -191,16 +163,14 @@ export default function ChalkArrow() {
             transform-origin: right center;
           }
         }
-        
+
         @media (prefers-reduced-motion: reduce) {
-          .chalk-line,
-          .chalk-arrow-head {
+          .chalk-arrow-line,
+          .chalk-arrowhead {
             animation: none !important;
             stroke-dashoffset: 0 !important;
-            opacity: 1 !important;
-            transform: scale(1) !important;
           }
-          .eraser-wipe {
+          .arrow-eraser-wipe {
             animation: none !important;
           }
         }

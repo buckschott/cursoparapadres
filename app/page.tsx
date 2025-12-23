@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { ChalkAnimationProvider } from '@/components/ChalkAnimationContext';
+import ChalkCircle from '@/components/ChalkCircle';
 import ChalkArrow from '@/components/ChalkArrow';
 
 export default function Home() {
@@ -105,25 +107,31 @@ export default function Home() {
       <main className="min-h-screen bg-background">
         {/* HERO SECTION */}
         <section className="relative w-full overflow-hidden bg-background hero-section flex justify-center z-0">
+          <ChalkAnimationProvider>
           <div className="relative w-full max-w-7xl mx-auto px-4 md:px-6 text-center z-10 flex flex-col justify-between hero-content">
             
-            <div>
-              <h1 className="hero-title text-5xl md:text-[54px] lg:text-[71px] font-bold text-white leading-[1.1] tracking-wide">
-                <span className="hero-line-1">Curso Para Padres</span><br />
-                <span className="hero-line-2">Aceptado por la Corte</span>
-              </h1>
-            </div>
-
-            <div>
-              <p className="hero-subheadline text-xl md:text-2xl lg:text-3xl font-normal text-white/70 max-w-4xl mx-auto leading-relaxed">
-                <span className="subtext-line subtext-line-1 inline-block opacity-0">Un precio.</span><br />
-                <span className="subtext-line subtext-line-2 inline-block opacity-0">Todos los estados.</span><br />
-                <span className="subtext-line subtext-line-3 inline-block opacity-0">Sin sorpresas.</span>
-              </p>
+            <div className="flex justify-center">
+              <ChalkCircle target="title">
+                <h1 className="hero-title text-5xl md:text-[54px] lg:text-[71px] font-bold text-white leading-[1.1] tracking-wide">
+                  <span className="hero-line-1">Curso Para Padres</span><br />
+                  <span className="hero-line-2">Aceptado por la Corte</span>
+                </h1>
+              </ChalkCircle>
             </div>
 
             <div className="flex justify-center">
-              <div className="trust-badge-pill inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-3">
+              <ChalkCircle target="subtext">
+                <p className="hero-subheadline text-xl md:text-2xl lg:text-3xl font-normal text-white/70 max-w-4xl mx-auto leading-relaxed">
+                  <span className="subtext-line subtext-line-1 inline-block">Un precio.</span><br />
+                  <span className="subtext-line subtext-line-2 inline-block">Todos los estados.</span><br />
+                  <span className="subtext-line subtext-line-3 inline-block">Sin sorpresas.</span>
+                </p>
+              </ChalkCircle>
+            </div>
+
+            <div className="flex justify-center">
+              <ChalkCircle target="badge">
+                <div className="trust-badge-pill inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-3">
                 <span className="relative flex h-4 w-4 flex-shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#77DD77] opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-4 w-4 bg-[#77DD77]"></span>
@@ -132,7 +140,8 @@ export default function Home() {
                   <span className="trust-text-1">El Curso Original en Línea</span>
                   <span className="trust-text-2 absolute left-0 right-0 text-center">De confianza desde 1993</span>
                 </span>
-              </div>
+                </div>
+              </ChalkCircle>
             </div>
 
             <div className="relative">
@@ -153,7 +162,8 @@ export default function Home() {
                 Garantía de Aceptación del 100%
               </a>
             </div>
-          </div>
+            </div>
+          </ChalkAnimationProvider>
         </section>
 
         {/* FEATURES SECTION - No divider at top (connects to hero) */}

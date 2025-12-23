@@ -4,7 +4,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ChalkAnimationProvider } from '@/components/ChalkAnimationContext';
 import ChalkCircle from '@/components/ChalkCircle';
-import ChalkArrow from '@/components/ChalkArrow';
 import ChalkBadgeArrow from '@/components/ChalkBadgeArrow';
 
 export default function Home() {

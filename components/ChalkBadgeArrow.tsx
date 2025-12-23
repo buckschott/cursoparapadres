@@ -5,11 +5,9 @@ import { useChalkAnimation } from './ChalkAnimationContext';
 export default function ChalkBadgeArrow() {
   const { phase, reducedMotion } = useChalkAnimation();
 
-  // This component handles both badge circle AND arrow as one continuous line
   const getState = () => {
     if (reducedMotion) return 'visible';
 
-    // Starts drawing when badge phase begins, continues through arrow phase
     if (phase === 'drawing-badge' || phase === 'drawing-arrow') return 'drawing';
     if (['holding-all', 'erasing-title', 'erasing-subtext'].includes(phase)) return 'visible';
     if (phase === 'erasing-badge-arrow') return 'erasing';
@@ -18,7 +16,6 @@ export default function ChalkBadgeArrow() {
 
   const state = getState();
 
-  // Calculate drawing progress based on phase
   const getDrawingClass = () => {
     if (state === 'drawing') {
       if (phase === 'drawing-badge') return 'drawing-badge-portion';
@@ -27,17 +24,42 @@ export default function ChalkBadgeArrow() {
     return '';
   };
 
+  /*
+    Path breakdown (matching reference images):
+    
+    1. OVAL around badge (counterclockwise from bottom-left gap):
+       - Start at M 80 55 (bottom-left, creates gap)
+       - Curve up left side to top-left
+       - Curve across top to top-right  
+       - Curve down right side to bottom-right
+       - Curve along bottom toward start (but don't close - leave gap)
+       - Exit point around x:200, y:60
+    
+    2. EXIT from oval bottom-right, curve down:
+       - Smooth transition from oval into downward stroke
+    
+    3. ONE PIGTAIL CURL:
+       - Curve left and loop back (like a "q" descender)
+       - Single curl, not multiple
+    
+    4. CONTINUE DOWN toward CTA
+    
+    5. TRIANGLE pointing DOWN:
+       - Left corner, bottom tip, right corner, back to left
+       - Hand-drawn feel (slightly imperfect)
+  */
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-visible" aria-hidden="true">
-      {/* SVG positioned to wrap around badge and extend down to CTA */}
       <svg
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-[-15%] w-[350px] h-[450px] md:w-[450px] md:h-[550px]"
-        viewBox="0 0 450 550"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+        className="absolute left-1/2 -translate-x-1/2 w-[320px] h-[380px] md:w-[400px] md:h-[450px]"
         style={{
+          top: '-60px', // Position so oval wraps the badge
           filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.3))',
         }}
+        viewBox="0 0 300 380"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
           {/* Chalk texture filter */}
@@ -51,8 +73,8 @@ export default function ChalkBadgeArrow() {
             <rect
               x="-20"
               y="-20"
-              width="490"
-              height="590"
+              width="340"
+              height="420"
               fill="white"
               className={state === 'erasing' ? 'badge-arrow-eraser-wipe' : ''}
               style={{
@@ -64,44 +86,36 @@ export default function ChalkBadgeArrow() {
         </defs>
 
         <g filter="url(#chalkTextureBadgeArrow)" mask="url(#eraserMaskBadgeArrow)">
-          {/* 
-            One continuous path:
-            1. Start at bottom-left of badge area
-            2. Go counterclockwise around badge (almost closed)
-            3. Continue down into ONE pigtail curl
-            4. Line going down toward CTA
-            5. Small loop before triangle
-            6. Triangle: left corner → bottom tip → right corner → back to left (hand-drawn, slightly imperfect)
-          */}
           <path
-            d="M 175 75
-               C 120 70, 60 55, 45 35
-               C 30 15, 50 0, 120 0
-               C 200 0, 320 0, 380 0
-               C 420 0, 430 20, 415 40
-               C 395 65, 330 75, 275 78
-               
-               C 280 110, 300 140, 290 165
-               C 280 190, 255 190, 265 170
-               C 275 150, 290 155, 280 180
-               
-               L 260 320
-               
-               C 255 335, 250 345, 245 350
-               
-               L 200 390
-               L 250 450
-               L 300 390
-               L 200 390"
+            d={`
+              M 70 62
+              C 40 55, 20 45, 18 30
+              C 16 12, 50 5, 100 5
+              L 200 5
+              C 250 5, 285 12, 283 30
+              C 281 48, 255 58, 220 62
+              C 200 65, 180 66, 175 68
+              
+              C 172 85, 175 100, 168 115
+              C 160 135, 140 140, 145 120
+              C 150 100, 165 105, 158 130
+              
+              L 152 250
+              
+              L 110 295
+              L 150 350
+              L 190 295
+              Z
+            `}
             stroke="#FFFFFF"
-            strokeWidth="2"
+            strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"
             className={`badge-arrow-path ${state === 'drawing' ? getDrawingClass() : ''} ${state === 'visible' ? 'badge-arrow-visible' : ''}`}
             style={{
-              strokeDasharray: 1800,
-              strokeDashoffset: state === 'hidden' ? 1800 : state === 'visible' ? 0 : 1800,
+              strokeDasharray: 1200,
+              strokeDashoffset: state === 'hidden' ? 1200 : state === 'visible' ? 0 : 1200,
             }}
           />
         </g>
@@ -126,16 +140,16 @@ export default function ChalkBadgeArrow() {
 
         @keyframes drawBadgePortion {
           from {
-            stroke-dashoffset: 1800;
+            stroke-dashoffset: 1200;
           }
           to {
-            stroke-dashoffset: 1000;
+            stroke-dashoffset: 700;
           }
         }
 
         @keyframes drawArrowPortion {
           from {
-            stroke-dashoffset: 1000;
+            stroke-dashoffset: 700;
           }
           to {
             stroke-dashoffset: 0;

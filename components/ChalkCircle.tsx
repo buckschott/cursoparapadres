@@ -36,16 +36,16 @@ export default function ChalkCircle({ children, target, className = '' }: ChalkC
 
   const circleState = getCircleState();
 
-  // Open/broken circle paths - gap at bottom, larger padding
-  // These don't close (no Z), leaving a gap
+  // Open/broken circle paths - small gap at bottom (~95% closed)
+  // These don't close (no Z), leaving a small gap
   const getPath = () => {
     switch (target) {
       case 'title':
-        // Wide oval for title - open at bottom, starts bottom-left, ends bottom-right
-        return 'M 15 70 C 5 55, 3 35, 10 20 C 18 5, 35 -2, 50 -2 C 65 -2, 82 5, 90 20 C 97 35, 95 55, 85 70';
+        // Wide oval for title - almost closed, small gap at bottom center
+        return 'M 45 85 C 20 75, 5 55, 5 40 C 5 20, 20 5, 50 5 C 80 5, 95 20, 95 40 C 95 55, 80 75, 55 85';
       case 'subtext':
-        // Medium oval for subtext - open at bottom
-        return 'M 12 72 C 2 55, 0 35, 8 18 C 16 2, 33 -3, 50 -3 C 67 -3, 84 2, 92 18 C 100 35, 98 55, 88 72';
+        // Medium oval for subtext - almost closed
+        return 'M 45 88 C 18 78, 2 58, 2 40 C 2 18, 20 2, 50 2 C 80 2, 98 18, 98 40 C 98 58, 82 78, 55 88';
       default:
         return '';
     }
@@ -109,7 +109,7 @@ export default function ChalkCircle({ children, target, className = '' }: ChalkC
           d={getPath()}
           fill="none"
           stroke="#FFFFFF"
-          strokeWidth="2"
+          strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
           filter={`url(#chalkTexture-${target})`}

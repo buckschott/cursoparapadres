@@ -65,35 +65,32 @@ export default function ChalkBadgeArrow() {
 
         <g filter="url(#chalkTextureBadgeArrow)" mask="url(#eraserMaskBadgeArrow)">
           {/* 
-            One continuous path - no breaks:
-            1. Start at bottom center of badge
-            2. Go LEFT and UP around the badge (counterclockwise)
-            3. Come back to bottom (open circle, doesn't close completely)
-            4. From bottom, continue into first pigtail curl
-            5. Second pigtail curl
-            6. Straight-ish line pointing down toward CTA
-            7. Triangle arrowhead (3 lines connected, pointing DOWN)
+            One continuous path matching the hand drawing:
+            1. Start from upper left
+            2. Swoop loosely around/over the badge (not a tight circle)
+            3. Exit lower right of badge
+            4. First pigtail curl
+            5. Second pigtail curl  
+            6. Line going down toward CTA
+            7. Triangle arrowhead (3 connected lines pointing DOWN)
           */}
           <path
-            d="M 225 95
-               C 180 98, 120 95, 80 75
-               C 50 58, 40 40, 55 25
-               C 75 8, 130 0, 225 0
-               C 320 0, 375 8, 395 25
-               C 410 40, 400 58, 370 75
-               C 330 95, 270 98, 235 95
+            d="M 50 60
+               C 30 40, 50 10, 150 5
+               C 280 0, 400 10, 420 50
+               C 440 90, 380 100, 320 95
+               C 280 92, 260 100, 280 130
                
-               C 235 120, 200 140, 195 165
-               C 190 190, 175 195, 180 175
-               C 185 155, 210 150, 220 170
-               C 230 190, 220 215, 210 225
-               C 200 235, 185 230, 195 215
-               C 205 200, 230 200, 250 220
-               L 270 280
-               L 225 350
-               L 225 320
-               L 270 280
-               L 225 280"
+               C 290 160, 260 175, 255 155
+               C 250 135, 275 130, 285 150
+               C 295 170, 280 195, 265 200
+               C 250 205, 245 190, 260 180
+               
+               L 240 280
+               
+               L 200 320
+               L 240 280
+               L 280 320"
             stroke="#FFFFFF"
             strokeWidth="2.5"
             strokeLinecap="round"
@@ -101,8 +98,8 @@ export default function ChalkBadgeArrow() {
             fill="none"
             className={`badge-arrow-path ${state === 'drawing' ? getDrawingClass() : ''} ${state === 'visible' ? 'badge-arrow-visible' : ''}`}
             style={{
-              strokeDasharray: 1800,
-              strokeDashoffset: state === 'hidden' ? 1800 : state === 'visible' ? 0 : 1800,
+              strokeDasharray: 1600,
+              strokeDashoffset: state === 'hidden' ? 1600 : state === 'visible' ? 0 : 1600,
             }}
           />
         </g>
@@ -127,16 +124,16 @@ export default function ChalkBadgeArrow() {
 
         @keyframes drawBadgePortion {
           from {
-            stroke-dashoffset: 1800;
+            stroke-dashoffset: 1600;
           }
           to {
-            stroke-dashoffset: 1100;
+            stroke-dashoffset: 900;
           }
         }
 
         @keyframes drawArrowPortion {
           from {
-            stroke-dashoffset: 1100;
+            stroke-dashoffset: 900;
           }
           to {
             stroke-dashoffset: 0;

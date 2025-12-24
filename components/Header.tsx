@@ -21,7 +21,8 @@ export default function Header() {
     <>
       <header className="fixed top-0 left-0 right-0 bg-background z-[200] border-b border-[#FFFFFF]/20">
         <nav className="max-w-7xl mx-auto px-6 h-[73px] flex items-center justify-between">
-          <a href="/" className="relative z-[210]">
+          <a href="/" className="relative z-[210] flex items-center gap-2">
+            <img src="/logo.svg" alt="" className="h-7 w-auto" aria-hidden="true" />
             <div className="header-title text-lg font-semibold text-white tracking-tight font-brand">
               Putting Kids First<sup className="text-[10px] relative -top-2">®</sup>
             </div>
@@ -31,7 +32,7 @@ export default function Header() {
             <a href="/aceptacion-de-la-corte" className="text-white/70 hover:text-white transition-colors">Aceptación de la Corte</a>
             <a href="/garantia" className="text-white/70 hover:text-white transition-colors">Nuestra Garantía</a>
             <a href="mailto:info@cursoparapadres.org" className="text-white/70 hover:text-white transition-colors">Contáctenos</a>
-            <a href="#precios" className="bg-[#77DD77] text-[#1C1C1C] px-6 py-2 rounded-lg font-semibold hover:bg-[#88EE88] transition-colors">Obtener Mi Certificado</a>
+            <a href="#precios" className="bg-[#77DD77] text-[#1C1C1C] px-6 py-2 rounded-lg font-semibold hover:bg-[#88EE88] transition-colors">Inscríbase Ahora</a>
             <a href="/iniciar-sesion" className="text-white/70 hover:text-white transition-colors">Iniciar Sesión</a>
           </div>
 
@@ -82,7 +83,7 @@ export default function Header() {
 
           <div className="mt-auto pt-12 space-y-4">
             <a href="#precios" onClick={closeMenu} className="block w-full bg-[#77DD77] text-[#1C1C1C] text-center px-6 py-4 rounded-xl font-semibold hover:bg-[#88EE88] transition-colors text-lg">
-              Obtener Mi Certificado
+              Inscríbase Ahora
             </a>
             <a href="/iniciar-sesion" onClick={closeMenu} className="block w-full bg-transparent text-white text-center px-6 py-4 rounded-xl font-semibold border-2 border-white hover:bg-white/10 transition-colors text-lg">
               Iniciar Sesión

@@ -21,7 +21,7 @@ export default function Footer() {
               href="#precios" 
               className="footer-cta-button bg-[#77DD77] text-[#1C1C1C] px-8 py-4 rounded-xl font-bold hover:bg-[#88EE88] transition-colors text-lg"
             >
-              Comenzar Ahora
+              Inscríbase Ahora
             </a>
             <a 
               href="/iniciar-sesion" 

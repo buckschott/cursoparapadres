@@ -60,6 +60,20 @@ export default function Home() {
     }
   };
 
+  // Safe checkout handler with env var validation
+  const handleCoparentingCheckout = () => {
+    const priceId = process.env.NEXT_PUBLIC_PRICE_COPARENTING;
+    if (!priceId) {
+      showToast(
+        'error',
+        'Error de configuración',
+        'Por favor, contáctenos para completar su inscripción.'
+      );
+      return;
+    }
+    handleCheckout(priceId, 'coparenting');
+  };
+
   return (
     <>
       <CheckoutOverlay isVisible={isRedirecting} />
@@ -72,7 +86,7 @@ export default function Home() {
             
             <div className="flex justify-center">
               <h1 className="hero-title text-5xl md:text-[54px] lg:text-[71px] font-bold text-white leading-[1.1] tracking-wide">
-                <span className="hero-line-1">Curso Para Padres</span><br />
+                <span className="hero-line-1">Curso de Crianza Compartida</span><br />
                 <span className="hero-line-2">Aceptado por la Corte</span>
               </h1>
             </div>
@@ -80,7 +94,7 @@ export default function Home() {
             <div className="flex justify-center">
               <p className="hero-subheadline text-xl md:text-2xl lg:text-3xl font-normal text-white/70 max-w-4xl mx-auto leading-relaxed">
                 <span className="subtext-line subtext-line-1 inline-block">Un precio.</span><br />
-                <span className="subtext-line subtext-line-2 inline-block">Todos los estados.</span><br />
+                <span className="subtext-line subtext-line-2 inline-block">Aceptado en todos los estados.</span><br />
                 <span className="subtext-line subtext-line-3 inline-block">Sin sorpresas.</span>
               </p>
             </div>
@@ -101,7 +115,7 @@ export default function Home() {
             {/* CTA with hand-drawn arrow */}
             <div className="flex justify-center">
               <CTAButton href="#precios" showArrow={true}>
-                Obtener Mi Certificado
+                Inscríbase Ahora
               </CTAButton>
             </div>
 
@@ -117,7 +131,11 @@ export default function Home() {
         </section>
 
         {/* FEATURES SECTION */}
-        <section id="caracteristicas" className="section-divider relative pt-8 pb-24 bg-background overflow-hidden z-20" aria-labelledby="features-heading">
+        <section 
+          id="caracteristicas" 
+          className="section-divider relative pt-8 pb-24 bg-background overflow-hidden z-20" 
+          aria-labelledby="caracteristicas-heading"
+        >
           <div className="relative max-w-7xl mx-auto px-4 md:px-6 z-10">
             <div className="text-center mb-16">
               <h2 id="caracteristicas-heading" className="scroll-reveal text-xl md:text-4xl font-bold text-white mb-4">
@@ -152,8 +170,9 @@ export default function Home() {
         {/* DEVICES SECTION */}
         <section 
           ref={devicesRef as React.RefObject<HTMLElement>}
+          id="dispositivos"
           className="section-divider relative bg-background overflow-hidden z-20 py-24 pt-32" 
-          aria-labelledby="devices-heading"
+          aria-labelledby="dispositivos-heading"
         >
           <div className="relative max-w-7xl mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
@@ -187,7 +206,11 @@ export default function Home() {
         </section>
 
         {/* PRICING SECTION */}
-        <section id="precios" className="section-divider relative bg-background z-20 overflow-hidden py-24" aria-labelledby="pricing-heading">
+        <section 
+          id="precios" 
+          className="section-divider relative bg-background z-20 overflow-hidden py-24" 
+          aria-labelledby="precios-heading"
+        >
           <div className="max-w-6xl mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
               <h2 id="precios-heading" className="scroll-reveal text-lg md:text-4xl font-bold text-white mb-4">
@@ -221,7 +244,7 @@ export default function Home() {
                   </ul>
                 </div>
                 <button 
-                  onClick={() => handleCheckout(process.env.NEXT_PUBLIC_PRICE_COPARENTING!, 'coparenting')}
+                  onClick={handleCoparentingCheckout}
                   disabled={loading === 'coparenting'}
                   className="w-full bg-[#7EC8E3] text-white py-4 rounded-xl font-bold md:hover:bg-[#6BB8D3] transition-all md:hover:shadow-xl shadow-black/40 mb-6 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
@@ -231,7 +254,7 @@ export default function Home() {
                       <span>Conectando...</span>
                     </>
                   ) : (
-                    'Obtener Mi Certificado'
+                    'Inscríbase Ahora'
                   )}
                 </button>
                 <div className="mb-6 pt-4 border-t border-[#FFFFFF]/15">
@@ -337,7 +360,11 @@ export default function Home() {
         </section>
 
         {/* TESTIMONIALS SECTION */}
-        <section id="testimonios" className="section-divider py-24 bg-background relative z-20" aria-labelledby="testimonials-heading">
+        <section 
+          id="testimonios" 
+          className="section-divider py-24 bg-background relative z-20" 
+          aria-labelledby="testimonios-heading"
+        >
           <div className="max-w-7xl mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
               <h2 id="testimonios-heading" className="text-lg md:text-4xl font-bold text-white mb-4">
@@ -372,7 +399,11 @@ export default function Home() {
         </section>
 
         {/* FAQ SECTION */}
-        <section id="preguntas-frecuentes" className="section-divider py-24 bg-background relative z-20" aria-labelledby="faq-heading">
+        <section 
+          id="preguntas-frecuentes" 
+          className="section-divider py-24 bg-background relative z-20" 
+          aria-labelledby="preguntas-frecuentes-heading"
+        >
           <div className="max-w-4xl mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
               <h2 id="preguntas-frecuentes-heading" className="text-lg md:text-4xl font-bold text-white mb-4">

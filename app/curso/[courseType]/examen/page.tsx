@@ -5,6 +5,10 @@ import { QUESTIONS_PER_EXAM, PASS_THRESHOLD } from '@/lib/courseContent';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
+// ============================================
+// TYPES
+// ============================================
+
 interface ExamQuestion {
   id: string;
   question_text: string;
@@ -42,6 +46,10 @@ function shuffle<T>(arr: T[]): T[] {
   }
   return a;
 }
+
+// ============================================
+// MAIN COMPONENT
+// ============================================
 
 export default function ExamPage() {
   const params = useParams();
@@ -86,7 +94,6 @@ export default function ExamPage() {
         .limit(1);
 
       if (existingCert && existingCert.length > 0) {
-        // Already passed! Redirect to certificate
         window.location.href = `/certificado/${existingCert[0].id}`;
         return;
       }
@@ -153,7 +160,7 @@ export default function ExamPage() {
       .select('*')
       .eq('version', ver);
 
-    if (!qs?.length) { alert('Error'); return; }
+    if (!qs?.length) { alert('Error al cargar el examen. Por favor, intente de nuevo.'); return; }
 
     const selected = shuffle(qs).slice(0, QUESTIONS_PER_EXAM);
     const processed: ShuffledQuestion[] = selected.map(q => {
@@ -250,7 +257,6 @@ export default function ExamPage() {
           .select('id')
           .single();
 
-        // Send email to attorney if provided
         if (newCert?.id) {
           fetch('/api/send-attorney-email', {
             method: 'POST',
@@ -282,59 +288,101 @@ export default function ExamPage() {
     setPhase('intro');
   };
 
+  // ============================================
+  // LOADING STATE
+  // ============================================
   if (loading) {
-    return <main className="min-h-screen bg-background flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7EC8E3]"></div></main>;
+    return (
+      <main className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative w-16 h-16 mx-auto mb-4">
+            <svg className="w-full h-full animate-spin" viewBox="0 0 100 100">
+              <circle
+                cx="50" cy="50" r="40"
+                fill="none" stroke="#7EC8E3" strokeWidth="4"
+                strokeLinecap="round" strokeDasharray="60 140"
+              />
+            </svg>
+          </div>
+          <p className="text-white/70">Cargando examen...</p>
+        </div>
+      </main>
+    );
   }
 
+  // ============================================
+  // RESULTS SCREEN
+  // ============================================
   if (phase === 'done') {
     const passed = correctCount >= PASS_SCORE;
     const score = Math.round((correctCount / QUESTIONS_PER_EXAM) * 100);
     
     return (
-      <main className="min-h-screen bg-background flex items-center justify-center p-6">
-        <div className="bg-background rounded-2xl shadow-lg shadow-black/30 p-8 max-w-md w-full text-center">
+      <main className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="bg-[#2A2A2A] rounded-2xl p-8 md:p-10 max-w-md w-full text-center border border-white/10">
           {passed ? (
             <>
-              <div className="w-20 h-20 bg-[#77DD77]/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg className="w-10 h-10 text-[#77DD77]" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
+              {/* Success State */}
+              <div className="relative inline-flex items-center justify-center w-24 h-24 mb-6">
+                <div className="absolute inset-0 bg-[#77DD77]/20 rounded-full animate-ping" style={{ animationDuration: '2s' }} />
+                <div className="relative w-20 h-20 bg-[#77DD77]/20 rounded-full flex items-center justify-center border-2 border-[#77DD77]/40">
+                  <svg className="w-10 h-10 text-[#77DD77]" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
               </div>
-              <h1 className="text-2xl font-bold text-white mb-2">¡Felicitaciones!</h1>
-              <p className="text-white/70 mb-6">Ha aprobado con {score}% ({correctCount}/{QUESTIONS_PER_EXAM})</p>
+              
+              <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">¡Felicidades!</h1>
+              <p className="text-white/70 mb-2">Ha aprobado el examen</p>
+              
+              <div className="inline-flex items-center gap-2 bg-[#77DD77]/10 border border-[#77DD77]/30 rounded-full px-4 py-2 mb-8">
+                <span className="text-[#77DD77] font-bold text-lg">{score}%</span>
+                <span className="text-[#77DD77]/70 text-sm">({correctCount}/{QUESTIONS_PER_EXAM} correctas)</span>
+              </div>
               
               <Link 
                 href="/completar-perfil"
-                className="block w-full bg-[#7EC8E3] text-white py-4 rounded-lg font-bold hover:bg-[#6BB8D3] transition-colors mb-3"
+                className="block w-full bg-[#77DD77] text-[#1C1C1C] py-4 rounded-xl font-bold text-lg hover:bg-[#88EE88] transition-all hover:shadow-lg hover:shadow-[#77DD77]/25 mb-3"
               >
-                Descargar Certificado
+                Obtener Mi Certificado
               </Link>
               
               <Link 
                 href="/panel" 
-                className="block w-full bg-[#2A2A2A] text-white py-3 rounded-lg hover:bg-[#333333] transition-colors"
+                className="block w-full bg-transparent text-white/70 py-3 rounded-xl hover:text-white transition-colors text-sm"
               >
-                Volver a los Cursos
+                Volver al Panel
               </Link>
             </>
           ) : (
             <>
-              <div className="w-20 h-20 bg-[#FF9999]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              {/* Failed State */}
+              <div className="w-20 h-20 bg-[#FF9999]/20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#FF9999]/30">
                 <svg className="w-10 h-10 text-[#FF9999]" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </div>
-              <h1 className="text-2xl font-bold text-white mb-2">No Aprobó</h1>
-              <p className="text-white/70 mb-6">Obtuvo {score}% — necesita 70%</p>
+              
+              <h1 className="text-2xl font-bold text-white mb-2">No Aprobó Esta Vez</h1>
+              <p className="text-white/70 mb-2">Obtuvo {score}% — necesita 70% para aprobar</p>
+              
+              <div className="bg-[#1C1C1C] rounded-xl p-4 mb-6 text-left">
+                <p className="text-white/60 text-sm">
+                  No se preocupe — puede retomar el examen las veces que necesite. 
+                  Le recomendamos revisar las lecciones antes de intentar de nuevo.
+                </p>
+              </div>
+              
               <button 
                 onClick={handleRetry}
-                className="block w-full bg-[#7EC8E3] text-white py-3 rounded-lg font-bold hover:bg-[#6BB8D3] mb-3"
+                className="block w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold hover:bg-[#9DD8F3] transition-all mb-3"
               >
-                Reintentar
+                Reintentar Examen
               </button>
+              
               <Link 
                 href={`/curso/${courseType}`} 
-                className="block w-full bg-[#2A2A2A] text-white py-3 rounded-lg hover:bg-[#333333]"
+                className="block w-full bg-transparent border border-white/20 text-white py-3 rounded-xl hover:bg-white/5 transition-colors"
               >
                 Revisar el Curso
               </Link>
@@ -345,89 +393,270 @@ export default function ExamPage() {
     );
   }
 
+  // ============================================
+  // INTRO SCREEN
+  // ============================================
   if (phase === 'intro') {
     return (
       <main className="min-h-screen bg-background">
-        <header className="bg-background border-b">
-          <div className="max-w-4xl mx-auto px-6 py-4">
-            <Link href={`/curso/${courseType}`} className="text-[#7EC8E3] text-sm">← Volver al Curso</Link>
+        {/* Header */}
+        <header className="bg-background border-b border-white/10">
+          <div className="max-w-4xl mx-auto px-4 md:px-6 py-4">
+            <Link 
+              href={`/curso/${courseType}`} 
+              className="text-white/70 hover:text-white text-sm font-medium flex items-center gap-2 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Volver al Curso
+            </Link>
           </div>
         </header>
-        <div className="max-w-2xl mx-auto px-6 py-12">
-          <div className="bg-background rounded-2xl shadow-lg shadow-black/30 p-8">
-            <h1 className="text-2xl font-bold text-white mb-6">Examen Final</h1>
+
+        <div className="max-w-2xl mx-auto px-4 md:px-6 py-8 md:py-12">
+          <div className="bg-[#2A2A2A] rounded-2xl p-6 md:p-8 border border-white/10">
+            {/* Icon */}
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#7EC8E3]/10 border-2 border-[#7EC8E3]/30 mb-4">
+                <svg className="w-8 h-8 text-[#7EC8E3]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 11l3 3L22 4" />
+                  <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+                </svg>
+              </div>
+              <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Examen Final</h1>
+              <p className="text-white/60">Demuestre lo que ha aprendido para obtener su certificado</p>
+            </div>
+
+            {/* Resume Alert */}
             {hasResumable && (
-              <div className="bg-[#FFB347]/10 border border-[#FFB347]/30 rounded-lg p-4 mb-6">
-                <p className="font-semibold text-[#FFB347] mb-2">Examen en progreso</p>
-                <div className="flex gap-3">
-                  <button onClick={resume} className="bg-[#FFB347] text-white px-4 py-2 rounded-lg hover:bg-[#FFA337]">Continuar</button>
-                  <button onClick={start} className="bg-white/20 text-white px-4 py-2 rounded-lg hover:bg-white/30">Empezar de Nuevo</button>
+              <div className="bg-[#FFB347]/10 border border-[#FFB347]/30 rounded-xl p-4 mb-6">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-[#FFB347]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-[#FFB347]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-[#FFB347] mb-2">Tiene un examen en progreso</p>
+                    <div className="flex flex-wrap gap-2">
+                      <button 
+                        onClick={resume} 
+                        className="bg-[#FFB347] text-[#1C1C1C] px-4 py-2 rounded-lg font-semibold hover:bg-[#FFC05C] transition-colors"
+                      >
+                        Continuar
+                      </button>
+                      <button 
+                        onClick={start} 
+                        className="bg-white/10 text-white px-4 py-2 rounded-lg font-semibold hover:bg-white/20 transition-colors"
+                      >
+                        Empezar de Nuevo
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
-            <ul className="space-y-2 text-white/70 mb-8">
-              <li>• {QUESTIONS_PER_EXAM} preguntas</li>
-              <li>• Necesita 70% ({PASS_SCORE} correctas)</li>
-              <li>• Progreso guardado automáticamente</li>
-            </ul>
-            {!hasResumable && <button onClick={start} className="w-full bg-[#7EC8E3] text-white py-4 rounded-lg font-bold hover:bg-[#6BB8D3] text-lg">Comenzar Examen</button>}
+
+            {/* Exam Info */}
+            <div className="bg-[#1C1C1C] rounded-xl p-5 mb-6">
+              <h3 className="font-semibold text-white mb-4">Detalles del Examen</h3>
+              <ul className="space-y-3">
+                <li className="flex items-center gap-3 text-white/70">
+                  <div className="w-8 h-8 bg-[#7EC8E3]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-[#7EC8E3] font-bold text-sm">{QUESTIONS_PER_EXAM}</span>
+                  </div>
+                  <span>Preguntas de opción múltiple</span>
+                </li>
+                <li className="flex items-center gap-3 text-white/70">
+                  <div className="w-8 h-8 bg-[#77DD77]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-[#77DD77] font-bold text-sm">70%</span>
+                  </div>
+                  <span>Puntuación mínima para aprobar ({PASS_SCORE} correctas)</span>
+                </li>
+                <li className="flex items-center gap-3 text-white/70">
+                  <div className="w-8 h-8 bg-[#FFB347]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-[#FFB347]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                  </div>
+                  <span>Puede retomar el examen sin límite</span>
+                </li>
+                <li className="flex items-center gap-3 text-white/70">
+                  <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                    </svg>
+                  </div>
+                  <span>Su progreso se guarda automáticamente</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Start Button */}
+            {!hasResumable && (
+              <button 
+                onClick={start} 
+                className="w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold text-lg hover:bg-[#9DD8F3] transition-all hover:shadow-lg hover:shadow-[#7EC8E3]/25 flex items-center justify-center gap-2"
+              >
+                Comenzar Examen
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
       </main>
     );
   }
 
+  // ============================================
+  // EXAM SCREEN
+  // ============================================
   const q = questions[currentIndex];
   if (!q) return null;
 
+  const progressPercent = ((currentIndex + 1) / QUESTIONS_PER_EXAM) * 100;
+
   return (
     <main className="min-h-screen bg-background">
-      <div className="bg-background border-b">
-        <div className="max-w-4xl mx-auto px-6 py-4">
-          <div className="flex justify-between text-sm text-white/70 mb-2">
-            <span>Pregunta {currentIndex + 1} de {QUESTIONS_PER_EXAM}</span>
-            <span>{correctCount} correctas</span>
+      {/* Progress Header */}
+      <header className="bg-[#2A2A2A] border-b border-white/10 sticky top-0 z-10">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 py-4">
+          <div className="flex justify-between items-center text-sm mb-3">
+            <span className="text-white font-medium">
+              Pregunta {currentIndex + 1} de {QUESTIONS_PER_EXAM}
+            </span>
+            <span className="text-[#77DD77] font-medium">
+              {correctCount} correcta{correctCount !== 1 ? 's' : ''}
+            </span>
           </div>
-          <div className="w-full bg-white/20 rounded-full h-2">
-            <div className="bg-[#7EC8E3] h-2 rounded-full transition-all duration-300" style={{ width: `${((currentIndex + 1) / QUESTIONS_PER_EXAM) * 100}%` }}></div>
+          <div className="w-full bg-[#1C1C1C] rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-[#7EC8E3] to-[#7EC8E3] h-2 rounded-full transition-all duration-500"
+              style={{ 
+                width: `${progressPercent}%`,
+                boxShadow: '0 0 12px rgba(126, 200, 227, 0.4)'
+              }}
+            />
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-2xl mx-auto px-6 py-8">
-        <div className="bg-background rounded-2xl shadow-lg shadow-black/30 p-8" key={currentIndex}>
-          <h2 className="text-lg font-semibold text-white mb-6">{q.question_text}</h2>
+      {/* Question Card */}
+      <div className="max-w-2xl mx-auto px-4 md:px-6 py-6 md:py-8">
+        <div className="bg-[#2A2A2A] rounded-2xl p-6 md:p-8 border border-white/10" key={currentIndex}>
+          {/* Question Text */}
+          <h2 className="text-lg md:text-xl font-semibold text-white mb-6 leading-relaxed">
+            {q.question_text}
+          </h2>
+          
+          {/* Answer Options */}
           <div className="space-y-3 mb-6">
             {q.shuffledAnswers.map((ans) => {
-              const isSel = selectedAnswer === ans.label;
-              const showR = submitted && isSel && !isCorrect;
+              const isSelected = selectedAnswer === ans.label;
+              const showWrong = submitted && isSelected && !isCorrect;
+              const showCorrect = submitted && isCorrect && isSelected;
+              
               return (
                 <button 
                   key={`q${currentIndex}-${ans.label}`} 
                   onClick={() => !submitted && setSelectedAnswer(ans.label)} 
                   disabled={submitted}
-                  className={`w-full p-4 rounded-lg border-2 text-left text-white transition-colors ${showR ? 'border-[#FF9999]/100 bg-[#FF9999]/10' : isSel ? 'border-[#7EC8E3] bg-[#7EC8E3]/10' : 'border-[#FFFFFF]/15 hover:border-[#FFFFFF]/20'} ${submitted ? 'cursor-default' : 'cursor-pointer'}`}
+                  className={`
+                    w-full p-4 rounded-xl border-2 text-left transition-all
+                    ${showWrong 
+                      ? 'border-[#FF9999] bg-[#FF9999]/10' 
+                      : showCorrect
+                        ? 'border-[#77DD77] bg-[#77DD77]/10'
+                        : isSelected 
+                          ? 'border-[#7EC8E3] bg-[#7EC8E3]/10' 
+                          : 'border-white/10 hover:border-white/20 bg-[#1C1C1C]'
+                    }
+                    ${submitted ? 'cursor-default' : 'cursor-pointer'}
+                  `}
                 >
-                  <span className="font-semibold mr-2">{ans.label}.</span>{ans.text}
+                  <div className="flex items-start gap-3">
+                    <span className={`
+                      w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0
+                      ${showWrong 
+                        ? 'bg-[#FF9999] text-[#1C1C1C]' 
+                        : showCorrect
+                          ? 'bg-[#77DD77] text-[#1C1C1C]'
+                          : isSelected 
+                            ? 'bg-[#7EC8E3] text-[#1C1C1C]' 
+                            : 'bg-white/10 text-white/60'
+                      }
+                    `}>
+                      {ans.label}
+                    </span>
+                    <span className={`pt-1 ${isSelected || submitted ? 'text-white' : 'text-white/80'}`}>
+                      {ans.text}
+                    </span>
+                  </div>
                 </button>
               );
             })}
           </div>
+
+          {/* Feedback Messages */}
           {submitted && !isCorrect && (
-            <div className="bg-[#FF9999]/10 border border-[#FF9999]/30 rounded-lg p-4 mb-6">
-              <p className="font-semibold text-[#FF9999] mb-2">Incorrecto</p>
-              <p className="text-[#FF9999] text-sm"><strong>Revise:</strong> {wrongRed ? cleanRedirect(wrongRed) : 'el material del curso'}</p>
+            <div className="bg-[#FF9999]/10 border border-[#FF9999]/30 rounded-xl p-4 mb-6">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-[#FF9999]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-[#FF9999]" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-semibold text-[#FF9999] mb-1">Respuesta Incorrecta</p>
+                  <p className="text-[#FF9999]/80 text-sm">
+                    Le recomendamos revisar: <strong>{wrongRed ? cleanRedirect(wrongRed) : 'el material del curso'}</strong>
+                  </p>
+                </div>
+              </div>
             </div>
           )}
+          
           {submitted && isCorrect && (
-            <div className="bg-[#77DD77]/10 border border-[#77DD77]/30 rounded-lg p-4 mb-6">
-              <p className="font-semibold text-[#77DD77]">¡Correcto!</p>
+            <div className="bg-[#77DD77]/10 border border-[#77DD77]/30 rounded-xl p-4 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-[#77DD77] rounded-full flex items-center justify-center">
+                  <svg className="w-4 h-4 text-[#1C1C1C]" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <p className="font-semibold text-[#77DD77]">¡Correcto!</p>
+              </div>
             </div>
           )}
+
+          {/* Action Button */}
           {!submitted ? (
-            <button onClick={handleSubmit} disabled={!selectedAnswer} className="w-full bg-[#7EC8E3] text-white py-3 rounded-lg font-bold hover:bg-[#6BB8D3] disabled:opacity-50 transition-colors">Confirmar</button>
+            <button 
+              onClick={handleSubmit} 
+              disabled={!selectedAnswer} 
+              className="w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold text-lg hover:bg-[#9DD8F3] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              Confirmar Respuesta
+            </button>
           ) : (
-            <button onClick={handleNext} className="w-full bg-[#7EC8E3] text-white py-3 rounded-lg font-bold hover:bg-[#6BB8D3] transition-colors">{currentIndex < questions.length - 1 ? 'Siguiente Pregunta' : 'Ver Resultados'}</button>
+            <button 
+              onClick={handleNext} 
+              className="w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold text-lg hover:bg-[#9DD8F3] transition-all flex items-center justify-center gap-2"
+            >
+              {currentIndex < questions.length - 1 ? (
+                <>
+                  Siguiente Pregunta
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </>
+              ) : (
+                'Ver Resultados'
+              )}
+            </button>
           )}
         </div>
       </div>

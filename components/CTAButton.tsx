@@ -91,9 +91,10 @@ export default function CTAButton({ href, children, className = '', showArrow = 
   return (
     <div className="relative inline-block">
       {/* Hand-drawn arrow - positioned upper-right of button, original orientation */}
+      {/* Fixed: moved 40px left on mobile (-right-14 → -right-4) for Safari iOS */}
       {showArrow && (
         <div 
-          className="absolute -top-[66px] -right-14 md:-top-[74px] md:-right-20 w-12 h-20 md:w-16 md:h-28 pointer-events-none z-10"
+          className="absolute -top-[80px] -right-[26px] -rotate-[22.5deg] md:-top-[74px] md:-right-20 md:rotate-0 w-12 h-20 md:w-16 md:h-28 pointer-events-none z-10"
           aria-hidden="true"
         >
           <svg 

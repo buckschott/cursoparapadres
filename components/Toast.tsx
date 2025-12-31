@@ -57,6 +57,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 // TOAST CONTAINER
 // ============================================
 
+/**
+ * Toast container - positioned above header and modals.
+ * 
+ * Z-index: 450 (between modal at 400 and checkout overlay at 500)
+ * This ensures toasts appear above modals but below the checkout overlay.
+ */
 function ToastContainer({ 
   toasts, 
   onDismiss 
@@ -68,7 +74,7 @@ function ToastContainer({
 
   return (
     <div 
-      className="fixed top-[85px] left-0 right-0 z-[300] flex flex-col items-center gap-3 px-4 pointer-events-none"
+      className="fixed top-[85px] left-0 right-0 z-[450] flex flex-col items-center gap-3 px-4 pointer-events-none"
       role="region"
       aria-label="Notificaciones"
     >
@@ -210,6 +216,7 @@ function ErrorIcon() {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+      aria-hidden="true"
     >
       <path d="M12 3c.2 0 .5.1.6.3l8.5 14.8c.3.5-.1 1.1-.6 1.1H3.5c-.5 0-.9-.6-.6-1.1l8.5-14.8c.1-.2.4-.3.6-.3z" />
       <path d="M12 8.5v4" strokeWidth="2.5" />
@@ -228,6 +235,7 @@ function SuccessIcon() {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+      aria-hidden="true"
     >
       <circle cx="12" cy="12" r="9" />
       <path d="M8 12.5l2.5 2.5 5-5" />
@@ -245,6 +253,7 @@ function InfoIcon() {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+      aria-hidden="true"
     >
       <circle cx="12" cy="12" r="9" />
       <path d="M12 8v0" strokeWidth="3" />

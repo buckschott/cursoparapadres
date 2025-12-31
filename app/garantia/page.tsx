@@ -1,60 +1,89 @@
 'use client';
 
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+
+/**
+ * Garantía (Guarantee) Page
+ * 
+ * Explains the 100% Court Acceptance Guarantee.
+ * CTA is in the universal Footer.
+ */
 export default function Garantia() {
   return (
-    <main className="min-h-screen bg-background">
-      <header className="border-b border-[#FFFFFF]/10 bg-background sticky top-0 z-[110]">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 flex items-center justify-between">
-          <a href="/" className="header-title text-lg font-semibold text-white tracking-tight font-brand">
-            Putting Kids First <sup className="text-xs">®</sup>
-          </a>
-          <a href="/#precios" className="bg-[#77DD77] text-[#1C1C1C] px-3 md:px-6 py-2 rounded-full hover:bg-[#88EE88] transition-colors font-semibold text-[10px] md:text-sm whitespace-nowrap">
-            Obtener Mi Certificado
-          </a>
-        </div>
-      </header>
-
-      <section className="bg-background py-16 md:py-24 border-b border-[#FFFFFF]/10">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-6">
-            Garantía de Aceptación del 100%
-          </h1>
-          <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto">
-            Si su corte no acepta su certificado, recibe un reembolso completo.
-          </p>
-        </div>
-      </section>
-
-      <section className="section-divider py-16 bg-background">
-        <div className="max-w-3xl mx-auto px-6">
-          <p className="text-white text-lg leading-relaxed mb-12">
-            Respaldamos nuestro certificado. En más de 30 años, cortes en todo el país han aceptado los certificados de <span className="font-brand">Putting Kids First®</span>.
-          </p>
-          <div className="bg-background rounded-xl p-8 border border-[#FFFFFF]/15">
-            <h2 className="text-2xl font-bold text-white mb-4">Cómo Funciona</h2>
-            <p className="text-white/70 text-lg">
-              Envíe documentación oficial de su corte mostrando la no aceptación. Procesaremos su reembolso completo. Sin complicaciones. Sin rodeos.
+    <>
+      <Header />
+      
+      <main className="min-h-screen bg-background">
+        {/* Hero Section */}
+        <section className="bg-background py-16 md:py-24 border-b border-[#FFFFFF]/10">
+          <div className="max-w-4xl mx-auto px-6 text-center">
+            <h1 className="text-3xl md:text-5xl font-bold text-white mb-6">
+              Garantía de Aceptación del 100%
+            </h1>
+            <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto">
+              Si su corte no acepta su certificado, recibe un reembolso completo.
             </p>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="section-divider py-16 bg-background">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <a href="/#precios" className="inline-block bg-[#77DD77] text-[#1C1C1C] px-8 py-4 rounded-xl font-bold hover:bg-[#88EE88] transition-all text-lg">
-            Obtener Mi Certificado
-          </a>
-        </div>
-      </section>
+        {/* Main Content */}
+        <section className="border-t border-[#FFFFFF]/10 py-16 bg-background">
+          <div className="max-w-3xl mx-auto px-6">
+            <p className="text-white text-lg leading-relaxed mb-12">
+              Respaldamos nuestro certificado. En más de 30 años, cortes en todo el país han aceptado los certificados de{' '}
+              <span className="font-brand">Putting Kids First®</span>.
+            </p>
+            
+            {/* How It Works Card */}
+            <div className="bg-background rounded-xl p-8 border border-[#FFFFFF]/15 mb-8">
+              <h2 className="text-2xl font-bold text-white mb-4">Cómo Funciona</h2>
+              <p className="text-white/70 text-lg leading-relaxed">
+                Envíe documentación oficial de su corte mostrando la no aceptación. 
+                Procesaremos su reembolso completo. Sin complicaciones. Sin rodeos.
+              </p>
+            </div>
 
-      <footer className="section-divider border-t border-[#FFFFFF]/10 bg-background">
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <div className="text-center text-xs text-white/70">
-            <p>© 2025 <span className="font-brand">Putting Kids First ®</span>. Todos los derechos reservados.</p>
-            <p className="mt-2">info@cursoparapadres.org • 888-777-2298</p>
+            {/* Steps */}
+            <div className="space-y-6">
+              <h3 className="text-xl font-bold text-white">Proceso de Reembolso</h3>
+              <ol className="space-y-4">
+                {[
+                  'Complete el curso y reciba su certificado',
+                  'Presente el certificado a su corte',
+                  'Si la corte no lo acepta, contáctenos con la documentación oficial',
+                  'Reciba su reembolso completo en 5-7 días hábiles'
+                ].map((step, index) => (
+                  <li key={index} className="flex items-start gap-4">
+                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-[#77DD77]/20 text-[#77DD77] flex items-center justify-center font-bold text-sm">
+                      {index + 1}
+                    </span>
+                    <span className="text-white/70 text-lg pt-1">{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
-        </div>
-      </footer>
-    </main>
+        </section>
+
+        {/* Trust Indicators */}
+        <section className="border-t border-[#FFFFFF]/10 py-16 bg-background">
+          <div className="max-w-4xl mx-auto px-6">
+            <div className="grid md:grid-cols-2 gap-8 text-center max-w-2xl mx-auto">
+              <div className="p-6">
+                <div className="text-4xl font-bold text-[#77DD77] mb-2">30+</div>
+                <div className="text-white/70">Años de Experiencia</div>
+              </div>
+              <div className="p-6">
+                <div className="text-4xl font-bold text-[#FFE566] mb-2">100%</div>
+                <div className="text-white/70">Garantía de Reembolso</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <Footer />
+    </>
   );
 }

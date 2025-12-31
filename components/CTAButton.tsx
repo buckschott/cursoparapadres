@@ -10,71 +10,110 @@ interface CTAButtonProps {
   showArrow?: boolean;
 }
 
+/**
+ * Primary CTA Button with hand-drawn arrow and chalk dust effect.
+ * 
+ * Features:
+ * - Animated hand-drawn arrow that loops
+ * - Chalk dust particle burst on hover
+ * - Respects reduced motion preferences
+ * - Disabled on touch devices (no hover state)
+ */
 export default function CTAButton({ href, children, className = '', showArrow = false }: CTAButtonProps) {
   const [isVisible, setIsVisible] = useState(false);
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; angle: number; speed: number; size: number }>>([]);
+  const [particles, setParticles] = useState<Array<{ 
+    id: number; 
+    x: number; 
+    y: number; 
+    angle: number; 
+    speed: number; 
+    size: number;
+  }>>([]);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const buttonRef = useRef<HTMLAnchorElement>(null);
 
-  // Trigger arrow animation on mount - uses constant for delay
+  // Detect touch device and motion preferences on mount
   useEffect(() => {
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    setPrefersReducedMotion(
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    );
+  }, []);
+
+  // Trigger arrow animation after delay
+  useEffect(() => {
+    // If reduced motion, show arrow immediately without animation
+    if (prefersReducedMotion) {
+      setIsVisible(true);
+      return;
+    }
+
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, ANIMATION.CTA_ARROW_DELAY);
+    
     return () => clearTimeout(timer);
-  }, []);
+  }, [prefersReducedMotion]);
 
-  // Chalk dust particle burst on hover - from all edges
+  // Chalk dust particle burst on hover
   const handleMouseEnter = () => {
+    // Skip particles on touch devices (they use tap, not hover)
+    if (isTouchDevice) return;
+    
+    // Skip if user prefers reduced motion
+    if (prefersReducedMotion) return;
+
     const rect = buttonRef.current?.getBoundingClientRect();
     if (!rect) return;
 
     const width = rect.width;
     const height = rect.height;
-    const newParticles: Array<{ id: number; x: number; y: number; angle: number; speed: number; size: number }> = [];
+    const newParticles: typeof particles = [];
 
-    // Top edge particles
+    // Top edge particles (6)
     for (let i = 0; i < 6; i++) {
       newParticles.push({
         id: Date.now() + i,
         x: (width * (i + 0.5)) / 6,
         y: 0,
-        angle: -Math.PI / 2 + (Math.random() - 0.5) * 0.8, // Upward
+        angle: -Math.PI / 2 + (Math.random() - 0.5) * 0.8,
         speed: 1.5 + Math.random() * 2,
         size: 2 + Math.random() * 3,
       });
     }
 
-    // Bottom edge particles
+    // Bottom edge particles (6)
     for (let i = 0; i < 6; i++) {
       newParticles.push({
         id: Date.now() + 10 + i,
         x: (width * (i + 0.5)) / 6,
         y: height,
-        angle: Math.PI / 2 + (Math.random() - 0.5) * 0.8, // Downward
+        angle: Math.PI / 2 + (Math.random() - 0.5) * 0.8,
         speed: 1.5 + Math.random() * 2,
         size: 2 + Math.random() * 3,
       });
     }
 
-    // Left edge particles
+    // Left edge particles (3)
     for (let i = 0; i < 3; i++) {
       newParticles.push({
         id: Date.now() + 20 + i,
         x: 0,
         y: (height * (i + 0.5)) / 3,
-        angle: Math.PI + (Math.random() - 0.5) * 0.8, // Leftward
+        angle: Math.PI + (Math.random() - 0.5) * 0.8,
         speed: 1.5 + Math.random() * 2,
         size: 2 + Math.random() * 3,
       });
     }
 
-    // Right edge particles
+    // Right edge particles (3)
     for (let i = 0; i < 3; i++) {
       newParticles.push({
         id: Date.now() + 30 + i,
         x: width,
         y: (height * (i + 0.5)) / 3,
-        angle: 0 + (Math.random() - 0.5) * 0.8, // Rightward
+        angle: 0 + (Math.random() - 0.5) * 0.8,
         speed: 1.5 + Math.random() * 2,
         size: 2 + Math.random() * 3,
       });
@@ -82,7 +121,7 @@ export default function CTAButton({ href, children, className = '', showArrow = 
 
     setParticles(newParticles);
 
-    // Clean up particles after animation - uses constant
+    // Clean up particles after animation
     setTimeout(() => {
       setParticles([]);
     }, ANIMATION.PARTICLE_CLEANUP);
@@ -90,11 +129,10 @@ export default function CTAButton({ href, children, className = '', showArrow = 
 
   return (
     <div className="relative inline-block">
-      {/* Hand-drawn arrow - positioned upper-right of button, original orientation */}
-      {/* Fixed: moved 40px left on mobile (-right-14 → -right-4) for Safari iOS */}
+      {/* Hand-drawn arrow - positioned upper-right of button */}
       {showArrow && (
         <div 
-          className="absolute -top-[80px] -right-[26px] -rotate-[22.5deg] md:-top-[74px] md:-right-20 md:rotate-0 w-12 h-20 md:w-16 md:h-28 pointer-events-none z-10"
+          className="absolute -top-[80px] -right-[56px] -rotate-[22.5deg] md:-top-[74px] md:-right-20 md:rotate-0 w-12 h-20 md:w-16 md:h-28 pointer-events-none z-10"
           aria-hidden="true"
         >
           <svg 
@@ -150,6 +188,7 @@ export default function CTAButton({ href, children, className = '', showArrow = 
               '--angle': `${particle.angle}rad`,
               '--speed': particle.speed,
             } as React.CSSProperties}
+            aria-hidden="true"
           />
         ))}
       </a>

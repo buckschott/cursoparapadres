@@ -348,6 +348,12 @@ export default function CompleteProfilePage() {
       return;
     }
 
+    // Update certificate with participant name
+    await supabase
+      .from('certificates')
+      .update({ participant_name: formData.legal_name })
+      .eq('user_id', user.id);
+
     // Redirect to certificate
     const { data: certs } = await supabase
       .from('certificates')
@@ -391,9 +397,12 @@ export default function CompleteProfilePage() {
       {/* Header */}
       <header className="bg-background border-b border-white/10">
         <div className="max-w-4xl mx-auto px-4 md:px-6 py-4">
-          <Link href="/" className="text-white font-semibold font-brand">
-            Putting Kids First<sup className="text-[8px] relative -top-2">®</sup>
-          </Link>
+          <Link href="/" className="flex items-center gap-2">
+            <img src="/logo.svg" alt="" className="h-7 w-auto" aria-hidden="true" />
+            <span className="text-white font-semibold font-brand">
+             Putting Kids First<sup className="text-[8px] relative -top-2">®</sup>
+           </span>
+         </Link>
         </div>
       </header>
 
@@ -406,7 +415,7 @@ export default function CompleteProfilePage() {
             </svg>
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
-            ¡Felicidades! Ha Aprobado el Examen
+            ¡Felicidades!<br />Ha Aprobado el Examen
           </h1>
           <p className="text-white/70">
             Complete la información a continuación para generar su certificado oficial.
@@ -416,7 +425,7 @@ export default function CompleteProfilePage() {
         {/* Form Card */}
         <div className="bg-[#2A2A2A] rounded-2xl p-6 md:p-8 border border-white/10">
           <div className="mb-6">
-            <h2 className="text-xl font-bold text-white mb-2">Información del Certificado</h2>
+            <h2 className="text-lg font-bold text-white mb-2">Información del Certificado</h2>
             <p className="text-white/60 text-sm">
               Esta información aparecerá en su certificado oficial aceptado por la corte.
             </p>
@@ -439,7 +448,7 @@ export default function CompleteProfilePage() {
                 type="text"
                 value={formData.legal_name}
                 onChange={(e) => setFormData({...formData, legal_name: e.target.value})}
-                className="w-full px-4 py-3 bg-[#1C1C1C] border border-white/20 rounded-xl text-white placeholder-white/40 focus:border-[#7EC8E3] focus:ring-1 focus:ring-[#7EC8E3] transition-colors"
+                className="w-full px-4 py-3 bg-[#1C1C1C] border border-white/20 rounded-xl text-white text-sm focus:border-[#7EC8E3] focus:ring-1 focus:ring-[#7EC8E3] transition-colors"
                 placeholder="Nombre exacto como aparece en documentos legales"
                 required
               />
@@ -458,7 +467,7 @@ export default function CompleteProfilePage() {
                 onChange={(e) => setFormData({...formData, court_state: e.target.value})}
                 className="w-full px-4 py-3 bg-[#1C1C1C] border border-white/20 rounded-xl text-white focus:border-[#7EC8E3] focus:ring-1 focus:ring-[#7EC8E3] transition-colors"
               >
-                <option value="">Seleccionar Estado (Opcional)</option>
+                <option value="">Seleccionar Estado</option>
                 {US_STATES.map((state) => (
                   <option key={state} value={state}>{state}</option>
                 ))}
@@ -495,7 +504,7 @@ export default function CompleteProfilePage() {
 
             {/* Attorney Section */}
             <div className="border-t border-white/10 pt-6">
-              <h3 className="text-white font-semibold mb-4">
+              <h3 className="text-white font-semibold mb-4 text-sm">
                 Información del Abogado <span className="text-white/50 font-normal">(Opcional)</span>
               </h3>
 

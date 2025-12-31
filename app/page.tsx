@@ -60,7 +60,7 @@ export default function Home() {
     }
   };
 
-  // Safe checkout handler with env var validation
+  // Safe checkout handlers with env var validation
   const handleCoparentingCheckout = () => {
     const priceId = process.env.NEXT_PUBLIC_PRICE_COPARENTING;
     if (!priceId) {
@@ -72,6 +72,32 @@ export default function Home() {
       return;
     }
     handleCheckout(priceId, 'coparenting');
+  };
+
+  const handleParentingCheckout = () => {
+    const priceId = process.env.NEXT_PUBLIC_PRICE_PARENTING;
+    if (!priceId) {
+      showToast(
+        'error',
+        'Error de configuración',
+        'Por favor, contáctenos para completar su inscripción.'
+      );
+      return;
+    }
+    handleCheckout(priceId, 'parenting');
+  };
+
+  const handleBundleCheckout = () => {
+    const priceId = process.env.NEXT_PUBLIC_PRICE_BUNDLE;
+    if (!priceId) {
+      showToast(
+        'error',
+        'Error de configuración',
+        'Por favor, contáctenos para completar su inscripción.'
+      );
+      return;
+    }
+    handleCheckout(priceId, 'bundle');
   };
 
   return (
@@ -243,10 +269,11 @@ export default function Home() {
                     ))}
                   </ul>
                 </div>
+                
                 <button 
                   onClick={handleCoparentingCheckout}
                   disabled={loading === 'coparenting'}
-                  className="w-full bg-[#7EC8E3] text-white py-4 rounded-xl font-bold md:hover:bg-[#6BB8D3] transition-all md:hover:shadow-xl shadow-black/40 mb-6 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                  className="group w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold transition-all duration-200 hover:bg-[#9DD8F3] hover:shadow-lg hover:shadow-[#7EC8E3]/30 active:scale-[0.98] active:bg-[#9DD8F3] mb-6 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {loading === 'coparenting' ? (
                     <>
@@ -254,9 +281,21 @@ export default function Home() {
                       <span>Conectando...</span>
                     </>
                   ) : (
-                    'Inscríbase Ahora'
+                    <>
+                      <span>Inscríbase Ahora</span>
+                      <svg 
+                        className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1 group-active:translate-x-1" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </>
                   )}
                 </button>
+                
                 <div className="mb-6 pt-4 border-t border-[#FFFFFF]/15">
                   <h4 className="text-xs font-semibold text-white mb-2">Incluye:</h4>
                   <ul className="space-y-2">
@@ -276,17 +315,14 @@ export default function Home() {
                 </div>
               </article>
 
-              {/* Parenting Class - Coming Soon */}
-              <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/15 p-8 opacity-75">
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-[#FFB347] text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg shadow-black/30">PRÓXIMAMENTE</span>
-                </div>
-                <div className="mb-6 mt-6">
+              {/* Parenting Class - Active */}
+              <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/20 p-8 transition-all md:hover:shadow-2xl shadow-black/50 md:hover:border-[#FFFFFF]/50">
+                <div className="mb-6">
                   <h3 className="text-2xl font-bold text-white mb-1">Clase de Crianza</h3>
                   <p className="text-sm text-white/70">Para Habilidades Fundamentales y Estabilidad del Hogar</p>
                 </div>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-white/70">$60</span>
+                  <span className="text-5xl font-bold text-white">$60</span>
                   <p className="text-sm text-white/60 mt-2">Pago único</p>
                 </div>
                 <div className="mb-6">
@@ -294,19 +330,45 @@ export default function Home() {
                   <ul className="space-y-2">
                     {["Demostrar crianza positiva en la corte", "Crear un hogar estable y nutritivo", "Desarrollar autoestima infantil y disciplina positiva", "Procedimientos de adopción o cuidado temporal"].map((item, i) => (
                       <li key={i} className="flex items-start gap-3">
-                        <CheckIcon className="w-5 h-5 mt-0.5 flex-shrink-0 text-white/70" />
-                        <span className="text-white/60 text-sm">{item}</span>
+                        <CheckIcon className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#7EC8E3]" />
+                        <span className="text-white text-sm">{item}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-                <button disabled className="w-full bg-[#333333] text-white/70 py-4 rounded-xl font-bold cursor-not-allowed mb-6">Próximamente</button>
+                
+                <button 
+                  onClick={handleParentingCheckout}
+                  disabled={loading === 'parenting'}
+                  className="group w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold transition-all duration-200 hover:bg-[#9DD8F3] hover:shadow-lg hover:shadow-[#7EC8E3]/30 active:scale-[0.98] active:bg-[#9DD8F3] mb-6 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {loading === 'parenting' ? (
+                    <>
+                      <LoadingSpinner />
+                      <span>Conectando...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Inscríbase Ahora</span>
+                      <svg 
+                        className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1 group-active:translate-x-1" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </>
+                  )}
+                </button>
+                
                 <div className="mb-6 pt-4 border-t border-[#FFFFFF]/15">
                   <h4 className="text-xs font-semibold text-white mb-2">Incluye:</h4>
                   <ul className="space-y-2">
                     {["Garantía de Aceptación del 100%", "El Curso Original en Línea (Desde 1993)", "100% en Línea y a Su Ritmo", "Certificado Instantáneo con Código de Verificación Judicial"].map((item, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <CheckIcon className="w-4 h-4 mt-0.5 flex-shrink-0 text-white/70" />
+                        <CheckIcon className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#77DD77]" />
                         <span className="text-white/70 text-xs">{item}</span>
                       </li>
                     ))}
@@ -321,18 +383,15 @@ export default function Home() {
               </article>
             </div>
 
-            {/* Bundle - Coming Soon */}
+            {/* Bundle - Active */}
             <div className="max-w-4xl mx-auto mt-16 mb-14">
-              <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/15 p-8 opacity-75">
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-[#FFB347] text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg shadow-black/30">PRÓXIMAMENTE</span>
-                </div>
-                <div className="mb-6 mt-6">
+              <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/20 p-8 transition-all md:hover:shadow-2xl shadow-black/50 md:hover:border-[#FFFFFF]/50">
+                <div className="mb-6">
                   <h3 className="text-2xl font-bold text-white mb-1">El Paquete Completo</h3>
                   <p className="text-sm text-white/70">Demuestre Su Compromiso Total</p>
                 </div>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-white/70">$80</span>
+                  <span className="text-5xl font-bold text-white">$80</span>
                   <p className="text-sm text-white/60 mt-2">Pago único • Ahorre $40</p>
                 </div>
                 <div className="mb-6">
@@ -340,13 +399,38 @@ export default function Home() {
                   <ul className="space-y-2">
                     {["Clase de Coparentalidad (Para Divorcio y Custodia)", "Clase de Habilidades de Crianza (Para Habilidades Fundamentales y Estabilidad del Hogar)", "Cumple con requisitos combinados o de nivel superior", "Garantía de Aceptación del 100%"].map((item, i) => (
                       <li key={i} className="flex items-start gap-3">
-                        <CheckIcon className="w-5 h-5 mt-0.5 flex-shrink-0 text-white/70" />
-                        <span className="text-white/60 text-sm">{item}</span>
+                        <CheckIcon className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#7EC8E3]" />
+                        <span className="text-white text-sm">{item}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-                <button disabled className="w-full bg-[#333333] text-white/70 py-4 rounded-xl font-bold cursor-not-allowed">Próximamente</button>
+                
+                <button 
+                  onClick={handleBundleCheckout}
+                  disabled={loading === 'bundle'}
+                  className="group w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold transition-all duration-200 hover:bg-[#9DD8F3] hover:shadow-lg hover:shadow-[#7EC8E3]/30 active:scale-[0.98] active:bg-[#9DD8F3] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {loading === 'bundle' ? (
+                    <>
+                      <LoadingSpinner />
+                      <span>Conectando...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Inscríbase Ahora</span>
+                      <svg 
+                        className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1 group-active:translate-x-1" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </>
+                  )}
+                </button>
               </article>
             </div>
 

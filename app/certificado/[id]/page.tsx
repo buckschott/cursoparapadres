@@ -91,7 +91,7 @@ export default function CertificatePage() {
   };
 
   const handleDownload = () => {
-    window.location.href = `/api/certificate/${certId}`;
+  window.open(`/api/certificate/${certId}`, '_blank');
   };
 
   if (loading) {

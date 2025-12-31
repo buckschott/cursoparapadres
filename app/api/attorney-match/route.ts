@@ -1,168 +1,279 @@
-// /app/api/attorney-match/route.ts
-// Updated to set needs_review = true when creating new attorneys
-
-import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+import { Resend } from 'resend';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-// Levenshtein distance for fuzzy matching
-function levenshteinDistance(a: string, b: string): number {
-  const matrix: number[][] = [];
-  const aLower = a.toLowerCase();
-  const bLower = b.toLowerCase();
-
-  for (let i = 0; i <= bLower.length; i++) {
-    matrix[i] = [i];
-  }
-  for (let j = 0; j <= aLower.length; j++) {
-    matrix[0][j] = j;
-  }
-
-  for (let i = 1; i <= bLower.length; i++) {
-    for (let j = 1; j <= aLower.length; j++) {
-      if (bLower.charAt(i - 1) === aLower.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1];
-      } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j] + 1
-        );
-      }
-    }
-  }
-  return matrix[bLower.length][aLower.length];
-}
-
-function calculateSimilarity(a: string, b: string): number {
-  const maxLength = Math.max(a.length, b.length);
-  if (maxLength === 0) return 1;
-  const distance = levenshteinDistance(a, b);
-  return 1 - distance / maxLength;
-}
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { attorneyName, attorneyEmail } = body;
+    const { certificateId } = await request.json();
 
-    if (!attorneyName && !attorneyEmail) {
-      return NextResponse.json(
-        { error: 'Attorney name or email required' },
-        { status: 400 }
-      );
+    if (!certificateId) {
+      return NextResponse.json({ error: 'Certificate ID required' }, { status: 400 });
     }
 
-    // Try to find existing attorney
-    let matchedAttorney = null;
-    let matchType = 'none';
-
-    // First, try exact email match (most reliable)
-    if (attorneyEmail) {
-      const { data: emailMatch } = await supabase
-        .from('attorneys')
-        .select('*')
-        .ilike('email', attorneyEmail)
-        .single();
-
-      if (emailMatch) {
-        matchedAttorney = emailMatch;
-        matchType = 'email';
-      }
-    }
-
-    // If no email match, try fuzzy name matching
-    if (!matchedAttorney && attorneyName) {
-      const { data: allAttorneys } = await supabase
-        .from('attorneys')
-        .select('*');
-
-      if (allAttorneys) {
-        let bestMatch = null;
-        let bestSimilarity = 0;
-
-        for (const attorney of allAttorneys) {
-          const similarity = calculateSimilarity(attorneyName, attorney.name);
-          if (similarity > bestSimilarity && similarity >= 0.8) {
-            bestMatch = attorney;
-            bestSimilarity = similarity;
-          }
-        }
-
-        if (bestMatch) {
-          matchedAttorney = bestMatch;
-          matchType = 'fuzzy';
-        }
-      }
-    }
-
-    // If match found, increment referral counts
-    if (matchedAttorney) {
-      const { data: updated, error: updateError } = await supabase
-        .from('attorneys')
-        .update({
-          referral_count: (matchedAttorney.referral_count || 0) + 1,
-          current_year_referrals: (matchedAttorney.current_year_referrals || 0) + 1,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', matchedAttorney.id)
-        .select()
-        .single();
-
-      if (updateError) {
-        console.error('Update error:', updateError);
-        return NextResponse.json({ error: 'Failed to update attorney' }, { status: 500 });
-      }
-
-      return NextResponse.json({
-        action: 'updated',
-        matchType,
-        attorney: updated
-      });
-    }
-
-    // No match found - create new attorney with needs_review = true
-    const newAttorney = {
-      name: attorneyName || 'Unknown',
-      email: attorneyEmail || null,
-      phone: null,
-      address: null,
-      city: null,
-      state: null,
-      zip: null,
-      referral_count: 1,
-      cards_sent: 0,
-      current_year_referrals: 1,
-      needs_review: true, // Flag for manual address lookup
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    const { data: created, error: createError } = await supabase
-      .from('attorneys')
-      .insert(newAttorney)
-      .select()
-      .single();
-
-    if (createError) {
-      console.error('Create error:', createError);
-      return NextResponse.json({ error: 'Failed to create attorney' }, { status: 500 });
-    }
-
-    return NextResponse.json({
-      action: 'created',
-      needsReview: true, // Signal to caller that this needs manual attention
-      attorney: created
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: { autoRefreshToken: false, persistSession: false }
     });
 
+    // Get certificate
+    const { data: cert } = await supabase
+      .from('certificates')
+      .select('*')
+      .eq('id', certificateId)
+      .single();
+
+    if (!cert) {
+      return NextResponse.json({ error: 'Certificate not found' }, { status: 404 });
+    }
+
+    // Get profile with attorney info
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('legal_name, court_state, court_county, case_number, attorney_name, attorney_email')
+      .eq('id', cert.user_id)
+      .single();
+
+    // If no attorney email, skip silently
+    if (!profile?.attorney_email) {
+      return NextResponse.json({ success: true, skipped: true, reason: 'No attorney email provided' });
+    }
+
+    // Get course progress for dates
+    const { data: progress } = await supabase
+      .from('course_progress')
+      .select('completed_at')
+      .eq('user_id', cert.user_id)
+      .eq('course_type', cert.course_type)
+      .single();
+
+    const completionDate = progress?.completed_at || cert.issued_at;
+    const formatDate = (dateString: string) => {
+      const date = new Date(dateString);
+      return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;
+    };
+
+    const courseNames: Record<string, string> = {
+      coparenting: 'Co-Parenting Class',
+      parenting: 'Parenting Class',
+      bundle: 'Co-Parenting & Parenting Classes'
+    };
+
+    const courseName = courseNames[cert.course_type] || cert.course_type;
+    const verifyUrl = `https://www.cursoparapadres.org/verificar/${cert.verification_code}`;
+    const downloadUrl = `https://www.cursoparapadres.org/api/certificate/${cert.id}`;
+    const currentYear = new Date().getFullYear();
+
+    // Send email to attorney
+    const { data, error } = await resend.emails.send({
+      from: 'Putting Kids First <certificates@cursoparapadres.org>',
+      to: [profile.attorney_email],
+      subject: `Certificate of Completion - ${profile.legal_name}`,
+      html: `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificate of Completion - ${profile.legal_name}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #1C1C1C; font-family: 'Courier Prime', Courier, monospace;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #1C1C1C;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px;">
+          
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding-bottom: 32px;">
+              <img 
+                src="https://www.cursoparapadres.org/logo.svg" 
+                width="40" 
+                height="40" 
+                alt="PKF" 
+                style="display: block; margin-bottom: 8px;"
+              />
+              <p style="color: #FFFFFF; font-size: 20px; font-weight: 600; margin: 0; font-family: 'Short Stack', cursive, sans-serif;">
+                Putting Kids First<sup style="font-size: 10px; position: relative; top: -8px;">®</sup>
+              </p>
+            </td>
+          </tr>
+          
+          <!-- Certificate Icon -->
+          <tr>
+            <td align="center" style="padding-bottom: 24px;">
+              <table cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="width: 70px; height: 70px; background-color: #7EC8E3; border-radius: 50%; text-align: center; vertical-align: middle;">
+                    <span style="color: #1C1C1C; font-size: 32px; line-height: 70px;">📜</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          
+          <!-- Heading -->
+          <tr>
+            <td align="center" style="padding-bottom: 24px;">
+              <h1 style="color: #FFFFFF; font-size: 28px; font-weight: 700; margin: 0; font-family: 'Courier Prime', Courier, monospace;">
+                Certificate of Completion
+              </h1>
+            </td>
+          </tr>
+          
+          <!-- Greeting -->
+          <tr>
+            <td style="padding-bottom: 16px;">
+              <p style="color: rgba(255,255,255,0.85); font-size: 16px; line-height: 26px; margin: 0; font-family: 'Courier Prime', Courier, monospace;">
+                Dear ${profile.attorney_name || 'Counselor'},
+              </p>
+            </td>
+          </tr>
+          
+          <tr>
+            <td style="padding-bottom: 24px;">
+              <p style="color: rgba(255,255,255,0.85); font-size: 16px; line-height: 26px; margin: 0; font-family: 'Courier Prime', Courier, monospace;">
+                Your client, <strong style="color: #77DD77;">${profile.legal_name}</strong>, has successfully completed the 
+                <strong style="color: #7EC8E3;">${courseName}</strong> through Putting Kids First®.
+              </p>
+            </td>
+          </tr>
+          
+          <!-- Certificate Details Box -->
+          <tr>
+            <td>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #2A2A2A; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                <tr>
+                  <td style="padding: 24px;">
+                    <p style="color: #FFFFFF; font-size: 14px; font-weight: 700; margin: 0 0 16px 0; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'Courier Prime', Courier, monospace;">
+                      Certificate Details
+                    </p>
+                    
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 14px; font-family: 'Courier Prime', Courier, monospace;">
+                      <tr>
+                        <td style="padding: 8px 0; color: rgba(255,255,255,0.6); width: 40%;">Participant:</td>
+                        <td style="padding: 8px 0; color: #FFFFFF;">${profile.legal_name}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 8px 0; color: rgba(255,255,255,0.6);">Course:</td>
+                        <td style="padding: 8px 0; color: #7EC8E3;">${courseName}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 8px 0; color: rgba(255,255,255,0.6);">Completion Date:</td>
+                        <td style="padding: 8px 0; color: #77DD77;">${formatDate(completionDate)}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 8px 0; color: rgba(255,255,255,0.6);">Certificate #:</td>
+                        <td style="padding: 8px 0; color: #FFE566; font-family: monospace;">${cert.certificate_number}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 8px 0; color: rgba(255,255,255,0.6);">State:</td>
+                        <td style="padding: 8px 0; color: #FFFFFF;">${profile.court_state || 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 8px 0; color: rgba(255,255,255,0.6);">County:</td>
+                        <td style="padding: 8px 0; color: #FFFFFF;">${profile.court_county || 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 8px 0; color: rgba(255,255,255,0.6);">Case Number:</td>
+                        <td style="padding: 8px 0; color: #FFFFFF;">${profile.case_number || 'N/A'}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          
+          <!-- Download Button -->
+          <tr>
+            <td align="center" style="padding: 32px 0;">
+              <table cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="background-color: #7EC8E3; border-radius: 12px;">
+                    <a 
+                      href="${downloadUrl}" 
+                      style="display: inline-block; padding: 16px 32px; color: #1C1C1C; font-size: 16px; font-weight: 700; text-decoration: none; font-family: 'Courier Prime', Courier, monospace;"
+                    >
+                      Download Certificate PDF
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          
+          <!-- Verification Box -->
+          <tr>
+            <td>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: rgba(126,200,227,0.1); border-radius: 12px; border: 1px solid rgba(126,200,227,0.3);">
+                <tr>
+                  <td style="padding: 16px 24px;">
+                    <p style="color: #7EC8E3; font-size: 14px; font-weight: 700; margin: 0 0 8px 0; font-family: 'Courier Prime', Courier, monospace;">
+                      Verify Online:
+                    </p>
+                    <p style="margin: 0 0 8px 0;">
+                      <a href="${verifyUrl}" style="color: #7EC8E3; font-size: 14px; font-family: 'Courier Prime', Courier, monospace;">${verifyUrl}</a>
+                    </p>
+                    <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 0; font-family: 'Courier Prime', Courier, monospace;">
+                      Verification Code: <strong style="color: #FFE566;">${cert.verification_code}</strong>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          
+          <!-- About -->
+          <tr>
+            <td style="padding: 24px 0;">
+              <p style="color: rgba(255,255,255,0.5); font-size: 14px; line-height: 22px; margin: 0; font-family: 'Courier Prime', Courier, monospace;">
+                Putting Kids First® has been providing court-accepted parenting education since 1993. 
+                If you have any questions, please contact us at info@cursoparapadres.org.
+              </p>
+            </td>
+          </tr>
+          
+          <!-- Divider -->
+          <tr>
+            <td style="padding-bottom: 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="border-top: 1px solid rgba(255,255,255,0.1);"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td align="center">
+              <p style="color: rgba(255,255,255,0.3); font-size: 12px; margin: 0; line-height: 18px; font-family: 'Courier Prime', Courier, monospace;">
+                © ${currentYear} Putting Kids First® | 888-777-2298 | info@cursoparapadres.org
+              </p>
+            </td>
+          </tr>
+          
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+      `.trim(),
+    });
+
+    if (error) {
+      console.error('Failed to send attorney email:', error);
+      return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, emailId: data?.id });
+
   } catch (error) {
-    console.error('Attorney match error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('Attorney email error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

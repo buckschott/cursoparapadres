@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 /* ===== DESIGN TOKENS ===== */
+/* 
+ * ⚠️  SYNC WARNING: Timing and z-index values must match constants/animation.ts
+ *     When updating values, update BOTH files.
+ */
 :root {
   /* Colors */
   --chalk-white: #FFFFFF;
@@ -13,18 +17,18 @@
   --background: #1C1C1C;
   --foreground: #ffffff;
 
-  /* Animation Timing - Single source of truth */
-  --timing-instant: 100ms;
-  --timing-fast: 200ms;
-  --timing-normal: 300ms;
-  --timing-slow: 600ms;
-  --timing-reveal: 800ms;
+  /* Animation Timing - Sync with constants/animation.ts ANIMATION.* */
+  --timing-instant: 100ms;   /* ANIMATION.INSTANT */
+  --timing-fast: 200ms;      /* ANIMATION.FAST */
+  --timing-normal: 300ms;    /* ANIMATION.NORMAL */
+  --timing-slow: 600ms;      /* ANIMATION.SLOW */
+  --timing-reveal: 800ms;    /* ANIMATION.REVEAL */
 
-  /* Animation Easing */
-  --ease-out-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Animation Easing - Sync with constants/animation.ts EASING.* */
+  --ease-out-smooth: cubic-bezier(0.4, 0, 0.2, 1);   /* EASING.OUT_SMOOTH */
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1); /* EASING.OUT_BACK */
 
-  /* Z-Index Scale - Documented! */
+  /* Z-Index Scale - Sync with constants/animation.ts Z_INDEX.* */
   --z-base: 0;
   --z-above: 10;
   --z-section: 20;
@@ -32,6 +36,10 @@
   --z-header: 200;
   --z-toast: 300;
   --z-modal: 400;
+  /* Note: checkout overlay (500) is JS-only */
+
+  /* Layout - Sync with constants/animation.ts LAYOUT.* */
+  --header-height: 73px;     /* LAYOUT.HEADER_HEIGHT */
 }
 
 @theme inline {
@@ -247,13 +255,13 @@ body {
 
 /* ===== HERO SECTION ===== */
 .hero-section {
-  min-height: calc(100vh - 73px);
-  min-height: calc(100svh - 73px);
+  min-height: calc(100vh - var(--header-height));
+  min-height: calc(100svh - var(--header-height));
 }
 
 .hero-content {
-  min-height: calc(100vh - 73px);
-  min-height: calc(100svh - 73px);
+  min-height: calc(100vh - var(--header-height));
+  min-height: calc(100svh - var(--header-height));
   padding-top: 50px;
   padding-bottom: 50px;
   gap: 1rem;
@@ -351,13 +359,13 @@ body {
 /* ===== MOBILE PORTRAIT OVERRIDES ===== */
 @media (orientation: portrait) and (max-width: 767px) {
   .header-title { font-size: 1.25rem !important; }
-  .hero-title { font-size: 1.75rem !important; line-height: 1.1; }
+  .hero-title { font-size: 1.36rem !important; line-height: 1.1; }
   .hero-line-1, .hero-line-2 { display: inline-block; white-space: normal; }
-  .hero-subheadline { font-size: 1.125rem !important; line-height: 1.5; }
+  .hero-subheadline { font-size: 1rem !important; line-height: 1.5; }
   .trust-badge-text { font-size: clamp(0.8rem, 4.2vw, 1rem) !important; }
   .trust-badge-pill { margin-left: 0; margin-right: 0; }
   .cta-button { font-size: 1.25rem !important; padding: 1rem 2rem !important; }
-  .secondary-cta { font-size: 1.125rem !important; }
+  .secondary-cta { font-size: .9rem !important; }
   .hero-content { gap: 1.25rem; padding-top: 50px; padding-bottom: 50px; }
 }
 
@@ -601,7 +609,6 @@ body {
 }
 
 /* ===== COURSE PAGE ANIMATIONS ===== */
-/* Add these to your globals.css */
 
 /* ===== FLOATING PARTICLES (Celebration) ===== */
 @keyframes float {
@@ -669,7 +676,7 @@ body {
   animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
-/* ===== REDUCED MOTION ===== */
+/* ===== REDUCED MOTION (Course Page Specific) ===== */
 @media (prefers-reduced-motion: reduce) {
   .certificate-stamp,
   .certificate-ring,

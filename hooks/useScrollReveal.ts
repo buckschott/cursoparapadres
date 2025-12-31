@@ -1,7 +1,39 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import { ANIMATION } from '@/constants/animation';
+
+// ============================================
+// IMAGE PRELOADING
+// ============================================
+
+/**
+ * Device images to preload for smooth animation.
+ * Called once when the hook mounts.
+ */
+const DEVICE_IMAGES_COLOR = [
+  '/phone-2.svg',
+  '/tablet-2-es.svg',
+  '/laptop-2-es.svg',
+  '/desktop-2-es.svg',
+];
+
+let imagesPreloaded = false;
+
+function preloadDeviceImages() {
+  if (imagesPreloaded || typeof window === 'undefined') return;
+  
+  DEVICE_IMAGES_COLOR.forEach(src => {
+    const img = new Image();
+    img.src = src;
+  });
+  
+  imagesPreloaded = true;
+}
+
+// ============================================
+// SCROLL REVEAL HOOK
+// ============================================
 
 /**
  * Hook for scroll-triggered reveal animations.
@@ -9,6 +41,14 @@ import { ANIMATION } from '@/constants/animation';
  * 
  * @param options - IntersectionObserver options
  * @returns ref to attach to container element
+ * 
+ * @example
+ * ```tsx
+ * const mainRef = useScrollReveal();
+ * return <main ref={mainRef}>
+ *   <div className="scroll-reveal">I fade in!</div>
+ * </main>
+ * ```
  */
 export function useScrollReveal(options?: IntersectionObserverInit) {
   const containerRef = useRef<HTMLElement>(null);
@@ -51,19 +91,29 @@ export function useScrollReveal(options?: IntersectionObserverInit) {
   return containerRef;
 }
 
+// ============================================
+// DEVICE ANIMATION HOOK
+// ============================================
+
 /**
  * Hook for device section animation.
  * Sequentially activates devices when section enters viewport.
+ * Preloads color images on mount to prevent flicker.
  */
 export function useDeviceAnimation() {
   const containerRef = useRef<HTMLElement>(null);
   const hasAnimated = useRef(false);
 
+  // Preload images on mount (before animation triggers)
+  useEffect(() => {
+    preloadDeviceImages();
+  }, []);
+
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (prefersReducedMotion) {
-      // Show all devices immediately
+      // Show all devices immediately with color images
       const devices = containerRef.current?.querySelectorAll('.device-animate');
       devices?.forEach(device => {
         device.classList.add('device-active');
@@ -119,6 +169,10 @@ export function useDeviceAnimation() {
 
   return containerRef;
 }
+
+// ============================================
+// FOOTER REVEAL HOOK
+// ============================================
 
 /**
  * Hook for footer entrance animation.

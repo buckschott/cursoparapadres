@@ -1,5 +1,6 @@
-// Course content configuration for 15-lesson curriculum (13 core + 2 closing)
-// Updated: December 2025 - Lecciones (Spanish curriculum)
+// Course content configuration for multi-course curriculum
+// Updated: December 2025
+// Supports: coparenting (Co-Parenting Class) and parenting (Parenting Class)
 
 export interface LessonSection {
   id: string;
@@ -23,7 +24,11 @@ export const PASS_SCORE = Math.ceil(QUESTIONS_PER_EXAM * PASS_THRESHOLD);
 // Legacy exports for compatibility
 export const TOTAL_MODULES = TOTAL_LESSONS;
 
-export const courseLessons: CourseLesson[] = [
+// ============================================
+// CO-PARENTING CLASS (coparenting)
+// ============================================
+
+const coparentingLessons: CourseLesson[] = [
   {
     id: 1,
     slug: 'leccion-1',
@@ -184,33 +189,232 @@ export const courseLessons: CourseLesson[] = [
   }
 ];
 
-// Legacy export for compatibility with existing code
-export const courseModules = courseLessons;
+// ============================================
+// PARENTING CLASS (parenting)
+// ============================================
 
-export function getLessonBySlug(slug: string): CourseLesson | undefined {
-  return courseLessons.find(l => l.slug === slug);
+const parentingLessons: CourseLesson[] = [
+  {
+    id: 1,
+    slug: 'leccion-1',
+    titleEs: 'Entendiendo el Desarrollo Infantil',
+    descriptionEs: 'Por qué importa el desarrollo, cómo piensan los niños a diferentes edades, y el temperamento de su hijo.',
+    estimatedTime: '~20 min',
+    sections: [
+      { id: 'section_1_A', titleEs: 'Cómo Piensan los Niños y Qué Necesitan' },
+      { id: 'section_1_B', titleEs: 'Su Hijo Único' }
+    ]
+  },
+  {
+    id: 2,
+    slug: 'leccion-2',
+    titleEs: 'Cómo Piensan y Crecen los Niños',
+    descriptionEs: 'Comportamientos normales por edad, expectativas realistas, y cuándo buscar ayuda.',
+    estimatedTime: '~20 min',
+    sections: [
+      { id: 'section_2_A', titleEs: 'Desarrollo de Bebés y Niños Pequeños (0-3)' },
+      { id: 'section_2_B', titleEs: 'Desarrollo Preescolar y Edad Escolar (3-12)' },
+      { id: 'section_2_C', titleEs: 'Desarrollo Adolescente (12-18) y Regresión' }
+    ]
+  },
+  {
+    id: 3,
+    slug: 'leccion-3',
+    titleEs: 'Construyendo Apego Seguro',
+    descriptionEs: 'Qué es el apego, servir y devolver, y reparar después de las rupturas.',
+    estimatedTime: '~17 min',
+    sections: [
+      { id: 'section_3_A', titleEs: 'Qué Es el Apego y Por Qué Importa' },
+      { id: 'section_3_B', titleEs: 'Construyendo Apego a Través de Interacciones Diarias' },
+      { id: 'section_3_C', titleEs: 'Reparar Después de las Rupturas' },
+      { id: 'section_3_D', titleEs: 'Conceptos Básicos de Crianza Informada por el Trauma' }
+    ]
+  },
+  {
+    id: 4,
+    slug: 'leccion-4',
+    titleEs: 'Comunicándose con Su Hijo',
+    descriptionEs: 'Escucha activa, validación emocional, y el marco PACE para conversaciones difíciles.',
+    estimatedTime: '~18 min',
+    sections: [
+      { id: 'section_4_A', titleEs: 'Escuchando para Entender' },
+      { id: 'section_4_B', titleEs: 'Hablando para que los Niños Escuchen' },
+      { id: 'section_4_C', titleEs: 'Un Marco para Conversaciones Difíciles' }
+    ]
+  },
+  {
+    id: 5,
+    slug: 'leccion-5',
+    titleEs: 'Entendiendo el Comportamiento',
+    descriptionEs: 'Por qué los niños se portan mal, el comportamiento como comunicación, y el método ABC.',
+    estimatedTime: '~15 min',
+    sections: [
+      { id: 'section_5_A', titleEs: 'Por Qué los Niños Se Portan Mal' },
+      { id: 'section_5_B', titleEs: 'El Método ABC' }
+    ]
+  },
+  {
+    id: 6,
+    slug: 'leccion-6',
+    titleEs: 'Estrategias de Disciplina Positiva',
+    descriptionEs: 'Crianza autoritativa, estableciendo límites, consecuencias naturales vs. lógicas.',
+    estimatedTime: '~18 min',
+    sections: [
+      { id: 'section_6_A', titleEs: 'Fundamentos de la Disciplina' },
+      { id: 'section_6_B', titleEs: 'Estrategias que Funcionan' }
+    ]
+  },
+  {
+    id: 7,
+    slug: 'leccion-7',
+    titleEs: 'Manejando Comportamientos Desafiantes',
+    descriptionEs: 'Berrinches, desafío, agresión, y cuándo buscar ayuda profesional.',
+    estimatedTime: '~16 min',
+    sections: [
+      { id: 'section_7_A', titleEs: 'Comportamientos Comunes Desafiantes' },
+      { id: 'section_7_B', titleEs: 'Cuándo Buscar Ayuda' }
+    ]
+  },
+  {
+    id: 8,
+    slug: 'leccion-8',
+    titleEs: 'Inteligencia Emocional',
+    descriptionEs: 'Entrenamiento emocional, ayudando a los niños a identificar y expresar sentimientos.',
+    estimatedTime: '~15 min',
+    sections: [
+      { id: 'section_8_A', titleEs: 'Qué Es la Inteligencia Emocional' },
+      { id: 'section_8_B', titleEs: 'Entrenamiento Emocional en la Práctica' }
+    ]
+  },
+  {
+    id: 9,
+    slug: 'leccion-9',
+    titleEs: 'Ayudando a Su Hijo a Regularse',
+    descriptionEs: 'Autorregulación, co-regulación, y enseñando estrategias de calma.',
+    estimatedTime: '~15 min',
+    sections: [
+      { id: 'section_9_A', titleEs: 'Entendiendo la Autorregulación' },
+      { id: 'section_9_B', titleEs: 'Ayudando a Su Hijo a Calmarse' }
+    ]
+  },
+  {
+    id: 10,
+    slug: 'leccion-10',
+    titleEs: 'Cuidándose a Sí Mismo',
+    descriptionEs: 'Bienestar parental, reconociendo el agotamiento, y manejando la ira.',
+    estimatedTime: '~18 min',
+    sections: [
+      { id: 'section_10_A', titleEs: 'Por Qué Importa Su Bienestar' },
+      { id: 'section_10_B', titleEs: 'Cuando Pierde la Calma' }
+    ]
+  },
+  {
+    id: 11,
+    slug: 'leccion-11',
+    titleEs: 'Manteniendo a Su Hijo Seguro',
+    descriptionEs: 'Seguridad corporal, prevención del abuso, y enseñando límites.',
+    estimatedTime: '~16 min',
+    sections: [
+      { id: 'section_11_A', titleEs: 'Seguridad Corporal y Prevención' },
+      { id: 'section_11_B', titleEs: 'Reconociendo Señales de Advertencia' }
+    ]
+  },
+  {
+    id: 12,
+    slug: 'leccion-12',
+    titleEs: 'Tecnología y Crianza Moderna',
+    descriptionEs: 'El marco de las 5 Cs, tiempo de pantalla por edad, y seguridad en línea.',
+    estimatedTime: '~12 min',
+    sections: [
+      { id: 'section_12_A', titleEs: 'Tomando Decisiones Inteligentes sobre el Tiempo de Pantalla' },
+      { id: 'section_12_B', titleEs: 'Conceptos Básicos de Seguridad en Línea' }
+    ]
+  },
+  {
+    id: 13,
+    slug: 'leccion-13',
+    titleEs: 'Construyendo Resiliencia',
+    descriptionEs: 'Mentalidad de crecimiento, elogio al proceso, y fomentando la autonomía.',
+    estimatedTime: '~12 min',
+    sections: [
+      { id: 'section_13_A', titleEs: 'Qué Construye la Resiliencia' },
+      { id: 'section_13_B', titleEs: 'Estrategias Prácticas' }
+    ]
+  },
+  {
+    id: 14,
+    slug: 'leccion-14',
+    titleEs: 'Recursos Adicionales',
+    descriptionEs: 'Apoyo de crisis, encontrando terapeutas, y glosario de términos clave.',
+    estimatedTime: '~8 min',
+    sections: [
+      { id: 'section_14_A', titleEs: 'Obteniendo Ayuda Cuando la Necesita' },
+      { id: 'section_14_B', titleEs: 'Continuando Su Aprendizaje' }
+    ]
+  },
+  {
+    id: 15,
+    slug: 'leccion-15',
+    titleEs: 'Cierre: Avanzando',
+    descriptionEs: 'Principios clave, guía de referencia, y próximos pasos.',
+    estimatedTime: '~4 min',
+    sections: [
+      { id: 'section_15_A', titleEs: 'Principios Clave para Recordar' },
+      { id: 'section_15_B', titleEs: 'Sus Próximos Pasos' }
+    ]
+  }
+];
+
+// ============================================
+// COURSE LESSONS BY TYPE
+// ============================================
+
+export const allCourseLessons: Record<string, CourseLesson[]> = {
+  coparenting: coparentingLessons,
+  parenting: parentingLessons
+};
+
+// Default export for backward compatibility (co-parenting)
+export const courseLessons = coparentingLessons;
+
+// Legacy export for compatibility with existing code
+export const courseModules = coparentingLessons;
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+export function getCourseLessons(courseType: string): CourseLesson[] {
+  return allCourseLessons[courseType] || coparentingLessons;
 }
 
-export function getLessonById(id: number): CourseLesson | undefined {
-  return courseLessons.find(l => l.id === id);
+export function getLessonBySlug(slug: string, courseType?: string): CourseLesson | undefined {
+  const lessons = courseType ? getCourseLessons(courseType) : coparentingLessons;
+  return lessons.find(l => l.slug === slug);
+}
+
+export function getLessonById(id: number, courseType?: string): CourseLesson | undefined {
+  const lessons = courseType ? getCourseLessons(courseType) : coparentingLessons;
+  return lessons.find(l => l.id === id);
 }
 
 // Legacy functions for compatibility
-export function getModuleBySlug(slug: string): CourseLesson | undefined {
-  return getLessonBySlug(slug);
+export function getModuleBySlug(slug: string, courseType?: string): CourseLesson | undefined {
+  return getLessonBySlug(slug, courseType);
 }
 
-export function getModuleById(id: number): CourseLesson | undefined {
-  return getLessonById(id);
+export function getModuleById(id: number, courseType?: string): CourseLesson | undefined {
+  return getLessonById(id, courseType);
 }
 
-export function getSectionLesson(sectionId: string): CourseLesson | undefined {
-  return courseLessons.find(l => l.sections.some(s => s.id === sectionId));
+export function getSectionLesson(sectionId: string, courseType?: string): CourseLesson | undefined {
+  const lessons = courseType ? getCourseLessons(courseType) : coparentingLessons;
+  return lessons.find(l => l.sections.some(s => s.id === sectionId));
 }
 
 // Legacy function
-export function getSectionModule(sectionId: string): CourseLesson | undefined {
-  return getSectionLesson(sectionId);
+export function getSectionModule(sectionId: string, courseType?: string): CourseLesson | undefined {
+  return getSectionLesson(sectionId, courseType);
 }
 
 export function getTotalLessons(): number {
@@ -221,7 +425,11 @@ export function getTotalModules(): number {
   return TOTAL_LESSONS;
 }
 
-export const courseTypeNames = {
+// ============================================
+// COURSE TYPE CONFIGURATION
+// ============================================
+
+export const courseTypeNames: Record<string, { en: string; es: string }> = {
   coparenting: {
     en: 'Co-Parenting Class',
     es: 'Clase de Coparentalidad'
@@ -232,9 +440,23 @@ export const courseTypeNames = {
   }
 };
 
-export function getContentFileName(lessonId: number): string {
-  return `leccion-${lessonId}.md`;
+// ============================================
+// CONTENT FILE PATHS
+// ============================================
+
+export function getContentFileName(lessonId: number, courseType?: string): string {
+  // Both courses use subfolder structure: /content/{courseType}/leccion-{id}.md
+  const folder = courseType === 'parenting' ? 'parenting' : 'coparenting';
+  return `${folder}/leccion-${lessonId}.md`;
 }
+
+export function getContentPath(lessonId: number, courseType?: string): string {
+  return `/content/${getContentFileName(lessonId, courseType)}`;
+}
+
+// ============================================
+// SUPPLEMENTAL CONTENT
+// ============================================
 
 export const supplementalContent: any[] = [];
 export const additionalContent: any[] = [];

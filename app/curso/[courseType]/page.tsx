@@ -1,7 +1,7 @@
 'use client';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';
-import { courseModules, TOTAL_MODULES, courseTypeNames } from '@/lib/courseContent';
+import { QUESTIONS_PER_EXAM, PASS_THRESHOLD } from '@/lib/courseContent';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
@@ -9,841 +9,818 @@ import { useParams } from 'next/navigation';
 // TYPES
 // ============================================
 
-interface CourseProgress {
-  lessons_completed: number[];
-  completed_at: string | null;
-  current_lesson: number;
-}
-
-interface Certificate {
+interface ExamQuestion {
   id: string;
-  certificate_number: string;
-  verification_code: string;
-  issued_at: string;
+  question_text: string;
+  answer_a: string;
+  answer_b: string;
+  answer_c: string;
+  answer_d: string;
+  correct_position: string;
+  wrong_a_explanation: string;
+  wrong_a_redirect: string;
+  wrong_b_explanation: string;
+  wrong_b_redirect: string;
+  wrong_c_explanation: string;
+  wrong_c_redirect: string;
+  wrong_d_explanation: string;
+  wrong_d_redirect: string;
 }
 
-type CourseState = 'welcome' | 'in-progress' | 'exam-ready' | 'complete';
+interface ShuffledQuestion extends ExamQuestion {
+  shuffledAnswers: { label: string; text: string; originalLabel: string }[];
+}
 
-// ============================================
-// ANIMATION CONSTANTS
-// ============================================
+const PASS_SCORE = Math.ceil(QUESTIONS_PER_EXAM * PASS_THRESHOLD);
 
-const ANIMATION = {
-  PROGRESS_DELAY: 300,
-  STAGGER_DELAY: 100,
-};
+function cleanRedirect(text: string): string {
+  if (!text) return '';
+  return text.replace(/(\d+)[A-Za-z]+/g, '$1');
+}
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 // ============================================
 // MAIN COMPONENT
 // ============================================
 
-export default function CourseOverviewPage() {
+export default function ExamPage() {
   const params = useParams();
   const courseType = params.courseType as string;
-  const [progress, setProgress] = useState<CourseProgress | null>(null);
-  const [certificate, setCertificate] = useState<Certificate | null>(null);
+  const STORAGE_KEY = `exam_v3_${courseType}`;
+  
   const [loading, setLoading] = useState(true);
-  const [animatedPercent, setAnimatedPercent] = useState(0);
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [phase, setPhase] = useState<'intro' | 'exam' | 'done'>('intro');
+  const [hasResumable, setHasResumable] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isStarting, setIsStarting] = useState(false);
+  
+  // Exam state
+  const [questions, setQuestions] = useState<ShuffledQuestion[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [wrongRed, setWrongRed] = useState('');
+  const [showFeedback, setShowFeedback] = useState(false);
   
   const supabase = createClient();
 
+  // Save state to localStorage
   useEffect(() => {
-    const loadProgress = async () => {
+    if (phase === 'exam' && questions.length > 0) {
+      const state = { questions, currentIndex, correctCount, selectedAnswer, submitted, isCorrect, wrongRed };
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+    }
+  }, [phase, questions, currentIndex, correctCount, selectedAnswer, submitted, isCorrect, wrongRed, STORAGE_KEY]);
+
+  // Initial check
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { 
+          window.location.href = '/iniciar-sesion'; 
+          return; 
+        }
+
+        // Check for existing certificate
+        const { data: existingCert, error: certError } = await supabase
+          .from('certificates')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('course_type', courseType)
+          .limit(1);
+
+        if (certError) {
+          console.error('Error checking certificate:', certError);
+        }
+
+        if (existingCert && existingCert.length > 0) {
+          window.location.href = `/certificado/${existingCert[0].id}`;
+          return;
+        }
+
+        const { data: prog, error: progError } = await supabase
+          .from('course_progress')
+          .select('lessons_completed')
+          .eq('user_id', user.id)
+          .eq('course_type', courseType)
+          .single();
+
+        if (progError) {
+          console.error('Error checking progress:', progError);
+        }
+
+        if (!prog || prog.lessons_completed.length < 15) {
+          window.location.href = `/curso/${courseType}`;
+          return;
+        }
+
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) {
+            const p = JSON.parse(saved);
+            if (p.questions?.length) setHasResumable(true);
+          }
+        } catch {}
+
+        setLoading(false);
+      } catch (err) {
+        console.error('Error in initial check:', err);
+        setError('Error al cargar el examen. Por favor, recargue la página.');
+        setLoading(false);
+      }
+    };
+    check();
+  }, [courseType, STORAGE_KEY]);
+
+  const clear = useCallback(() => { 
+    try {
+      localStorage.removeItem(STORAGE_KEY); 
+    } catch {}
+  }, [STORAGE_KEY]);
+
+  const resume = () => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const p = JSON.parse(saved);
+        setQuestions(p.questions || []);
+        setCurrentIndex(p.currentIndex || 0);
+        setCorrectCount(p.correctCount || 0);
+        setSelectedAnswer(null);
+        setSubmitted(false);
+        setIsCorrect(false);
+        setWrongRed('');
+        setShowFeedback(false);
+        setPhase('exam');
+        setHasResumable(false);
+        setError(null);
+      }
+    } catch (err) { 
+      console.error('Error resuming exam:', err);
+      clear(); 
+      setError('No se pudo continuar el examen. Por favor, comience de nuevo.');
+    }
+  };
+
+  const start = async () => {
+    setIsStarting(true);
+    setError(null);
+    
+    try {
+      clear();
+      setHasResumable(false);
+
       const { data: { user } } = await supabase.auth.getUser();
-      
       if (!user) {
         window.location.href = '/iniciar-sesion';
         return;
       }
 
-      // Check if user has purchased this course
-      const { data: purchases } = await supabase
-        .from('purchases')
+      const versions = ['A', 'B', 'C'];
+      const ver = versions[Math.floor(Math.random() * versions.length)];
+
+      const { data: qs, error: fetchError } = await supabase
+        .from('exam_questions')
         .select('*')
-        .eq('user_id', user.id)
-        .or(`course_type.eq.${courseType},course_type.eq.bundle`)
-        .eq('status', 'active')
-        .limit(1);
+        .eq('course_type', courseType)
+        .eq('version', ver);
 
-      const purchase = purchases?.[0];
-
-      if (!purchase) {
-        window.location.href = '/panel';
-        return;
+      if (fetchError) {
+        console.error('Error fetching questions:', fetchError);
+        throw new Error('No se pudieron cargar las preguntas del examen.');
       }
 
-      // Get or create progress
-      const { data: progressData } = await supabase
-        .from('course_progress')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('course_type', courseType)
-        .single();
+      if (!qs?.length) { 
+        throw new Error('No hay preguntas disponibles para este examen.');
+      }
 
-      if (progressData) {
-        setProgress(progressData);
+      const selected = shuffle(qs).slice(0, QUESTIONS_PER_EXAM);
+      const processed: ShuffledQuestion[] = selected.map(q => {
+        const ans = [
+          { label: 'A', text: q.answer_a, originalLabel: 'A' },
+          { label: 'B', text: q.answer_b, originalLabel: 'B' },
+          { label: 'C', text: q.answer_c, originalLabel: 'C' },
+          { label: 'D', text: q.answer_d, originalLabel: 'D' }
+        ];
+        return { ...q, shuffledAnswers: shuffle(ans).map((a, i) => ({ ...a, label: ['A','B','C','D'][i] })) };
+      });
+
+      setQuestions(processed);
+      setCurrentIndex(0);
+      setCorrectCount(0);
+      setSelectedAnswer(null);
+      setSubmitted(false);
+      setIsCorrect(false);
+      setWrongRed('');
+      setShowFeedback(false);
+      setPhase('exam');
+    } catch (err) {
+      console.error('Error starting exam:', err);
+      setError(err instanceof Error ? err.message : 'Error al iniciar el examen. Por favor, intente de nuevo.');
+    } finally {
+      setIsStarting(false);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (!selectedAnswer || submitted) return;
+    
+    const q = questions[currentIndex];
+    const sel = q.shuffledAnswers.find(a => a.label === selectedAnswer);
+    const correct = sel?.originalLabel?.toUpperCase() === q.correct_position?.toUpperCase();
+    
+    let red = '';
+    if (!correct && sel) {
+      const o = sel.originalLabel;
+      if (o === 'A') red = q.wrong_a_redirect || '';
+      if (o === 'B') red = q.wrong_b_redirect || '';
+      if (o === 'C') red = q.wrong_c_redirect || '';
+      if (o === 'D') red = q.wrong_d_redirect || '';
+    }
+
+    setIsCorrect(correct);
+    setWrongRed(red);
+    setSubmitted(true);
+    if (correct) setCorrectCount(prev => prev + 1);
+    
+    setTimeout(() => setShowFeedback(true), 100);
+  };
+
+  const handleNext = () => {
+    setShowFeedback(false);
+    
+    setTimeout(() => {
+      if (currentIndex < questions.length - 1) {
+        setCurrentIndex(prev => prev + 1);
+        setSelectedAnswer(null);
+        setSubmitted(false);
+        setIsCorrect(false);
+        setWrongRed('');
       } else {
-        // Create initial progress
-        const { data: newProgress } = await supabase
-          .from('course_progress')
-          .insert({
-            user_id: user.id,
-            course_type: courseType,
-            current_lesson: 1,
-            lessons_completed: []
-          })
-          .select()
-          .single();
-        
-        setProgress(newProgress);
+        finishExam();
       }
+    }, 200);
+  };
 
-      // Check for certificate
-      const { data: certData } = await supabase
-        .from('certificates')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('course_type', courseType)
-        .single();
+  const finishExam = async () => {
+    clear();
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-      if (certData) {
-        setCertificate(certData);
+      const passed = correctCount >= PASS_SCORE;
+      const score = Math.round((correctCount / QUESTIONS_PER_EXAM) * 100);
+
+      await supabase.from('exam_attempts').insert({
+        user_id: user.id,
+        course_type: courseType,
+        questions_shown: questions.map(q => q.id),
+        score,
+        passed
+      });
+
+      if (passed) {
+        const { data: existingCerts } = await supabase
+          .from('certificates')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('course_type', courseType)
+          .limit(1);
+
+        if (!existingCerts || existingCerts.length === 0) {
+          const certNumber = `PKF-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+          const verifyCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+          
+          const { data: newCert } = await supabase
+            .from('certificates')
+            .insert({
+              user_id: user.id,
+              course_type: courseType,
+              certificate_number: certNumber,
+              verification_code: verifyCode
+            })
+            .select('id')
+            .single();
+
+          if (newCert?.id) {
+            fetch('/api/send-attorney-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ certificateId: newCert.id })
+            }).catch(console.error);
+          }
+
+          await supabase
+            .from('course_progress')
+            .update({ completed_at: new Date().toISOString() })
+            .eq('user_id', user.id)
+            .eq('course_type', courseType);
+        }
       }
-
-      setLoading(false);
-    };
-
-    loadProgress();
-  }, [courseType]);
-
-  // Animate progress bar after load
-  useEffect(() => {
-    if (!loading && progress) {
-      const targetPercent = (progress.lessons_completed.length / TOTAL_MODULES) * 100;
-      const timer = setTimeout(() => {
-        setAnimatedPercent(targetPercent);
-      }, ANIMATION.PROGRESS_DELAY);
-      return () => clearTimeout(timer);
+    } catch (err) {
+      console.error('Error finishing exam:', err);
     }
-  }, [loading, progress]);
-
-  // Helper functions
-  const isModuleCompleted = (moduleId: number) => {
-    return progress?.lessons_completed.includes(moduleId) || false;
+    
+    setPhase('done');
   };
 
-  const isModuleUnlocked = (moduleId: number) => {
-    if (moduleId === 1) return true;
-    return isModuleCompleted(moduleId - 1);
+  const handleRetry = () => {
+    clear();
+    setQuestions([]);
+    setCurrentIndex(0);
+    setCorrectCount(0);
+    setSelectedAnswer(null);
+    setSubmitted(false);
+    setIsCorrect(false);
+    setWrongRed('');
+    setShowFeedback(false);
+    setError(null);
+    setPhase('intro');
   };
 
-  const allModulesCompleted = () => {
-    return progress?.lessons_completed.length === TOTAL_MODULES;
-  };
-
-  const getCurrentModule = () => {
-    // Find first incomplete module that's unlocked
-    for (const module of courseModules) {
-      if (!isModuleCompleted(module.id) && isModuleUnlocked(module.id)) {
-        return module;
-      }
-    }
-    return null;
-  };
-
-  const getCourseState = (): CourseState => {
-    if (certificate) return 'complete';
-    if (allModulesCompleted()) return 'exam-ready';
-    if (progress && progress.lessons_completed.length > 0) return 'in-progress';
-    return 'welcome';
-  };
-
-  const handleDownloadCertificate = async () => {
-    if (!certificate) return;
-    setIsDownloading(true);
-    // Small delay for UX feedback
-    await new Promise(resolve => setTimeout(resolve, 500));
-    window.location.href = `/certificado/${certificate.id}`;
-    setIsDownloading(false);
-  };
-
-  const completedCount = progress?.lessons_completed.length || 0;
-  const courseState = getCourseState();
-  const currentModule = getCurrentModule();
-  const courseName = courseTypeNames[courseType as keyof typeof courseTypeNames]?.es || 'Curso';
-
+  // ============================================
+  // LOADING STATE
+  // ============================================
   if (loading) {
     return (
       <main className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="relative w-16 h-16 mx-auto mb-4">
-            <svg className="w-full h-full animate-spin" viewBox="0 0 100 100">
+          <div className="relative w-20 h-20 mx-auto mb-6">
+            <svg className="w-full h-full" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
               <circle
                 cx="50" cy="50" r="40"
                 fill="none" stroke="#7EC8E3" strokeWidth="4"
-                strokeLinecap="round" strokeDasharray="60 140"
+                strokeLinecap="round" strokeDasharray="60 191"
+                className="animate-spin origin-center"
+                style={{ animationDuration: '1.5s' }}
+              />
+              <circle
+                cx="50" cy="50" r="28"
+                fill="none" stroke="#77DD77" strokeWidth="3"
+                strokeLinecap="round" strokeDasharray="40 136"
+                className="animate-spin origin-center"
+                style={{ animationDuration: '2s', animationDirection: 'reverse' }}
               />
             </svg>
           </div>
-          <p className="text-white/70">Cargando su curso...</p>
+          <p className="text-white/70 text-lg">Preparando su examen...</p>
         </div>
       </main>
     );
   }
 
-  return (
-    <main className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-background border-b border-[#FFFFFF]/15">
-        <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
-          <Link 
-            href="/panel" 
-            className="text-white/70 hover:text-white text-sm font-medium flex items-center gap-2 transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Volver al Panel
-          </Link>
-          <Link href="/" className="text-white font-semibold font-brand">
-            Putting Kids First<sup className="text-[8px] relative -top-2">®</sup>
-          </Link>
-        </div>
-      </header>
-
-      <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-12">
-        
-        {/* State-Dependent Hero */}
-        <section className="text-center mb-10">
-          <StateHero 
-            state={courseState} 
-            courseName={courseName}
-            completedCount={completedCount}
-            totalCount={TOTAL_MODULES}
-          />
-        </section>
-
-        {/* Progress Tracker */}
-        <section className="mb-8">
-          <ProgressTracker 
-            completedCount={completedCount}
-            totalCount={TOTAL_MODULES}
-            animatedPercent={animatedPercent}
-            courseState={courseState}
-          />
-        </section>
-
-        {/* Certificate Section (if complete) */}
-        {courseState === 'complete' && certificate && (
-          <section className="mb-8">
-            <CertificateCard 
-              certificate={certificate}
-              isDownloading={isDownloading}
-              onDownload={handleDownloadCertificate}
-            />
-          </section>
-        )}
-
-        {/* Continue CTA (if in progress) */}
-        {courseState !== 'complete' && currentModule && courseState !== 'exam-ready' && (
-          <section className="mb-8">
-            <Link
-              href={`/curso/${courseType}/${currentModule.slug}`}
-              className="w-full bg-[#77DD77] text-[#1C1C1C] py-5 px-6 rounded-xl font-bold text-lg hover:bg-[#88EE88] transition-all hover:shadow-lg hover:shadow-[#77DD77]/25 active:scale-[0.98] flex items-center justify-center gap-3"
-            >
-              <PlayIcon className="w-6 h-6" />
-              <span>
-                {completedCount === 0 ? 'Comenzar' : 'Continuar'}: {currentModule.titleEs}
-              </span>
-            </Link>
-          </section>
-        )}
-
-        {/* Exam CTA (if ready) */}
-        {courseState === 'exam-ready' && (
-          <section className="mb-8">
-            <ExamCTA courseType={courseType} />
-          </section>
-        )}
-
-        {/* Lessons List */}
-        {courseState !== 'complete' && (
-          <section className="mb-8">
-            <h3 className="text-lg font-semibold text-white mb-4">Lecciones</h3>
-            <div className="space-y-3">
-              {courseModules.map((module, index) => {
-                const completed = isModuleCompleted(module.id);
-                const unlocked = isModuleUnlocked(module.id);
-                const isCurrent = currentModule?.id === module.id;
-
-                return (
-                  <LessonCard
-                    key={module.id}
-                    module={module}
-                    courseType={courseType}
-                    completed={completed}
-                    unlocked={unlocked}
-                    isCurrent={isCurrent}
-                    index={index}
+  // ============================================
+  // RESULTS SCREEN
+  // ============================================
+  if (phase === 'done') {
+    const passed = correctCount >= PASS_SCORE;
+    const score = Math.round((correctCount / QUESTIONS_PER_EXAM) * 100);
+    
+    return (
+      <main className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="bg-[#2A2A2A] rounded-2xl p-8 md:p-10 max-w-md w-full text-center border border-white/10 relative overflow-hidden">
+          {passed ? (
+            <>
+              {/* Success celebration particles */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                {Array.from({ length: 20 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute rounded-full"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                      width: `${4 + Math.random() * 6}px`,
+                      height: `${4 + Math.random() * 6}px`,
+                      backgroundColor: ['#77DD77', '#7EC8E3', '#FFE566', '#FFB347'][i % 4],
+                      opacity: 0.2 + Math.random() * 0.2,
+                      animation: `float ${3 + Math.random() * 3}s ease-in-out infinite`,
+                      animationDelay: `${Math.random() * 2}s`,
+                    }}
                   />
-                );
-              })}
-            </div>
-          </section>
-        )}
-
-        {/* Exam Card (locked state) */}
-        {courseState !== 'complete' && courseState !== 'exam-ready' && (
-          <section className="mb-8">
-            <div className="bg-[#2A2A2A] rounded-xl border border-white/10 p-6 opacity-60">
-              <div className="flex items-center gap-4">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
-                  <LockIcon className="w-6 h-6 text-white/40" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-white">Examen Final</h3>
-                  <p className="text-sm text-white/50">
-                    Complete todas las lecciones para desbloquear el examen.
-                  </p>
-                </div>
+                ))}
               </div>
-            </div>
-          </section>
-        )}
-
-        {/* Help Section */}
-        <section>
-          <HelpSection />
-        </section>
-      </div>
-    </main>
-  );
-}
-
-// ============================================
-// STATE HERO COMPONENT
-// ============================================
-
-function StateHero({ 
-  state, 
-  courseName,
-  completedCount,
-  totalCount 
-}: { 
-  state: CourseState; 
-  courseName: string;
-  completedCount: number;
-  totalCount: number;
-}) {
-  const content = {
-    welcome: {
-      icon: <WelcomeIcon />,
-      iconBg: 'bg-[#77DD77]/10 border-[#77DD77]/30',
-      greeting: `¡Bienvenido a ${courseName}!`,
-      message: 'Su inscripción está confirmada. Comience ahora y complete su requisito a su propio ritmo.',
-    },
-    'in-progress': {
-      icon: <ProgressIcon />,
-      iconBg: 'bg-[#7EC8E3]/10 border-[#7EC8E3]/30',
-      greeting: '¡Buen Progreso!',
-      message: `Ha completado ${completedCount} de ${totalCount} lecciones. Continúe donde lo dejó.`,
-    },
-    'exam-ready': {
-      icon: <ExamReadyIcon />,
-      iconBg: 'bg-[#FFB347]/10 border-[#FFB347]/30',
-      greeting: '¡Listo Para el Examen!',
-      message: 'Ha completado todas las lecciones. Apruebe el examen final para recibir su certificado.',
-    },
-    complete: {
-      icon: <CompleteIcon />,
-      iconBg: 'bg-[#77DD77]/10 border-[#77DD77]/30',
-      greeting: '¡Felicidades!',
-      message: 'Ha completado el curso exitosamente. Su certificado está listo para descargar.',
-    },
-  };
-
-  const { icon, iconBg, greeting, message } = content[state];
-
-  return (
-    <div>
-      <div className={`inline-flex items-center justify-center w-20 h-20 mb-6 rounded-full border-2 ${iconBg}`}>
-        {icon}
-      </div>
-      <h1 className="text-2xl md:text-3xl font-bold text-white mb-3">
-        {greeting}
-      </h1>
-      <p className="text-base md:text-lg text-white/70 max-w-xl mx-auto">
-        {message}
-      </p>
-    </div>
-  );
-}
-
-// ============================================
-// PROGRESS TRACKER COMPONENT
-// ============================================
-
-function ProgressTracker({ 
-  completedCount, 
-  totalCount, 
-  animatedPercent,
-  courseState 
-}: { 
-  completedCount: number; 
-  totalCount: number; 
-  animatedPercent: number;
-  courseState: CourseState;
-}) {
-  return (
-    <div className="bg-[#2A2A2A] rounded-2xl p-6 border border-white/10">
-      {/* Progress Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h2 className="text-lg font-semibold text-white">Progreso del Curso</h2>
-          <p className="text-sm text-white/60">
-            {completedCount} de {totalCount} lecciones completadas
-          </p>
-        </div>
-        <div className="text-right">
-          <span className="text-2xl font-bold text-[#77DD77]">
-            {Math.round((completedCount / totalCount) * 100)}%
-          </span>
-        </div>
-      </div>
-
-      {/* Animated Progress Bar */}
-      <div className="relative h-4 bg-[#1C1C1C] rounded-full overflow-hidden border border-white/10">
-        {/* Ink fill effect */}
-        <div 
-          className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#77DD77] via-[#88EE88] to-[#77DD77] rounded-full transition-all duration-1000 ease-out"
-          style={{ 
-            width: `${animatedPercent}%`,
-            boxShadow: animatedPercent > 0 ? '0 0 20px rgba(119, 221, 119, 0.4)' : 'none',
-          }}
-        >
-          {/* Ink edge glow */}
-          {animatedPercent > 0 && animatedPercent < 100 && (
-            <div 
-              className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-r from-transparent to-[#77DD77]/50"
-              style={{ filter: 'blur(2px)' }}
-            />
+              
+              <div className="relative z-10">
+                <div className="relative inline-flex items-center justify-center w-24 h-24 mb-6">
+                  <div className="absolute inset-0 bg-[#77DD77]/20 rounded-full animate-ping" style={{ animationDuration: '2s' }} />
+                  <div className="relative w-20 h-20 bg-[#77DD77] rounded-full flex items-center justify-center shadow-lg shadow-[#77DD77]/30">
+                    <svg className="w-10 h-10 text-[#1C1C1C]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+                
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">¡Felicidades!</h1>
+                <p className="text-white/60 mb-4">Ha aprobado el examen final</p>
+                
+                <div className="inline-flex items-center gap-2 bg-[#77DD77]/10 border border-[#77DD77]/30 rounded-full px-5 py-2.5 mb-8">
+                  <span className="text-[#77DD77] font-bold text-xl">{score}%</span>
+                  <span className="text-[#77DD77]/70 text-sm">({correctCount}/{QUESTIONS_PER_EXAM} correctas)</span>
+                </div>
+                
+                <Link 
+                  href="/completar-perfil"
+                  className="flex items-center justify-center gap-2 w-full bg-[#77DD77] text-[#1C1C1C] py-4 rounded-xl font-bold text-lg hover:bg-[#88EE88] transition-all hover:shadow-lg hover:shadow-[#77DD77]/25 mb-3 active:scale-[0.98]"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Obtener Mi Certificado
+                </Link>
+                
+                <Link 
+                  href="/panel" 
+                  className="block w-full text-white/50 py-3 rounded-xl hover:text-white transition-colors text-sm"
+                >
+                  Volver al Panel
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Failed State */}
+              <div className="w-20 h-20 bg-[#FF9999]/20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#FF9999]/30">
+                <svg className="w-10 h-10 text-[#FF9999]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </div>
+              
+              <h1 className="text-2xl font-bold text-white mb-2">No Aprobó Esta Vez</h1>
+              <p className="text-white/60 mb-2">Obtuvo {score}% — necesita 70% para aprobar</p>
+              
+              <div className="bg-[#1C1C1C] rounded-xl p-4 mb-6 text-left border border-white/10">
+                <p className="text-white/60 text-sm">
+                  <strong className="text-white">No se preocupe</strong> — puede retomar el examen las veces que necesite. 
+                  Le recomendamos revisar las lecciones antes de intentar de nuevo.
+                </p>
+              </div>
+              
+              <button 
+                onClick={handleRetry}
+                className="flex items-center justify-center gap-2 w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold hover:bg-[#9DD8F3] transition-all mb-3 active:scale-[0.98]"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Reintentar Examen
+              </button>
+              
+              <Link 
+                href={`/curso/${courseType}`} 
+                className="block w-full bg-transparent border border-white/20 text-white py-3 rounded-xl hover:bg-white/5 transition-colors"
+              >
+                Revisar el Curso
+              </Link>
+            </>
           )}
         </div>
-
-        {/* Lesson markers */}
-        <div className="absolute inset-0 flex">
-          {Array.from({ length: totalCount - 1 }).map((_, i) => (
-            <div key={i} className="flex-1 border-r border-white/5 last:border-r-0" />
-          ))}
-        </div>
-      </div>
-
-      {/* Quick Stats */}
-      <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/10">
-        <div className="text-center">
-          <div className="text-2xl font-bold text-white">{completedCount}</div>
-          <div className="text-xs text-white/60">Completadas</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-white">{totalCount - completedCount}</div>
-          <div className="text-xs text-white/60">Restantes</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-white">
-            {courseState === 'complete' ? (
-              <span className="text-[#77DD77]">✓</span>
-            ) : courseState === 'exam-ready' ? (
-              <span className="text-[#FFB347]">!</span>
-            ) : (
-              '—'
-            )}
-          </div>
-          <div className="text-xs text-white/60">Examen</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// LESSON CARD COMPONENT
-// ============================================
-
-interface LessonCardProps {
-  module: typeof courseModules[0];
-  courseType: string;
-  completed: boolean;
-  unlocked: boolean;
-  isCurrent: boolean;
-  index: number;
-}
-
-function LessonCard({ module, courseType, completed, unlocked, isCurrent, index }: LessonCardProps) {
-  const href = `/curso/${courseType}/${module.slug}`;
-  
-  const cardClasses = `
-    block relative p-4 md:p-5 rounded-xl border-2 transition-all
-    ${isCurrent 
-      ? 'bg-[#77DD77]/10 border-[#77DD77]/50 hover:border-[#77DD77]' 
-      : completed
-        ? 'bg-[#2A2A2A] border-white/10 hover:border-white/20'
-        : 'bg-[#1C1C1C] border-white/5 opacity-60 cursor-not-allowed'
-    }
-  `;
-
-  const content = (
-    <div className="flex items-center gap-4">
-      {/* Lesson number / checkmark */}
-      <div className={`
-        flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm
-        ${completed 
-          ? 'bg-[#77DD77] text-[#1C1C1C]' 
-          : isCurrent
-            ? 'bg-[#7EC8E3] text-[#1C1C1C]'
-            : 'bg-white/10 text-white/40'
-        }
-      `}>
-        {completed ? (
-          <CheckmarkIcon className="w-5 h-5" />
-        ) : (
-          module.id
-        )}
-      </div>
-
-      {/* Lesson info */}
-      <div className="flex-1 min-w-0">
-        <h4 className={`font-semibold text-sm truncate ${completed || unlocked ? 'text-white' : 'text-white/40'}`}>
-          {module.titleEs}
-        </h4>
-        <p className={`text-sm ${completed || unlocked ? 'text-white/60' : 'text-white/30'}`}>
-          {module.estimatedTime}
-        </p>
-      </div>
-
-      {/* Status indicator */}
-      <div className="flex-shrink-0">
-        {isCurrent && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7EC8E3]/20 text-[#7EC8E3] text-xs font-semibold">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7EC8E3] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#7EC8E3]"></span>
-            </span>
-            {index === 0 ? 'Comenzar' : 'Continuar'}
-          </span>
-        )}
-        {completed && !isCurrent && (
-          <span className="text-[#77DD77] text-sm font-semibold">Completada</span>
-        )}
-        {!completed && !isCurrent && !unlocked && (
-          <LockIcon className="w-5 h-5 text-white/20" />
-        )}
-      </div>
-    </div>
-  );
-
-  if (unlocked) {
-    return (
-      <Link href={href} className={cardClasses}>
-        {content}
-      </Link>
+        
+        {/* Float animation keyframes */}
+        <style jsx global>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(180deg); }
+          }
+        `}</style>
+      </main>
     );
   }
 
-  return (
-    <div className={cardClasses}>
-      {content}
-    </div>
-  );
-}
+  // ============================================
+  // INTRO SCREEN
+  // ============================================
+  if (phase === 'intro') {
+    return (
+      <main className="min-h-screen bg-background">
+        {/* Header */}
+        <header className="bg-background border-b border-white/10 sticky top-0 z-50">
+          <div className="max-w-4xl mx-auto px-4 md:px-6 py-4">
+            <Link 
+              href={`/curso/${courseType}`} 
+              className="text-white/60 hover:text-white text-sm font-medium flex items-center gap-2 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Volver al Curso
+            </Link>
+          </div>
+        </header>
 
-// ============================================
-// EXAM CTA COMPONENT
-// ============================================
+        <div className="max-w-2xl mx-auto px-4 md:px-6 py-8 md:py-12">
+          <div className="bg-[#2A2A2A] rounded-2xl p-6 md:p-8 border border-white/10">
+            {/* Icon */}
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#7EC8E3]/10 border-2 border-[#7EC8E3]/30 mb-4">
+                <svg className="w-10 h-10 text-[#7EC8E3]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 11l3 3L22 4" />
+                  <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+                </svg>
+              </div>
+              <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Examen Final</h1>
+              <p className="text-white/50">Demuestre lo que ha aprendido para obtener su certificado</p>
+            </div>
 
-function ExamCTA({ courseType }: { courseType: string }) {
-  return (
-    <div className="relative bg-gradient-to-br from-[#7EC8E3]/20 to-[#7EC8E3]/5 rounded-2xl p-6 md:p-8 border-2 border-[#7EC8E3]/30 overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-[#7EC8E3]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-      
-      <div className="relative z-10 text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-[#7EC8E3]/20 border-2 border-[#7EC8E3]/40">
-          <ExamIcon className="w-8 h-8 text-[#7EC8E3]" />
-        </div>
-        
-        <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
-          ¡Es Hora del Examen Final!
-        </h3>
-        <p className="text-white/70 mb-6 max-w-md mx-auto text-sm md:text-base">
-          Ha completado todas las lecciones. Apruebe el examen para recibir su certificado oficial aceptado por la corte.
-        </p>
-        
-        <Link
-          href={`/curso/${courseType}/examen`}
-          className="inline-flex items-center gap-2 bg-[#7EC8E3] text-[#1C1C1C] px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#9DD8F3] transition-all hover:shadow-lg hover:shadow-[#7EC8E3]/25"
-        >
-          Comenzar Examen
-          <ArrowRightIcon className="w-5 h-5" />
-        </Link>
-
-        <p className="text-white/50 text-sm mt-4">
-          Necesita 70% para aprobar. Puede retomarlo sin límite.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// CERTIFICATE CARD COMPONENT
-// ============================================
-
-function CertificateCard({ 
-  certificate, 
-  isDownloading, 
-  onDownload 
-}: { 
-  certificate: Certificate;
-  isDownloading: boolean;
-  onDownload: () => void;
-}) {
-  return (
-    <div className="relative bg-gradient-to-br from-[#77DD77]/20 to-[#77DD77]/5 rounded-2xl p-6 md:p-10 border-2 border-[#77DD77]/30 overflow-hidden">
-      {/* Celebration particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <CelebrationParticles />
-      </div>
-      
-      <div className="relative z-10 text-center">
-        {/* Animated certificate stamp */}
-        <div className="inline-flex items-center justify-center w-20 h-20 mb-6">
-          <CertificateStampIcon />
-        </div>
-        
-        <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
-          ¡Su Certificado Está Listo!
-        </h3>
-        <p className="text-white/70 mb-6 max-w-md mx-auto text-sm md:text-base">
-          Descargue su certificado oficial con código de verificación judicial.
-        </p>
-
-        {/* Certificate details */}
-        <div className="bg-[#1C1C1C]/50 rounded-xl p-4 mb-6 max-w-sm mx-auto">
-          <p className="text-sm text-white/60 mb-1">Certificado #{certificate.certificate_number}</p>
-          <p className="text-sm text-white/60">Código: <span className="text-[#77DD77] font-mono">{certificate.verification_code}</span></p>
-        </div>
-        
-        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-          <button
-            onClick={onDownload}
-            disabled={isDownloading}
-            className="inline-flex items-center gap-3 bg-[#77DD77] text-[#1C1C1C] px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#88EE88] transition-all hover:shadow-lg hover:shadow-[#77DD77]/25 disabled:opacity-70 disabled:cursor-not-allowed"
-          >
-            {isDownloading ? (
-              <>
-                <LoadingSpinner />
-                <span>Abriendo...</span>
-              </>
-            ) : (
-              <>
-                <DownloadIcon className="w-6 h-6" />
-                <span>Descargar Certificado</span>
-              </>
+            {/* Error Message */}
+            {error && (
+              <div className="bg-[#FF9999]/10 border border-[#FF9999]/30 rounded-xl p-4 mb-6">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-[#FF9999]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-[#FF9999]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-[#FF9999] text-sm">{error}</p>
+                    <p className="text-[#FF9999]/70 text-xs mt-1">Su progreso anterior está guardado. Puede intentar de nuevo.</p>
+                  </div>
+                </div>
+              </div>
             )}
-          </button>
+
+            {/* Resume Alert */}
+            {hasResumable && (
+              <div className="bg-[#FFB347]/10 border border-[#FFB347]/30 rounded-xl p-4 mb-6">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-[#FFB347]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 text-[#FFB347]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-[#FFB347] mb-3">Tiene un examen en progreso</p>
+                    <div className="flex flex-wrap gap-2">
+                      <button 
+                        onClick={resume} 
+                        className="bg-[#FFB347] text-[#1C1C1C] px-5 py-2.5 rounded-lg font-semibold hover:bg-[#FFC05C] transition-colors"
+                      >
+                        Continuar Examen
+                      </button>
+                      <button 
+                        onClick={start}
+                        disabled={isStarting}
+                        className="bg-white/10 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-white/20 transition-colors disabled:opacity-50"
+                      >
+                        {isStarting ? 'Cargando...' : 'Empezar de Nuevo'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Exam Info */}
+            <div className="bg-[#1C1C1C] rounded-xl p-5 mb-6 border border-white/5">
+              <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+                <svg className="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Detalles del Examen
+              </h3>
+              <ul className="space-y-3">
+                <li className="flex items-center gap-3 text-white/70">
+                  <div className="w-10 h-10 bg-[#7EC8E3]/10 rounded-lg flex items-center justify-center flex-shrink-0 border border-[#7EC8E3]/20">
+                    <span className="text-[#7EC8E3] font-bold">{QUESTIONS_PER_EXAM}</span>
+                  </div>
+                  <span>Preguntas de opción múltiple</span>
+                </li>
+                <li className="flex items-center gap-3 text-white/70">
+                  <div className="w-10 h-10 bg-[#77DD77]/10 rounded-lg flex items-center justify-center flex-shrink-0 border border-[#77DD77]/20">
+                    <span className="text-[#77DD77] font-bold">70%</span>
+                  </div>
+                  <span>Puntuación mínima para aprobar ({PASS_SCORE} correctas)</span>
+                </li>
+                <li className="flex items-center gap-3 text-white/70">
+                  <div className="w-10 h-10 bg-[#FFB347]/10 rounded-lg flex items-center justify-center flex-shrink-0 border border-[#FFB347]/20">
+                    <svg className="w-5 h-5 text-[#FFB347]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                  </div>
+                  <span>Puede retomar el examen sin límite</span>
+                </li>
+                <li className="flex items-center gap-3 text-white/70">
+                  <div className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center flex-shrink-0 border border-white/10">
+                    <svg className="w-5 h-5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                    </svg>
+                  </div>
+                  <span>Su progreso se guarda automáticamente</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Start Button */}
+            {!hasResumable && (
+              <button 
+                onClick={start}
+                disabled={isStarting}
+                className="w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold text-lg hover:bg-[#9DD8F3] transition-all hover:shadow-lg hover:shadow-[#7EC8E3]/25 flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isStarting ? (
+                  <>
+                    <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    <span>Cargando Preguntas...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Comenzar Examen</span>
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // ============================================
+  // EXAM SCREEN
+  // ============================================
+  const q = questions[currentIndex];
+  if (!q) return null;
+
+  const progressPercent = ((currentIndex + 1) / QUESTIONS_PER_EXAM) * 100;
+
+  return (
+    <main className="min-h-screen bg-background">
+      {/* Progress Header */}
+      <header className="bg-[#2A2A2A] border-b border-white/10 sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 py-4">
+          <div className="flex justify-between items-center text-sm mb-3">
+            <span className="text-white font-medium flex items-center gap-2">
+              <span className="w-6 h-6 bg-[#7EC8E3]/20 rounded-full flex items-center justify-center text-[#7EC8E3] text-xs font-bold">
+                {currentIndex + 1}
+              </span>
+              Pregunta {currentIndex + 1} de {QUESTIONS_PER_EXAM}
+            </span>
+            <span className="text-[#77DD77] font-medium flex items-center gap-1.5">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              {correctCount} correcta{correctCount !== 1 ? 's' : ''}
+            </span>
+          </div>
+          <div className="w-full bg-[#1C1C1C] rounded-full h-2.5 overflow-hidden border border-white/10">
+            <div 
+              className="bg-gradient-to-r from-[#7EC8E3] to-[#77DD77] h-full rounded-full transition-all duration-500"
+              style={{ 
+                width: `${progressPercent}%`,
+                boxShadow: '0 0 12px rgba(126, 200, 227, 0.4)'
+              }}
+            />
+          </div>
+        </div>
+      </header>
+
+      {/* Question Card */}
+      <div className="max-w-2xl mx-auto px-4 md:px-6 py-6 md:py-8">
+        <div className="bg-[#2A2A2A] rounded-2xl p-6 md:p-8 border border-white/10">
+          {/* Question Text */}
+          <h2 className="text-lg md:text-xl font-semibold text-white mb-6 leading-relaxed">
+            {q.question_text}
+          </h2>
+          
+          {/* Answer Options */}
+          <div className="space-y-3 mb-6">
+            {q.shuffledAnswers.map((ans) => {
+              const isSelected = selectedAnswer === ans.label;
+              const showWrong = submitted && isSelected && !isCorrect;
+              const showCorrect = submitted && isCorrect && isSelected;
+              
+              return (
+                <button 
+                  key={`q${currentIndex}-${ans.label}`} 
+                  onClick={() => !submitted && setSelectedAnswer(ans.label)} 
+                  disabled={submitted}
+                  className={`
+                    w-full p-4 rounded-xl border-2 text-left transition-all
+                    ${showWrong 
+                      ? 'border-[#FF9999] bg-[#FF9999]/10' 
+                      : showCorrect
+                        ? 'border-[#77DD77] bg-[#77DD77]/10'
+                        : isSelected 
+                          ? 'border-[#7EC8E3] bg-[#7EC8E3]/10' 
+                          : 'border-white/10 hover:border-white/20 bg-[#1C1C1C]'
+                    }
+                    ${submitted ? 'cursor-default' : 'cursor-pointer active:scale-[0.99]'}
+                  `}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className={`
+                      w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0 transition-all
+                      ${showWrong 
+                        ? 'bg-[#FF9999] text-[#1C1C1C]' 
+                        : showCorrect
+                          ? 'bg-[#77DD77] text-[#1C1C1C]'
+                          : isSelected 
+                            ? 'bg-[#7EC8E3] text-[#1C1C1C]' 
+                            : 'bg-white/10 text-white/50'
+                      }
+                    `}>
+                      {showCorrect ? (
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      ) : showWrong ? (
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      ) : (
+                        ans.label
+                      )}
+                    </span>
+                    <span className={`pt-1.5 ${isSelected || submitted ? 'text-white' : 'text-white/80'}`}>
+                      {ans.text}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Feedback Messages */}
+          <div className={`transition-all duration-300 overflow-hidden ${showFeedback ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+            {submitted && !isCorrect && (
+              <div className="bg-[#FF9999]/10 border border-[#FF9999]/30 rounded-xl p-4 mb-6">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-[#FF9999]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-[#FF9999]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[#FF9999] mb-1">Respuesta Incorrecta</p>
+                    <p className="text-[#FF9999]/80 text-sm">
+                      Revisar: <strong>{wrongRed ? cleanRedirect(wrongRed) : 'el material del curso'}</strong>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {submitted && isCorrect && (
+              <div className="bg-[#77DD77]/10 border border-[#77DD77]/30 rounded-xl p-4 mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-[#77DD77] rounded-full flex items-center justify-center shadow-lg shadow-[#77DD77]/20">
+                    <svg className="w-4 h-4 text-[#1C1C1C]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <p className="font-semibold text-[#77DD77]">¡Correcto!</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Action Button */}
+          {!submitted ? (
+            <button 
+              onClick={handleSubmit} 
+              disabled={!selectedAnswer} 
+              className="w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold text-lg hover:bg-[#9DD8F3] disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
+            >
+              Confirmar Respuesta
+            </button>
+          ) : (
+            <button 
+              onClick={handleNext} 
+              className="w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold text-lg hover:bg-[#9DD8F3] transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+            >
+              {currentIndex < questions.length - 1 ? (
+                <>
+                  Siguiente Pregunta
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </>
+              ) : (
+                'Ver Resultados'
+              )}
+            </button>
+          )}
         </div>
       </div>
-    </div>
-  );
-}
-
-// ============================================
-// HELP SECTION COMPONENT
-// ============================================
-
-function HelpSection() {
-  return (
-    <div className="bg-[#2A2A2A] rounded-2xl p-6 border border-white/10">
-      <h3 className="text-lg font-semibold text-white mb-4">¿Necesita Ayuda?</h3>
-      <div className="grid md:grid-cols-2 gap-4">
-        <Link 
-          href="/preguntas-frecuentes"
-          className="flex items-center gap-3 p-4 rounded-xl border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all"
-        >
-          <QuestionIcon className="w-8 h-8 text-[#7EC8E3]" />
-          <div>
-            <p className="font-semibold text-white">Preguntas Frecuentes</p>
-            <p className="text-sm text-white/60">Respuestas a dudas comunes</p>
-          </div>
-        </Link>
-        <a 
-          href="mailto:info@cursoparapadres.org"
-          className="flex items-center gap-3 p-4 rounded-xl border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all"
-        >
-          <SupportIcon className="w-8 h-8 text-[#FFB347]" />
-          <div>
-            <p className="font-semibold text-white">Contactar Soporte</p>
-            <p className="text-sm text-white/60">info@cursoparapadres.org</p>
-          </div>
-        </a>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// CELEBRATION PARTICLES
-// ============================================
-
-function CelebrationParticles() {
-  return (
-    <div className="absolute inset-0">
-      {Array.from({ length: 15 }).map((_, i) => (
-        <div
-          key={i}
-          className="absolute w-2 h-2 rounded-full"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            backgroundColor: ['#77DD77', '#7EC8E3', '#FFE566', '#FFB347'][i % 4],
-            opacity: 0.2 + Math.random() * 0.3,
-            animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 2}s`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-// ============================================
-// ICONS
-// ============================================
-
-function WelcomeIcon() {
-  return (
-    <svg className="w-10 h-10 text-[#77DD77]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2L2 7l10 5 10-5-10-5z" />
-      <path d="M2 17l10 5 10-5" />
-      <path d="M2 12l10 5 10-5" />
-    </svg>
-  );
-}
-
-function ProgressIcon() {
-  return (
-    <svg className="w-10 h-10 text-[#7EC8E3]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 20V10" />
-      <path d="M18 20V4" />
-      <path d="M6 20v-4" />
-    </svg>
-  );
-}
-
-function ExamReadyIcon() {
-  return (
-    <svg className="w-10 h-10 text-[#FFB347]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <path d="M14 2v6h6" />
-      <path d="M9 15l2 2 4-4" />
-    </svg>
-  );
-}
-
-function CompleteIcon() {
-  return (
-    <svg className="w-10 h-10 text-[#77DD77]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-      <path d="M22 4L12 14.01l-3-3" />
-    </svg>
-  );
-}
-
-function CheckmarkIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 6L9 17l-5-5" />
-    </svg>
-  );
-}
-
-function PlayIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M8 5v14l11-7z" />
-    </svg>
-  );
-}
-
-function LockIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />
-    </svg>
-  );
-}
-
-function ArrowRightIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 12h14M12 5l7 7-7 7" />
-    </svg>
-  );
-}
-
-function ExamIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 11l3 3L22 4" />
-      <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-    </svg>
-  );
-}
-
-function DownloadIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-      <path d="M7 10l5 5 5-5" />
-      <path d="M12 15V3" />
-    </svg>
-  );
-}
-
-function QuestionIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
-      <path d="M12 17h.01" />
-    </svg>
-  );
-}
-
-function SupportIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
-    </svg>
-  );
-}
-
-function CertificateStampIcon() {
-  return (
-    <svg className="w-full h-full certificate-stamp" viewBox="0 0 100 100" aria-hidden="true">
-      <circle cx="50" cy="50" r="45" fill="none" stroke="#77DD77" strokeWidth="3" className="certificate-ring" />
-      <circle cx="50" cy="50" r="38" fill="none" stroke="#77DD77" strokeWidth="1" strokeDasharray="4 4" opacity="0.5" />
-      <path d="M30 50 L45 65 L70 35" fill="none" stroke="#77DD77" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" className="certificate-check" />
-    </svg>
-  );
-}
-
-function LoadingSpinner() {
-  return (
-    <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-    </svg>
+    </main>
   );
 }

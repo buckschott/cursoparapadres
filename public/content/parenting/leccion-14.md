@@ -172,7 +172,7 @@ Estilo de comportamiento innato—algunos niños son más activos, sensibles, o 
 
 ---
 
-> **Aviso Legal:** Los componentes legales de este curso de crianza proporcionan principios generales del derecho de familia. La presentación de este material no pretende constituir asesoramiento legal, y el material del curso indica al participante que debe consultar con un abogado licenciado para obtener respuestas a preguntas legales específicas.
+> **Aviso Legal:** Los componentes legales de este curso de crianza proporcionan principios generales del derecho de familia. La presentación de este material no pretende constituir asesoramiento legal, y el material de la clase indica al participante que debe consultar con un abogado licenciado para obtener respuestas a preguntas legales específicas.
 
 ---
 

@@ -8,7 +8,7 @@
 // ===== CONTACT =====
 
 /** Public support email - shown in UI */
-export const SUPPORT_EMAIL = 'info@cursoparapadres.org';
+export const SUPPORT_EMAIL = 'info@claseparapadres.com';
 
 /** Support phone number */
 export const SUPPORT_PHONE = '888-777-2298';
@@ -31,7 +31,7 @@ export const CURRENT_YEAR = new Date().getFullYear();
 
 export const SITE_URL = {
   /** Spanish site */
-  ES: 'https://cursoparapadres.org',
+  ES: 'https://claseparapadres.com',
   /** English site */
   EN: 'https://puttingkidsfirst.org',
 } as const;

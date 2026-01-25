@@ -132,7 +132,7 @@ export default function CTAButton({ href, children, className = '', showArrow = 
       {/* Hand-drawn arrow - positioned upper-right of button */}
       {showArrow && (
         <div 
-          className="absolute -top-[80px] -right-[56px] -rotate-[22.5deg] md:-top-[74px] md:-right-20 md:rotate-0 w-12 h-20 md:w-16 md:h-28 pointer-events-none z-10"
+          className="absolute -top-[70px] -right-[36px] -rotate-[22.5deg] md:-top-[74px] md:-right-20 md:rotate-0 w-10 h-16 md:w-16 md:h-28 pointer-events-none z-10"
           aria-hidden="true"
         >
           <svg 
@@ -162,7 +162,7 @@ export default function CTAButton({ href, children, className = '', showArrow = 
         onMouseEnter={handleMouseEnter}
         className={`
           cta-button relative inline-flex items-center justify-center group 
-          px-12 py-5 rounded-full text-2xl font-bold 
+          px-8 py-4 md:px-12 md:py-5 rounded-full text-xl md:text-2xl font-bold 
           transition-all duration-200
           bg-[#77DD77] text-[#1C1C1C] 
           hover:bg-[#88EE88] hover:shadow-lg hover:shadow-[#77DD77]/25

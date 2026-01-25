@@ -267,39 +267,62 @@ body {
   gap: 1rem;
 }
 
+/* ===== HERO LAYOUT (Mobile Portrait) ===== */
+@media (orientation: portrait) and (max-width: 767px) {
+  .hero-line-1, .hero-line-2 { display: inline-block; white-space: normal; }
+  .hero-content { gap: 1.25rem; }
+}
+
 /* ===== TRUST BADGE ROTATION ===== */
 .trust-badge-text {
   position: relative;
-  font-size: clamp(0.875rem, 4.5vw, 1.25rem);
+  display: inline-block;
+  font-size: clamp(0.875rem, 4vw, 1.5rem);
 }
 
-.trust-text-1, .trust-text-2 {
-  transition: opacity var(--timing-slow) ease-in-out;
+.trust-text-1,
+.trust-text-2,
+.trust-text-3 {
   white-space: nowrap;
 }
 
-.trust-text-2 {
+/* Text 1 is the width anchor (visible in DOM flow) */
+.trust-text-1 {
+  display: inline-block;
+  animation: trustRotate1 12s ease-in-out infinite;
+}
+
+/* Text 2 & 3 are absolutely positioned over text 1 */
+.trust-text-2,
+.trust-text-3 {
   opacity: 0;
 }
 
+.trust-text-2 {
+  animation: trustRotate2 12s ease-in-out infinite;
+}
+
+.trust-text-3 {
+  animation: trustRotate3 12s ease-in-out infinite;
+}
+
+/* 3-phase rotation: each text visible for ~4s, 12s total cycle */
 @keyframes trustRotate1 {
-  0%, 42% { opacity: 1; }
-  50%, 92% { opacity: 0; }
+  0%, 28% { opacity: 1; }
+  33%, 95% { opacity: 0; }
   100% { opacity: 1; }
 }
 
 @keyframes trustRotate2 {
-  0%, 42% { opacity: 0; }
-  50%, 92% { opacity: 1; }
+  0%, 28% { opacity: 0; }
+  33%, 61% { opacity: 1; }
+  66%, 100% { opacity: 0; }
+}
+
+@keyframes trustRotate3 {
+  0%, 61% { opacity: 0; }
+  66%, 95% { opacity: 1; }
   100% { opacity: 0; }
-}
-
-.trust-text-1 {
-  animation: trustRotate1 8s ease-in-out infinite;
-}
-
-.trust-text-2 {
-  animation: trustRotate2 8s ease-in-out infinite;
 }
 
 /* ===== SUBTEXT REVEAL ===== */
@@ -355,19 +378,6 @@ body {
 /* ===== UTILITIES ===== */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* ===== MOBILE PORTRAIT OVERRIDES ===== */
-@media (orientation: portrait) and (max-width: 767px) {
-  .header-title { font-size: 1.25rem !important; }
-  .hero-title { font-size: 1.36rem !important; line-height: 1.1; }
-  .hero-line-1, .hero-line-2 { display: inline-block; white-space: normal; }
-  .hero-subheadline { font-size: 1rem !important; line-height: 1.5; }
-  .trust-badge-text { font-size: clamp(0.8rem, 4.2vw, 1rem) !important; }
-  .trust-badge-pill { margin-left: 0; margin-right: 0; }
-  .cta-button { font-size: 1.25rem !important; padding: 1rem 2rem !important; }
-  .secondary-cta { font-size: .9rem !important; }
-  .hero-content { gap: 1.25rem; padding-top: 50px; padding-bottom: 50px; }
-}
 
 /* ===== TOAST ANIMATIONS ===== */
 @keyframes toastShrink {
@@ -453,107 +463,6 @@ body {
   }
 }
 
-/* ===== REDUCED MOTION - COMPLETE IMPLEMENTATION ===== */
-@media (prefers-reduced-motion: reduce) {
-  /* Disable all transforms and animations globally */
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-
-  /* Scroll reveal - show immediately without animation */
-  .scroll-reveal {
-    opacity: 1;
-    transform: none;
-  }
-
-  /* SVG draw - show complete, no animation */
-  .draw-svg path {
-    stroke-dashoffset: 0;
-    animation: none !important;
-  }
-
-  /* Device animations - show active state immediately */
-  .device-animate .device-img {
-    opacity: 1;
-    filter: none;
-  }
-
-  /* Trust badge - show first message only, no rotation */
-  .trust-text-1 {
-    animation: none;
-    opacity: 1;
-  }
-  .trust-text-2 {
-    animation: none;
-    opacity: 0;
-    display: none;
-  }
-
-  /* Subtext - show immediately */
-  .subtext-line {
-    opacity: 1;
-    animation: none;
-    transform: none;
-  }
-
-  /* CTA arrow - show static */
-  .cta-arrow-path,
-  .cta-arrow-animate {
-    animation: none;
-    stroke-dashoffset: 0;
-    opacity: 1;
-  }
-
-  /* Chalk dust - disable */
-  @keyframes chalkBurst {
-    0%, 100% {
-      transform: none;
-      opacity: 0;
-    }
-  }
-
-  /* Footer entrance - show immediately */
-  .footer-cta {
-    opacity: 1;
-    transform: none;
-  }
-
-  /* Mobile menu - still needs to work, just instant */
-  .mobile-menu-overlay {
-    transition: none;
-  }
-  .mobile-menu-overlay.menu-open {
-    transform: translateY(0);
-  }
-  .mobile-menu-overlay:not(.menu-open) {
-    transform: translateY(-100%);
-  }
-
-  /* Hover effects - keep subtle feedback but no animation */
-  .group:hover .draw-svg {
-    transform: none;
-  }
-
-  /* Checkout overlay - show static */
-  .checkout-spinner,
-  .checkout-ring,
-  .checkout-arc,
-  .checkout-check,
-  .checkout-check-path {
-    animation: none !important;
-  }
-  
-  .checkout-ring {
-    stroke-dashoffset: 0;
-  }
-  
-  .checkout-arc {
-    transform: none;
-  }
-}
-
 /* ===== CHECKOUT OVERLAY ANIMATIONS ===== */
 
 /* Spinner container entrance */
@@ -620,6 +529,29 @@ body {
   }
 }
 
+/* ===== WELCOME BANNER CELEBRATION PARTICLES ===== */
+@keyframes celebrationTwinkle {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(1.3);
+  }
+}
+
+.celebration-particle {
+  animation: celebrationTwinkle 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celebration-particle {
+    animation: none;
+    opacity: 0.2;
+  }
+}
+
 /* ===== CERTIFICATE STAMP ANIMATION ===== */
 .certificate-stamp {
   animation: stampEntrance 0.6s ease-out forwards;
@@ -676,8 +608,128 @@ body {
   animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
-/* ===== REDUCED MOTION (Course Page Specific) ===== */
+/* ===== BUNDLE INTERSTITIAL ANIMATIONS ===== */
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out forwards;
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ===== REDUCED MOTION - COMPLETE IMPLEMENTATION ===== */
 @media (prefers-reduced-motion: reduce) {
+  /* Disable all transforms and animations globally */
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Scroll reveal - show immediately without animation */
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* SVG draw - show complete, no animation */
+  .draw-svg path {
+    stroke-dashoffset: 0;
+    animation: none !important;
+  }
+
+  /* Device animations - show active state immediately */
+  .device-animate .device-img {
+    opacity: 1;
+    filter: none;
+  }
+
+  /* Trust badge - show first message only, no rotation */
+  .trust-text-1 {
+    animation: none;
+    opacity: 1;
+  }
+  .trust-text-2,
+  .trust-text-3 {
+    animation: none;
+    opacity: 0;
+    display: none;
+  }
+
+  /* Subtext - show immediately */
+  .subtext-line {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+
+  /* CTA arrow - show static */
+  .cta-arrow-path,
+  .cta-arrow-animate {
+    animation: none;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+
+  /* Chalk dust - disable */
+  @keyframes chalkBurst {
+    0%, 100% {
+      transform: none;
+      opacity: 0;
+    }
+  }
+
+  /* Footer entrance - show immediately */
+  .footer-cta {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Mobile menu - still needs to work, just instant */
+  .mobile-menu-overlay {
+    transition: none;
+  }
+  .mobile-menu-overlay.menu-open {
+    transform: translateY(0);
+  }
+  .mobile-menu-overlay:not(.menu-open) {
+    transform: translateY(-100%);
+  }
+
+  /* Hover effects - keep subtle feedback but no animation */
+  .group:hover .draw-svg {
+    transform: none;
+  }
+
+  /* Checkout overlay - show static */
+  .checkout-spinner,
+  .checkout-ring,
+  .checkout-arc,
+  .checkout-check,
+  .checkout-check-path {
+    animation: none !important;
+  }
+  
+  .checkout-ring {
+    stroke-dashoffset: 0;
+  }
+  
+  .checkout-arc {
+    transform: none;
+  }
+
+  /* Certificate animations - show static */
   .certificate-stamp,
   .certificate-ring,
   .certificate-check {
@@ -696,4 +748,494 @@ body {
   .animate-ping {
     animation: none;
   }
+
+  /* Bundle interstitial - show static */
+  .animate-fade-in,
+  .animate-scale-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
+
+/* ===================================================================
+   UTILITY CLASSES FOR UI STATES
+   =================================================================== */
+
+/* ===== LOADING SKELETONS ===== */
+
+/**
+ * Usage: <div className="skeleton h-4 w-32 rounded" />
+ * Creates a shimmering placeholder while content loads
+ */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #2A2A2A 25%,
+    #3A3A3A 37%,
+    #2A2A2A 63%
+  );
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+}
+
+.skeleton-text {
+  height: 1em;
+  border-radius: 4px;
+}
+
+.skeleton-title {
+  height: 1.5em;
+  border-radius: 4px;
+  width: 60%;
+}
+
+.skeleton-avatar {
+  border-radius: 50%;
+}
+
+.skeleton-button {
+  height: 48px;
+  border-radius: 12px;
+}
+
+.skeleton-card {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* ===== SPINNER ===== */
+
+/**
+ * Usage: <div className="spinner" /> or <div className="spinner spinner-sm" />
+ * Sizes: spinner-sm (16px), default (24px), spinner-lg (32px)
+ */
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: var(--chalk-green);
+  border-radius: 50%;
+  animation: spinner-rotate 0.8s linear infinite;
+}
+
+.spinner-sm {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+.spinner-lg {
+  width: 32px;
+  height: 32px;
+  border-width: 4px;
+}
+
+/* Color variants */
+.spinner-white {
+  border-color: rgba(255, 255, 255, 0.2);
+  border-top-color: white;
+}
+
+.spinner-blue {
+  border-color: rgba(126, 200, 227, 0.2);
+  border-top-color: var(--chalk-blue);
+}
+
+.spinner-orange {
+  border-color: rgba(255, 179, 71, 0.2);
+  border-top-color: var(--chalk-orange);
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== FORM VALIDATION STATES ===== */
+
+/**
+ * Usage: <input className={`input-base ${error ? 'input-error' : ''}`} />
+ */
+
+/* Base input style (use as foundation) */
+.input-base {
+  background: #2A2A2A;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: white;
+  font-size: 1rem;
+  transition: border-color var(--timing-fast) ease, 
+              box-shadow var(--timing-fast) ease;
+}
+
+.input-base::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.input-base:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.input-base:focus {
+  outline: none;
+  border-color: var(--chalk-blue);
+  box-shadow: 0 0 0 3px rgba(126, 200, 227, 0.2);
+}
+
+/* Error state */
+.input-error {
+  border-color: var(--chalk-pink) !important;
+  animation: input-shake 0.4s ease-out;
+}
+
+.input-error:focus {
+  border-color: var(--chalk-pink) !important;
+  box-shadow: 0 0 0 3px rgba(255, 153, 153, 0.2);
+}
+
+/* Success state */
+.input-success {
+  border-color: var(--chalk-green) !important;
+}
+
+.input-success:focus {
+  border-color: var(--chalk-green) !important;
+  box-shadow: 0 0 0 3px rgba(119, 221, 119, 0.2);
+}
+
+/* Error message text */
+.error-message {
+  color: var(--chalk-pink);
+  font-size: 0.875rem;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: error-fade-in 0.2s ease-out;
+}
+
+@keyframes input-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+@keyframes error-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== FOCUS-VISIBLE (Accessibility) ===== */
+
+/**
+ * Shows focus ring ONLY for keyboard navigation, not mouse clicks
+ * This is critical for accessibility compliance
+ */
+
+/* Remove default outlines - we'll add our own */
+*:focus {
+  outline: none;
+}
+
+/* Keyboard focus ring */
+*:focus-visible {
+  outline: 2px solid var(--chalk-blue);
+  outline-offset: 2px;
+}
+
+/* Buttons and links get green focus */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline-color: var(--chalk-green);
+}
+
+/* Inputs get blue focus (handled in input-base, but backup here) */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline-color: var(--chalk-blue);
+}
+
+/* Cards and interactive containers */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--chalk-green);
+  outline-offset: 2px;
+}
+
+/* Skip link for screen readers */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--chalk-green);
+  color: #1C1C1C;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  z-index: 9999;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
+/* ===== DISABLED STATES ===== */
+
+/**
+ * Usage: <button className="btn-primary" disabled>...</button>
+ * Or: <button className="btn-disabled">...</button>
+ */
+
+/* Universal disabled styling */
+:disabled,
+[disabled],
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Button loading state - use with spinner inside */
+.btn-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(28, 28, 28, 0.3);
+  border-top-color: #1C1C1C;
+  border-radius: 50%;
+  animation: spinner-rotate 0.8s linear infinite;
+}
+
+/* Prevent double-click submissions */
+.btn-submitted {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* ===== PULSE ANIMATION (Attention) ===== */
+
+/**
+ * Usage: <div className="pulse-attention">Important!</div>
+ * Draws attention to critical elements
+ */
+.pulse-attention {
+  animation: pulse-attention 2s ease-in-out infinite;
+}
+
+.pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-attention {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(119, 221, 119, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(119, 221, 119, 0);
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+}
+
+/* ===== FADE TRANSITIONS ===== */
+
+/**
+ * Utility classes for common fade effects
+ */
+.fade-in {
+  animation: fade-in var(--timing-normal) ease-out forwards;
+}
+
+.fade-in-up {
+  animation: fade-in-up var(--timing-normal) ease-out forwards;
+}
+
+.fade-in-down {
+  animation: fade-in-down var(--timing-normal) ease-out forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== PROGRESS BAR ===== */
+
+/**
+ * Usage: <div className="progress-bar"><div className="progress-fill" style="width: 60%" /></div>
+ */
+.progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--chalk-green);
+  border-radius: 4px;
+  transition: width var(--timing-slow) ease-out;
+}
+
+.progress-fill-animated {
+  background: linear-gradient(
+    90deg,
+    var(--chalk-green) 0%,
+    #88EE88 50%,
+    var(--chalk-green) 100%
+  );
+  background-size: 200% 100%;
+  animation: progress-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes progress-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== STATUS INDICATORS ===== */
+
+/**
+ * Usage: <span className="status-dot status-success" />
+ */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-success {
+  background: var(--chalk-green);
+}
+
+.status-warning {
+  background: var(--chalk-orange);
+}
+
+.status-error {
+  background: var(--chalk-pink);
+}
+
+.status-info {
+  background: var(--chalk-blue);
+}
+
+.status-inactive {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ===== REDUCED MOTION - UTILITIES ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Disable all new utility animations */
+  .skeleton {
+    animation: none;
+    background: #2A2A2A;
+  }
+
+  .spinner,
+  .spinner-sm,
+  .spinner-lg {
+    animation: none;
+    /* Show static circle instead */
+    border-top-color: inherit;
+  }
+
+  .input-error {
+    animation: none;
+  }
+
+  .error-message {
+    animation: none;
+  }
+
+  .btn-loading::after {
+    animation: none;
+  }
+
+  .pulse-attention,
+  .pulse-dot {
+    animation: none;
+  }
+
+  .fade-in,
+  .fade-in-up,
+  .fade-in-down {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .progress-fill-animated {
+    animation: none;
+    background: var(--chalk-green);
+  }
+}
+
+/* ===== END GLOBALS.CSS ===== */

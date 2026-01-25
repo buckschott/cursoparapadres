@@ -1,6 +1,9 @@
 'use client';
 
-const SUPPORT_EMAIL = 'info@cursoparapadres.org';
+import Link from 'next/link';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
+
+const SUPPORT_EMAIL = 'info@claseparapadres.com';
 const COMPANY_NAME = 'Putting Kids First®';
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -8,37 +11,51 @@ const CURRENT_YEAR = new Date().getFullYear();
  * Site Footer
  * 
  * Universal footer with CTA section.
+ * 
+ * Features:
+ * - Scroll-reveal animation on CTA section
+ * - Staggered tagline animation
+ * - Next.js Link prefetching for internal routes
  */
 export default function Footer() {
+  const footerRef = useScrollReveal();
+
   return (
-    <footer className="border-t border-[#FFFFFF]/10 bg-background relative z-20">
+    <footer 
+      ref={footerRef as React.RefObject<HTMLElement>}
+      className="border-t border-[#FFFFFF]/10 bg-background relative z-20"
+    >
       <div className="max-w-7xl mx-auto px-6 py-16">
         {/* CTA Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-            Más de 30 Años de Confianza
+        <div className="text-center mb-12 scroll-reveal">
+          <h2 className="text-lg md:text-3xl font-bold text-white mb-4">
+            <span className="block footer-stagger-1">El Original.</span>
+            <span className="block footer-stagger-2">El Nombre Más Reconocido.</span>
+            <span className="block footer-stagger-3">El Certificado Más Aceptado.</span>
           </h2>
           <p className="text-lg text-white/70 mb-8 max-w-2xl mx-auto">
-            Hemos servido a familias desde 1993. Cuando su futuro está en juego, confíe en el original.
+            Su requisito cumplido.<br />
+            Su certificado entregado.<br />
+            Su tiempo respetado.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a 
+            <Link 
               href="/#precios" 
               className="bg-[#77DD77] text-[#1C1C1C] px-8 py-4 rounded-xl font-bold hover:bg-[#88EE88] hover:shadow-lg hover:shadow-[#77DD77]/25 transition-all text-lg"
             >
               Inscríbase Ahora
-            </a>
-            <a 
+            </Link>
+            <Link 
               href="/iniciar-sesion" 
               className="bg-transparent text-white px-8 py-4 rounded-xl font-bold border-2 border-white/30 hover:border-white/60 hover:bg-white/5 transition-all text-lg"
             >
               Iniciar Sesión
-            </a>
+            </Link>
           </div>
         </div>
 
         {/* Footer Links */}
-        <div className="grid md:grid-cols-3 gap-8 pt-8 border-t border-[#FFFFFF]/10">
+        <div className="grid md:grid-cols-3 gap-8 pt-8 border-t border-[#FFFFFF]/10 scroll-reveal">
           {/* Brand Column */}
           <div>
             <div className="flex items-center gap-2 mb-4">
@@ -52,7 +69,7 @@ export default function Footer() {
               </h3>
             </div>
             <p className="text-white/70 text-sm">
-              Cursos de crianza aceptados por tribunales en todo Estados Unidos.
+              La clase para padres original.
             </p>
           </div>
 
@@ -61,12 +78,12 @@ export default function Footer() {
             <h4 className="font-semibold text-white mb-3">Soporte</h4>
             <ul className="space-y-2 text-sm text-white/70">
               <li>
-                <a 
+                <Link 
                   href="/preguntas-frecuentes" 
                   className="hover:text-white transition-colors"
                 >
                   Preguntas Frecuentes
-                </a>
+                </Link>
               </li>
               <li>
                 <a 
@@ -84,20 +101,20 @@ export default function Footer() {
             <h4 className="font-semibold text-white mb-3">Legal</h4>
             <ul className="space-y-2 text-sm text-white/70">
               <li>
-                <a 
+                <Link 
                   href="/politica-de-privacidad" 
                   className="hover:text-white transition-colors"
                 >
                   Política de Privacidad
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
+                <Link 
                   href="/terminos-de-servicio" 
                   className="hover:text-white transition-colors"
                 >
                   Términos de Servicio
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

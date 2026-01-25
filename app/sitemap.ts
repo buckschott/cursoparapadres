@@ -1,14 +1,15 @@
 // ============================================
-// SITEMAP - cursoparapadres.org
+// SITEMAP - claseparapadres.com
 // ============================================
 // Next.js App Router auto-generates sitemap.xml from this file
 
 import { MetadataRoute } from 'next'
 
-const BASE_URL = 'https://cursoparapadres.org'
+const BASE_URL = 'https://www.claseparapadres.com'
 
-// State slugs for dynamic state pages
+// All 50 states + DC + Puerto Rico (matches seo-metadata-config.tsx)
 const stateSlugs = [
+  // Original 12
   'florida',
   'texas',
   'california',
@@ -21,6 +22,49 @@ const stateSlugs = [
   'colorado',
   'nevada',
   'nuevo-mexico',
+  // Tier 1 - High Hispanic population
+  'puerto-rico',
+  'washington',
+  'oregon',
+  'massachusetts',
+  'connecticut',
+  'maryland',
+  'virginia',
+  'pensilvania',
+  // Tier 2 - Medium Hispanic population
+  'michigan',
+  'ohio',
+  'indiana',
+  'wisconsin',
+  'minnesota',
+  'tennessee',
+  'oklahoma',
+  'utah',
+  // Tier 3 - Complete coverage
+  'alabama',
+  'alaska',
+  'arkansas',
+  'delaware',
+  'hawai',
+  'idaho',
+  'iowa',
+  'kansas',
+  'kentucky',
+  'luisiana',
+  'maine',
+  'misisipi',
+  'misuri',
+  'montana',
+  'nebraska',
+  'nuevo-hampshire',
+  'dakota-del-norte',
+  'rhode-island',
+  'carolina-del-sur',
+  'dakota-del-sur',
+  'vermont',
+  'virginia-occidental',
+  'wyoming',
+  'washington-dc',
 ]
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -33,12 +77,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: currentDate,
       changeFrequency: 'weekly',
       priority: 1.0,
-    },
-    {
-      url: `${BASE_URL}/garantia`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly',
-      priority: 0.8,
     },
     {
       url: `${BASE_URL}/aceptacion-de-la-corte`,
@@ -66,7 +104,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 
-  // State pages
+  // State pages (52 total: 50 states + DC + Puerto Rico)
   const statePages: MetadataRoute.Sitemap = stateSlugs.map(slug => ({
     url: `${BASE_URL}/estados/${slug}`,
     lastModified: currentDate,

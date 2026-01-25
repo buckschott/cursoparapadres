@@ -5,36 +5,32 @@ import { useState } from 'react';
 // FAQ Data organized by category
 const faqData = [
   {
-    category: "Aceptación y Legitimidad",
+    category: "Aceptación",
     id: "aceptacion",
     questions: [
       {
-        q: "¿Este curso es aceptado en mi estado?",
-        a: `Sí. Nuestro curso de coparentalidad es aceptado por tribunales en los 50 estados de Estados Unidos.
+        q: "¿Esta clase es aceptada en mi estado?",
+        a: `Sí. Nuestras clases son aceptadas en todo el país.
 
-Putting Kids First® ha ofrecido cursos de coparentalidad desde 1993 y fue pionero en la educación parental en línea en el año 2000. Miles de padres han completado nuestro curso y presentado sus certificados exitosamente en tribunales de todo el país.
+Putting Kids First® es el nombre más reconocido en educación parental — líderes en educación parental desde hace décadas. Miles de padres han completado nuestras clases y presentado sus certificados exitosamente en los 50 estados.
 
-Ofrecemos una garantía de aceptación del 100%: si su tribunal no acepta nuestro certificado por cualquier razón, le devolvemos el 100% de su dinero.`
+También puede verificar con su tribunal la aceptación de los certificados de Putting Kids First.
+
+El Original. El Certificado Más Aceptado.`
       },
       {
-        q: "¿Cómo sé que mi corte aceptará este certificado?",
-        a: `Nuestros certificados incluyen toda la información que los tribunales requieren:
+        q: "¿Qué clase necesito tomar?",
+        a: `Si su orden judicial es por divorcio, custodia, separación, o modificación de una orden existente, necesita la Clase de Co-Parenting.
 
-• Su nombre completo
-• El estado y condado de su caso
-• Su número de caso
-• La fecha de registro y finalización
-• Un número de certificado único
-• Un código QR de verificación
-• Firma del Director Ejecutivo
+Si su orden dice habilidades para padres o clase general de crianza, necesita la Clase de Crianza.
 
-Además, cualquier persona puede verificar la autenticidad de su certificado en línea usando el código de verificación.`
+Revise sus documentos del tribunal o pregunte a su abogado si no está seguro.`
       },
       {
-        q: "¿Necesito verificar con mi corte antes de tomar el curso?",
-        a: `En la mayoría de los casos, no es necesario. Nuestro curso cumple con los requisitos estándar de educación parental aceptados en todo el país.
+        q: "¿Necesito verificar con mi corte antes de tomar la clase?",
+        a: `No es necesario. Nuestra clase cumple con los requisitos estándar de educación parental aceptados en todo el país.
 
-Sin embargo, si su orden judicial especifica un proveedor particular o requisitos muy específicos, le recomendamos verificar primero. Puede contactarnos en info@cursoparapadres.org y con gusto revisamos su situación.`
+Sin embargo, si su orden judicial especifica un proveedor particular o requisitos muy específicos, le recomendamos verificar primero.`
       }
     ]
   },
@@ -43,14 +39,10 @@ Sin embargo, si su orden judicial especifica un proveedor particular o requisito
     id: "precio",
     questions: [
       {
-        q: "¿Cuánto cuesta el curso?",
-        a: `Curso de Coparentalidad: $60 (4 horas)
-Curso de Crianza: $60 (4 horas)
-Paquete Combinado: $80 (4 horas)
-
-El paquete combinado incluye ambos cursos por un precio reducido. Usted completa el mismo contenido una vez y recibe ambos certificados.
-
-No hay costos ocultos, cuotas de procesamiento, ni cargos por el certificado. El precio que ve es el precio que paga.`
+        q: "¿Cuánto cuesta la clase?",
+        a: `Clase de Co-Parenting: $60 (4 horas)
+Clase de Crianza: $60 (4 horas)
+Paquete Combinado: $80 (8 horas)`
       },
       {
         q: "¿Qué formas de pago aceptan?",
@@ -63,20 +55,16 @@ No hay costos ocultos, cuotas de procesamiento, ni cargos por el certificado. El
 El pago se procesa de forma segura a través de Stripe, uno de los procesadores de pago más confiables del mundo.`
       },
       {
-        q: "¿Es seguro pagar en línea aquí?",
-        a: `Absolutamente. Utilizamos Stripe para procesar todos los pagos. Stripe cumple con los estándares de seguridad PCI más estrictos, encripta toda su información financiera, y es utilizado por millones de empresas en todo el mundo.
+        q: "¿Puedo obtener el precio del paquete después de comprar una clase?",
+        a: `No. El precio especial del Paquete Completo ($80 por ambas clases) solo está disponible antes de su primera compra.
 
-Nosotros nunca vemos ni almacenamos los datos de su tarjeta de crédito.`
+Si decide tomar la segunda clase después, el precio será $60.`
       },
       {
         q: "¿Ofrecen reembolsos?",
-        a: `Sí. Ofrecemos reembolso completo si:
+        a: `Sí. Ofrecemos reembolso completo del 100% si su tribunal no acepta el certificado con no-aceptación comprobada.
 
-1. Su tribunal no acepta el certificado — Garantía de aceptación del 100%. Si su tribunal rechaza nuestro certificado, le devolvemos todo su dinero.
-
-2. Problemas técnicos no resueltos — Si experimenta problemas técnicos que no podemos resolver y que le impiden completar el curso, procesaremos un reembolso.
-
-Para solicitar un reembolso, contáctenos en info@cursoparapadres.org.`
+Si su tribunal rechaza nuestro certificado, le devolvemos todo su dinero.`
       }
     ]
   },
@@ -85,31 +73,22 @@ Para solicitar un reembolso, contáctenos en info@cursoparapadres.org.`
     id: "duracion",
     questions: [
       {
-        q: "¿Cuánto tiempo toma completar el curso?",
-        a: `El curso toma aproximadamente 4 horas para completar, incluyendo:
+        q: "¿Cuánto tiempo toma completar la clase?",
+        a: `La clase toma aproximadamente 4 horas para completar.
 
-• 15 lecciones de contenido educativo
-• Ejercicios de reflexión
-
-Puede completar el curso a su propio ritmo. No tiene que terminar todo en una sesión.`
+Puede completar la clase a su propio ritmo. No tiene que terminar todo en una sesión.`
       },
       {
         q: "¿Puedo pausar y continuar después?",
-        a: `Sí. Su progreso se guarda automáticamente. Puede cerrar el navegador y regresar después, cambiar de dispositivo, tomar descansos cuando los necesite, y completar el curso en varios días si lo prefiere.
+        a: `Sí. Su progreso se guarda automáticamente. Puede cerrar el navegador y regresar después, cambiar de dispositivo, tomar descansos cuando los necesite, y completar la clase en varios días si lo prefiere.
 
 Cuando regrese, simplemente inicie sesión y continúe donde lo dejó.`
       },
       {
-        q: "¿Puedo tomar el curso en mi teléfono?",
-        a: `Sí. Nuestro curso funciona perfectamente en teléfonos móviles (iPhone, Android), tabletas (iPad, Android), y computadoras (Windows, Mac).
+        q: "¿Puedo tomar la clase en mi teléfono?",
+        a: `Sí. Nuestra clase funciona perfectamente en teléfonos móviles (iPhone, Android), tabletas (iPad, Android), y computadoras (Windows, Mac).
 
 El diseño se adapta automáticamente a su pantalla. Puede comenzar en un dispositivo y continuar en otro sin perder su progreso.`
-      },
-      {
-        q: "¿El curso tiene límite de tiempo para completarlo?",
-        a: `No hay fecha límite estricta. Una vez que paga, tiene acceso al curso hasta que lo complete.
-
-Sin embargo, le recomendamos completar el curso antes de su fecha de corte si tiene una audiencia programada. La mayoría de las personas lo terminan en 1-3 días.`
       }
     ]
   },
@@ -119,7 +98,7 @@ Sin embargo, le recomendamos completar el curso antes de su fecha de corte si ti
     questions: [
       {
         q: "¿Cuándo recibo mi certificado?",
-        a: `Recibe su certificado inmediatamente después de completar el curso.
+        a: `Recibe su certificado inmediatamente después de completar la clase.
 
 El certificado se genera como un archivo PDF que puede descargar a su dispositivo, imprimir en casa, enviar por correo electrónico a su abogado, o presentar directamente al tribunal.
 
@@ -127,88 +106,36 @@ No tiene que esperar días ni pagar por envío.`
       },
       {
         q: "¿El certificado está en español?",
-        a: `El curso está 100% en español, pero el certificado se emite en inglés.
+        a: `La clase está 100% en español, pero el certificado se emite en inglés.
 
-Esto es estándar y necesario para que los tribunales de Estados Unidos lo acepten. Todos los cursos de coparentalidad emiten certificados en inglés, independientemente del idioma del curso.`
-      },
-      {
-        q: "¿Qué información aparece en el certificado?",
-        a: `Su certificado incluye:
-
-• Su nombre completo (como lo ingresó)
-• El estado donde reside
-• El condado donde se presenta su caso
-• Su número de caso
-• Fecha de registro y finalización
-• Número de certificado único (PKF-XXXXXX)
-• Código de verificación de 8 caracteres
-• Código QR para verificación instantánea
-• Firma del Director Ejecutivo
-• Logo de Putting Kids First®`
+Esto es estándar y necesario para que los tribunales de Estados Unidos lo acepten.`
       },
       {
         q: "¿Cómo verifican la autenticidad del certificado?",
-        a: `Cada certificado incluye:
-
-1. Código QR — El tribunal puede escanearlo para verificar instantáneamente
-2. Código de verificación — Puede ingresarse en nuestro sitio web para confirmar autenticidad
-3. Número de certificado único — Registrado en nuestra base de datos
-
-La verificación muestra el nombre, fechas y estado de finalización del curso.`
-      },
-      {
-        q: "¿Qué información necesito para obtener mi certificado?",
-        a: `Antes de poder generar su certificado, necesitará proporcionar:
-
-• Nombre completo — Exactamente como aparece en sus documentos legales
-• Estado — Donde reside actualmente
-• Condado — Donde se presenta su caso de familia
-• Número de caso — El número asignado por el tribunal
-
-Asegúrese de que esta información sea correcta, ya que aparecerá en su certificado oficial.`
+        a: `Cada certificado incluye un código QR que enlaza a una página de verificación. Al escanear el código o visitar el enlace, cualquier persona puede confirmar que el certificado es auténtico.`
       }
     ]
   },
   {
-    category: "Contenido del Curso",
+    category: "Contenido de la Clase",
     id: "contenido",
     questions: [
       {
-        q: "¿Qué temas cubre el curso?",
-        a: `El Curso de Coparentalidad incluye 15 lecciones:
-
-1. Entendiendo lo que Está Pasando
-2. Comunicándose con Sus Hijos
-3. Preguntas Comunes de los Niños
-4. Apoyando el Bienestar Emocional
-5. Manejando Sus Propias Emociones
-6. Trabajando con el Otro Padre
-7. Seguridad y Apoyo
-8. Realidades Financieras
-9. Haciendo que el Tiempo de Crianza Funcione
-10. Ayudando a los Niños a Través de las Transiciones
-11. Días Festivos, Hitos y Ocasiones Especiales
-12. El Primer Año y las Primeras Veces
-13. Cuando un Padre Se Desconecta
-14. Recursos Adicionales
-15. Cierre - Avanzando`
-      },
-      {
-        q: "¿Este curso es solo para divorcios?",
-        a: `No. El curso es útil para cualquier situación donde dos padres necesitan coordinar la crianza de sus hijos desde hogares separados, incluyendo divorcio, separación legal, padres que nunca estuvieron casados, casos de custodia, y modificaciones de custodia.
+        q: "¿Esta clase es solo para divorcios?",
+        a: `No. La clase es útil para cualquier situación donde dos padres necesitan coordinar la crianza de sus hijos desde hogares separados, incluyendo divorcio, separación legal, padres que nunca estuvieron casados, casos de custodia, y modificaciones de custodia.
 
 El contenido se aplica a cualquier situación de coparentalidad.`
       },
       {
-        q: "¿Ambos padres tienen que tomar el curso?",
-        a: `Depende de lo que requiera su tribunal. Algunos tribunales requieren que ambos padres completen el curso; otros solo requieren que uno lo tome.
+        q: "¿Ambos padres tienen que tomar la clase?",
+        a: `Depende de lo que requiera su tribunal. Algunos tribunales requieren que ambos padres completen la clase; otros solo requieren que uno la tome.
 
-Cada padre debe comprar y completar el curso por separado. No pueden compartir una cuenta ni un certificado.`
+Cada padre debe comprar y completar la clase por separado. No pueden compartir una cuenta ni un certificado.`
       }
     ]
   },
   {
-    category: "Soporte y Ayuda",
+    category: "Soporte",
     id: "soporte",
     questions: [
       {
@@ -216,18 +143,13 @@ Cada padre debe comprar y completar el curso por separado. No pueden compartir u
         a: `Sí. Todo nuestro soporte está disponible en español:
 
 • Sitio web completo en español
-• Curso completo en español
+• Clase completa en español
 • Soporte por correo electrónico en español
-• Preguntas frecuentes en español
-
-Puede contactarnos en español en cualquier momento.`
+• Preguntas frecuentes en español`
       },
       {
         q: "¿Cómo puedo contactarlos si tengo problemas?",
-        a: `Puede contactarnos de las siguientes maneras:
-
-• Correo electrónico: info@cursoparapadres.org
-• Teléfono: 888-777-2298
+        a: `Puede contactarnos por correo electrónico: info@claseparapadres.com
 
 Respondemos a los correos electrónicos lo más pronto posible, generalmente dentro de 24 horas en días laborales.`
       },
@@ -240,7 +162,7 @@ Respondemos a los correos electrónicos lo más pronto posible, generalmente den
 3. Verifique su conexión a internet
 4. Limpie la caché de su navegador
 
-Si el problema persiste, contáctenos en info@cursoparapadres.org con una descripción del problema, qué dispositivo y navegador está usando, y capturas de pantalla si es posible.`
+Si el problema persiste, contáctenos en info@claseparapadres.com con una descripción del problema, qué dispositivo y navegador está usando, y capturas de pantalla si es posible.`
       }
     ]
   },
@@ -250,23 +172,9 @@ Si el problema persiste, contáctenos en info@cursoparapadres.org con una descri
     questions: [
       {
         q: "¿Quién es Putting Kids First?",
-        a: `Putting Kids First® es una organización dedicada a la educación parental desde 1993.
+        a: `Putting Kids First® es el nombre más reconocido en educación parental — líderes en educación parental desde hace décadas.
 
-Somos pioneros — creamos el primer curso de coparentalidad en línea en el año 2000. Tenemos más de 30 años de experiencia ayudando a familias. Miles de certificados han sido aceptados por tribunales en todo el país.
-
-Somos una empresa familiar que entiende los desafíos que enfrentan las familias durante la separación.`
-      },
-      {
-        q: "¿Por qué debería elegir este curso sobre otros?",
-        a: `Experiencia: Llevamos más de 30 años en esto. Fuimos los primeros en ofrecer este tipo de educación en línea.
-
-Precio justo: $60, sin costos ocultos. Muchos competidores cobran más y agregan cargos por el certificado.
-
-Garantía: 100% de garantía de aceptación. Si su tribunal no acepta el certificado, le devolvemos su dinero.
-
-En español: Curso completo en español, no una traducción automática. Diseñado para la comunidad hispanohablante.
-
-Soporte: Ayuda real disponible en español si la necesita.`
+El Original. El Certificado Más Aceptado. Miles de padres han completado nuestras clases y presentado sus certificados exitosamente en tribunales de todo el país.`
       }
     ]
   }
@@ -279,14 +187,14 @@ function FAQItem({ question, answer, isOpen, onClick }: {
   onClick: () => void;
 }) {
   return (
-    <div className="border-b border-[#FFFFFF]/15">
+    <div className="border-b border-white/15 last:border-b-0">
       <button
         onClick={onClick}
-        className="w-full py-5 px-4 flex justify-between items-center text-left hover:bg-background transition-colors"
+        className="w-full py-5 px-4 flex justify-between items-center text-left hover:bg-white/5 transition-colors"
       >
         <span className="font-semibold text-white pr-4">{question}</span>
         <svg
-          className={`w-5 h-5 text-white/60 flex-shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-5 h-5 text-white/60 flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -316,13 +224,13 @@ export default function FAQAccordion() {
 
   return (
     <>
-      {/* Category Navigation */}
-      <nav className="mb-8 flex flex-wrap gap-2 justify-center">
+      {/* Category Navigation - Horizontal scroll on mobile, wrapped on tablet+ */}
+      <nav className="mb-10 flex gap-2 overflow-x-auto md:overflow-visible md:flex-wrap md:justify-center pb-2 -mb-2 md:pb-0 md:mb-10">
         {faqData.map(category => (
           <a
             key={category.id}
             href={`#${category.id}`}
-            className="px-4 py-2 bg-background rounded-full text-sm font-medium text-white hover:bg-[#7EC8E3]/10 hover:text-[#7EC8E3] transition-colors shadow-sm shadow-black/20"
+            className="flex-shrink-0 px-4 py-2.5 rounded-full text-sm font-medium border border-white/30 text-white/80 hover:border-[#7EC8E3] hover:text-[#7EC8E3] hover:bg-[#7EC8E3]/10 transition-all"
           >
             {category.category}
           </a>
@@ -331,11 +239,11 @@ export default function FAQAccordion() {
 
       {/* FAQ Categories */}
       {faqData.map(category => (
-        <div key={category.id} id={category.id} className="mb-10 scroll-mt-8">
-          <h2 className="text-2xl font-bold text-white mb-4 px-4">
+        <div key={category.id} id={category.id} className="mb-10 scroll-mt-24">
+          <h2 className="text-xl md:text-2xl font-bold text-white mb-4 px-4">
             {category.category}
           </h2>
-          <div className="bg-background rounded-xl shadow-sm shadow-black/20 overflow-hidden">
+          <div className="bg-[#252525] rounded-xl overflow-hidden">
             {category.questions.map((item, index) => (
               <FAQItem
                 key={index}

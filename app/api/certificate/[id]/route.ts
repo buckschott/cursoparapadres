@@ -1,9 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+
+// Certificate validity period in months
+const CERTIFICATE_VALIDITY_MONTHS = 12;
+
+/**
+ * Check if certificate is expired (older than 12 months)
+ */
+function isCertificateExpired(issuedAt: string): boolean {
+  const issueDate = new Date(issuedAt);
+  const expirationDate = new Date(issueDate);
+  expirationDate.setMonth(expirationDate.getMonth() + CERTIFICATE_VALIDITY_MONTHS);
+  return new Date() > expirationDate;
+}
 
 export async function GET(
   request: NextRequest,
@@ -11,6 +26,34 @@ export async function GET(
 ) {
   const { id } = await params;
   
+  // ============================================
+  // AUTH CHECK - Verify user owns this certificate
+  // ============================================
+  const cookieStore = await cookies();
+  const supabaseAuth = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+      },
+    }
+  );
+  
+  const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+  
+  if (authError || !user) {
+    return NextResponse.json(
+      { error: 'Unauthorized - Please log in' }, 
+      { status: 401 }
+    );
+  }
+  
+  // ============================================
+  // FETCH CERTIFICATE (with user_id check)
+  // ============================================
   const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: { autoRefreshToken: false, persistSession: false }
   });
@@ -19,15 +62,35 @@ export async function GET(
     .from('certificates')
     .select('*')
     .eq('id', id)
+    .eq('user_id', user.id)  // ✅ Security: Only fetch if user owns it
     .single();
 
   if (!cert) {
-    return NextResponse.json({ error: 'Certificate not found' }, { status: 404 });
+    return NextResponse.json(
+      { error: 'Certificate not found or access denied' }, 
+      { status: 404 }
+    );
   }
 
+  // ============================================
+  // CHECK EXPIRATION
+  // ============================================
+  if (isCertificateExpired(cert.issued_at)) {
+    return NextResponse.json(
+      { error: 'Certificate has expired. Please enroll again for a new certificate.' }, 
+      { status: 410 } // 410 Gone
+    );
+  }
+
+  // ============================================
+  // FETCH RELATED DATA
+  // ============================================
+  
+  // Get participant name from certificate (legal_name from profile at time of creation)
+  // Court info is now stored directly on certificate
   const { data: profile } = await supabase
     .from('profiles')
-    .select('legal_name, court_state, court_county, case_number')
+    .select('legal_name')
     .eq('id', cert.user_id)
     .single();
 
@@ -53,19 +116,25 @@ export async function GET(
     return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;
   };
 
+  // ============================================
+  // BUILD CERTIFICATE DATA
+  // Court info now comes from CERTIFICATE, not profile
+  // ============================================
   const certData = {
-    participantName: profile?.legal_name || cert.participant_name || '',
-    state: profile?.court_state || '',
-    county: profile?.court_county || '',
-    caseNumber: profile?.case_number || '',
+    participantName: cert.participant_name || profile?.legal_name || '',
+    state: cert.court_state || '',        // ✅ From certificate
+    county: cert.court_county || '',      // ✅ From certificate
+    caseNumber: cert.case_number || '',   // ✅ From certificate
     dateRegistered: formatDate(purchaseDate),
     dateCompleted: formatDate(completionDate),
     certificateNumber: cert.certificate_number,
     verificationCode: cert.verification_code,
-    verifyUrl: `https://www.cursoparapadres.org/verificar/${cert.verification_code}`
+    verifyUrl: `https://www.claseparapadres.com/verificar/${cert.verification_code}`
   };
 
-  // Create PDF
+  // ============================================
+  // CREATE PDF
+  // ============================================
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage([612, 792]); // Letter size in points
   
@@ -109,15 +178,13 @@ export async function GET(
     color: rgb(0, 0, 0),
   });
   
-  // Course name
-  const courseSub = 'Parent Education and Family Stabilization Course';
-  const courseSubSize = 11;
-  const courseSubWidth = courier.widthOfTextAtSize(courseSub, courseSubSize);
-  
-  // Co-Parenting Class
-  const courseMain = 'Co-Parenting Class';
+  // Dynamic course title and subtitle based on course_type
+  const courseMain = cert.course_type === 'parenting' ? 'Parenting Class' : 'Co-Parenting Class';
+  const courseSub = cert.course_type === 'parenting' ? 'Child Development & Parenting Skills' : 'Parent Education and Family Stabilization Course';
   const courseMainSize = 28;
+  const courseSubSize = 11;
   const courseMainWidth = courierBold.widthOfTextAtSize(courseMain, courseMainSize);
+  const courseSubWidth = courier.widthOfTextAtSize(courseSub, courseSubSize);
   
   page.drawText(courseMain, {
     x: (width - courseMainWidth) / 2,
@@ -224,7 +291,7 @@ export async function GET(
   // Fetch and embed logo
   let logoWidth = 95;
   try {
-    const logoResponse = await fetch('https://www.cursoparapadres.org/logo.png');
+    const logoResponse = await fetch('https://www.claseparapadres.com/logo.png');
     if (logoResponse.ok) {
       const logoBytes = await logoResponse.arrayBuffer();
       const logoImage = await pdfDoc.embedPng(logoBytes);
@@ -246,7 +313,7 @@ export async function GET(
   
   // Fetch and embed signature - 2pt above Executive Director line
   try {
-    const sigResponse = await fetch('https://www.cursoparapadres.org/geri-signature.png');
+    const sigResponse = await fetch('https://www.claseparapadres.com/geri-signature.png');
     if (sigResponse.ok) {
       const sigBytes = await sigResponse.arrayBuffer();
       const sigImage = await pdfDoc.embedPng(sigBytes);

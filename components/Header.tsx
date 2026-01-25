@@ -10,6 +10,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
  * - Animated hamburger icon
  * - Focus trapping in mobile menu (accessibility)
  * - Body scroll lock when menu open
+ * - Focus-visible styling (no blue box on tap)
  */
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -82,6 +83,9 @@ export default function Header() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+  // Shared focus classes for mobile menu links
+  const menuLinkFocusClasses = "focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7EC8E3] rounded-lg";
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 bg-background z-[200] border-b border-[#FFFFFF]/20">
@@ -91,10 +95,10 @@ export default function Header() {
             <img 
               src="/logo.svg" 
               alt="Putting Kids First logo" 
-              className="h-7 w-auto" 
+              className="h-[32px] md:h-[34px] lg:h-[38px] w-auto" 
             />
-            <div className="header-title text-lg font-semibold text-white tracking-tight font-brand">
-              Putting Kids First<sup className="text-[10px] relative -top-2">®</sup>
+            <div className="text-[14px] md:text-xl font-semibold text-white tracking-tight font-brand">
+              Putting Kids First<sup className="text-[10px] relative -top-1.5 md:-top-2">®</sup>
             </div>
           </a>
           
@@ -107,13 +111,13 @@ export default function Header() {
               Aceptación de la Corte
             </a>
             <a 
-              href="/garantia" 
+              href="/preguntas-frecuentes" 
               className="text-white/70 hover:text-white transition-colors"
             >
-              Nuestra Garantía
+              Preguntas Frecuentes
             </a>
             <a 
-              href="mailto:info@cursoparapadres.org" 
+              href="mailto:info@claseparapadres.com" 
               className="text-white/70 hover:text-white transition-colors"
             >
               Contáctenos
@@ -136,7 +140,7 @@ export default function Header() {
           <button
             ref={menuButtonRef}
             onClick={toggleMenu}
-            className="xl:hidden relative z-[210] w-10 h-10 flex items-center justify-center"
+            className="xl:hidden relative z-[210] w-10 h-10 flex items-center justify-center focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#7EC8E3] rounded-lg"
             aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
@@ -181,21 +185,21 @@ export default function Header() {
               ref={firstFocusableRef}
               href="/aceptacion-de-la-corte" 
               onClick={closeMenu} 
-              className="py-4 border-b border-[#FFFFFF]/20"
+              className={`py-4 border-b border-[#FFFFFF]/20 ${menuLinkFocusClasses}`}
             >
               <span className="text-white font-semibold text-xl">Aceptación de la Corte</span>
             </a>
             <a 
-              href="/garantia" 
+              href="/preguntas-frecuentes" 
               onClick={closeMenu} 
-              className="py-4 border-b border-[#FFFFFF]/20"
+              className={`py-4 border-b border-[#FFFFFF]/20 ${menuLinkFocusClasses}`}
             >
-              <span className="text-white font-semibold text-xl">Nuestra Garantía</span>
+              <span className="text-white font-semibold text-xl">Preguntas Frecuentes</span>
             </a>
             <a 
-              href="mailto:info@cursoparapadres.org" 
+              href="mailto:info@claseparapadres.com" 
               onClick={closeMenu} 
-              className="py-4 border-b border-[#FFFFFF]/20"
+              className={`py-4 border-b border-[#FFFFFF]/20 ${menuLinkFocusClasses}`}
             >
               <span className="text-white font-semibold text-xl">Contáctenos</span>
             </a>
@@ -205,7 +209,7 @@ export default function Header() {
             <a 
               href="#precios" 
               onClick={closeMenu} 
-              className="block w-full bg-[#77DD77] text-[#1C1C1C] text-center px-6 py-4 rounded-xl font-semibold hover:bg-[#88EE88] transition-colors text-lg"
+              className={`block w-full bg-[#77DD77] text-[#1C1C1C] text-center px-6 py-4 rounded-xl font-semibold hover:bg-[#88EE88] transition-colors text-lg ${menuLinkFocusClasses}`}
             >
               Inscríbase Ahora
             </a>
@@ -213,7 +217,7 @@ export default function Header() {
               ref={lastFocusableRef}
               href="/iniciar-sesion" 
               onClick={closeMenu} 
-              className="block w-full bg-transparent text-white text-center px-6 py-4 rounded-xl font-semibold border-2 border-white hover:bg-white/10 transition-colors text-lg"
+              className={`block w-full bg-transparent text-white text-center px-6 py-4 rounded-xl font-semibold border-2 border-white hover:bg-white/10 transition-colors text-lg ${menuLinkFocusClasses}`}
             >
               Iniciar Sesión
             </a>

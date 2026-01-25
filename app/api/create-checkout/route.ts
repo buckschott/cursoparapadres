@@ -79,8 +79,8 @@ export async function POST(request: NextRequest) {
       },
       // Collect billing address for records
       billing_address_collection: 'required',
-      // Allow promotion codes if configured in Stripe
-      allow_promotion_codes: true,
+      // Disable promotion codes - discounts handled via email request
+      allow_promotion_codes: false,
     });
 
     if (!session.url) {

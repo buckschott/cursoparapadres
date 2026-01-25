@@ -1,26 +1,26 @@
-# Robots.txt for cursoparapadres.org
+# Robots.txt for claseparapadres.com
 # Spanish-language co-parenting course
 
 User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://cursoparapadres.org/sitemap.xml
+Sitemap: https://www.claseparapadres.com/sitemap.xml
 
 # Disallow user account pages
 Disallow: /panel
 Disallow: /completar-perfil
 Disallow: /exito
 Disallow: /certificado/
-Disallow: /verificar/
 
 # Disallow auth pages
 Disallow: /iniciar-sesion
 Disallow: /recuperar-contrasena
 Disallow: /restablecer-contrasena
+Disallow: /actualizar-contrasena
 
 # Disallow course content (requires purchase)
-Disallow: /curso/
+Disallow: /clase/
 
 # Allow specific crawlers full access
 User-agent: Googlebot

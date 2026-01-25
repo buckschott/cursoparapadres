@@ -31,10 +31,87 @@ interface ShuffledQuestion extends ExamQuestion {
   shuffledAnswers: { label: string; text: string; originalLabel: string }[];
 }
 
+interface WrongAnswer {
+  lessonNumber: number;
+  lessonRedirect: string;
+}
+
+interface PendingResults {
+  passed: boolean;
+  score: number;
+  correctCount: number;
+  questionIds: string[];
+}
+
+// ============================================
+// CONSTANTS
+// ============================================
+
 const PASS_SCORE = Math.ceil(QUESTIONS_PER_EXAM * PASS_THRESHOLD);
 
+// Lesson titles by course type (Spanish)
+const LESSON_TITLES: Record<string, Record<number, string>> = {
+  coparenting: {
+    1: 'Introducción a la Coparentalidad',
+    2: 'Comunicación Efectiva',
+    3: 'Manejo de Conflictos',
+    4: 'El Impacto en los Niños',
+    5: 'Transiciones y Rutinas',
+    6: 'Toma de Decisiones Compartida',
+    7: 'Nuevas Parejas y Familias',
+    8: 'Días Festivos y Ocasiones Especiales',
+    9: 'Manejo del Estrés',
+    10: 'Comunicación con la Escuela',
+    11: 'Salud y Bienestar',
+    12: 'Planes de Crianza',
+    13: 'Resolución de Disputas',
+    14: 'Recursos y Apoyo',
+    15: 'Seguir Adelante',
+  },
+  parenting: {
+    1: 'Fundamentos de la Crianza',
+    2: 'Desarrollo Infantil',
+    3: 'Comunicación con los Hijos',
+    4: 'Disciplina Positiva',
+    5: 'Establecer Límites',
+    6: 'Manejo del Comportamiento',
+    7: 'Necesidades Emocionales',
+    8: 'Seguridad y Supervisión',
+    9: 'Salud y Nutrición',
+    10: 'Educación y Aprendizaje',
+    11: 'Manejo del Estrés Familiar',
+    12: 'Construir Relaciones',
+    13: 'Recursos Comunitarios',
+    14: 'Planificación del Futuro',
+    15: 'Ser el Mejor Padre',
+  },
+};
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+/**
+ * Extract lesson number from redirect text like "Lección 3", "3A", "Lesson 3", etc.
+ * Returns null if no valid lesson number (1-15) found.
+ */
+function extractLessonNumber(redirect: string): number | null {
+  if (!redirect) return null;
+  const match = redirect.match(/(\d+)/);
+  if (match) {
+    const num = parseInt(match[1], 10);
+    if (num >= 1 && num <= 15) return num;
+  }
+  return null;
+}
+
+/**
+ * Clean redirect text for display (remove letter suffixes like "3A" → "Lección 3")
+ */
 function cleanRedirect(text: string): string {
   if (!text) return '';
+  const num = extractLessonNumber(text);
+  if (num) return `Lección ${num}`;
   return text.replace(/(\d+)[A-Za-z]+/g, '$1');
 }
 
@@ -57,7 +134,7 @@ export default function ExamPage() {
   const STORAGE_KEY = `exam_v3_${courseType}`;
   
   const [loading, setLoading] = useState(true);
-  const [phase, setPhase] = useState<'intro' | 'exam' | 'done'>('intro');
+  const [phase, setPhase] = useState<'intro' | 'exam' | 'saving' | 'done'>('intro');
   const [hasResumable, setHasResumable] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isStarting, setIsStarting] = useState(false);
@@ -71,16 +148,31 @@ export default function ExamPage() {
   const [isCorrect, setIsCorrect] = useState(false);
   const [wrongRed, setWrongRed] = useState('');
   const [showFeedback, setShowFeedback] = useState(false);
+  const [wrongAnswers, setWrongAnswers] = useState<WrongAnswer[]>([]);
+  
+  // Save state for error recovery
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [pendingResults, setPendingResults] = useState<PendingResults | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   
   const supabase = createClient();
 
-  // Save state to localStorage
+  // Save state to localStorage (including wrongAnswers)
   useEffect(() => {
     if (phase === 'exam' && questions.length > 0) {
-      const state = { questions, currentIndex, correctCount, selectedAnswer, submitted, isCorrect, wrongRed };
+      const state = { 
+        questions, 
+        currentIndex, 
+        correctCount, 
+        selectedAnswer, 
+        submitted, 
+        isCorrect, 
+        wrongRed,
+        wrongAnswers 
+      };
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
     }
-  }, [phase, questions, currentIndex, correctCount, selectedAnswer, submitted, isCorrect, wrongRed, STORAGE_KEY]);
+  }, [phase, questions, currentIndex, correctCount, selectedAnswer, submitted, isCorrect, wrongRed, wrongAnswers, STORAGE_KEY]);
 
   // Initial check
   useEffect(() => {
@@ -92,7 +184,7 @@ export default function ExamPage() {
           return; 
         }
 
-        // Check for existing certificate
+        // Check for existing certificate - if they already have one, redirect there
         const { data: existingCert, error: certError } = await supabase
           .from('certificates')
           .select('id')
@@ -121,7 +213,7 @@ export default function ExamPage() {
         }
 
         if (!prog || prog.lessons_completed.length < 15) {
-          window.location.href = `/curso/${courseType}`;
+          window.location.href = `/clase/${courseType}`;
           return;
         }
 
@@ -157,6 +249,7 @@ export default function ExamPage() {
         setQuestions(p.questions || []);
         setCurrentIndex(p.currentIndex || 0);
         setCorrectCount(p.correctCount || 0);
+        setWrongAnswers(p.wrongAnswers || []);
         setSelectedAnswer(null);
         setSubmitted(false);
         setIsCorrect(false);
@@ -190,11 +283,11 @@ export default function ExamPage() {
       const versions = ['A', 'B', 'C'];
       const ver = versions[Math.floor(Math.random() * versions.length)];
 
-    const { data: qs, error: fetchError } = await supabase
-       .from('exam_questions')
-       .select('*')
-       .eq('course_type', courseType)
-       .eq('version', ver);
+      const { data: qs, error: fetchError } = await supabase
+        .from('exam_questions')
+        .select('*')
+        .eq('course_type', courseType)
+        .eq('version', ver);
 
       if (fetchError) {
         console.error('Error fetching questions:', fetchError);
@@ -219,11 +312,14 @@ export default function ExamPage() {
       setQuestions(processed);
       setCurrentIndex(0);
       setCorrectCount(0);
+      setWrongAnswers([]);
       setSelectedAnswer(null);
       setSubmitted(false);
       setIsCorrect(false);
       setWrongRed('');
       setShowFeedback(false);
+      setSaveError(null);
+      setPendingResults(null);
       setPhase('exam');
     } catch (err) {
       console.error('Error starting exam:', err);
@@ -247,6 +343,12 @@ export default function ExamPage() {
       if (o === 'B') red = q.wrong_b_redirect || '';
       if (o === 'C') red = q.wrong_c_redirect || '';
       if (o === 'D') red = q.wrong_d_redirect || '';
+      
+      // Track wrong answer for "Temas para Repasar" section
+      const lessonNum = extractLessonNumber(red);
+      if (lessonNum) {
+        setWrongAnswers(prev => [...prev, { lessonNumber: lessonNum, lessonRedirect: red }]);
+      }
     }
 
     setIsCorrect(correct);
@@ -273,67 +375,88 @@ export default function ExamPage() {
     }, 200);
   };
 
+  // ============================================
+  // FINISH EXAM - Save attempt with error handling
+  // ============================================
   const finishExam = async () => {
     clear();
+    setPhase('saving');
+    setIsSaving(true);
+    setSaveError(null);
+    
+    const passed = correctCount >= PASS_SCORE;
+    const score = Math.round((correctCount / QUESTIONS_PER_EXAM) * 100);
+    const questionIds = questions.map(q => q.id);
+    
+    // Store results in case we need to retry
+    setPendingResults({ passed, score, correctCount, questionIds });
     
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        window.location.href = '/iniciar-sesion';
+        return;
+      }
 
-      const passed = correctCount >= PASS_SCORE;
-      const score = Math.round((correctCount / QUESTIONS_PER_EXAM) * 100);
-
-      await supabase.from('exam_attempts').insert({
+      const { error: insertError } = await supabase.from('exam_attempts').insert({
         user_id: user.id,
         course_type: courseType,
-        questions_shown: questions.map(q => q.id),
+        questions_shown: questionIds,
         score,
         passed
       });
 
-      if (passed) {
-        const { data: existingCerts } = await supabase
-          .from('certificates')
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('course_type', courseType)
-          .limit(1);
-
-        if (!existingCerts || existingCerts.length === 0) {
-          const certNumber = `PKF-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-          const verifyCode = Math.random().toString(36).substring(2, 10).toUpperCase();
-          
-          const { data: newCert } = await supabase
-            .from('certificates')
-            .insert({
-              user_id: user.id,
-              course_type: courseType,
-              certificate_number: certNumber,
-              verification_code: verifyCode
-            })
-            .select('id')
-            .single();
-
-          if (newCert?.id) {
-            fetch('/api/send-attorney-email', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ certificateId: newCert.id })
-            }).catch(console.error);
-          }
-
-          await supabase
-            .from('course_progress')
-            .update({ completed_at: new Date().toISOString() })
-            .eq('user_id', user.id)
-            .eq('course_type', courseType);
-        }
+      if (insertError) {
+        throw insertError;
       }
+
+      // Success! Show results
+      setPhase('done');
     } catch (err) {
-      console.error('Error finishing exam:', err);
+      console.error('Error saving exam results:', err);
+      setSaveError('No pudimos guardar su resultado. Su progreso no se ha perdido.');
+      setPhase('saving'); // Stay on saving phase to show error
+    } finally {
+      setIsSaving(false);
     }
+  };
+
+  // ============================================
+  // RETRY SAVE - For when initial save fails
+  // ============================================
+  const retrySave = async () => {
+    if (!pendingResults) return;
     
-    setPhase('done');
+    setIsSaving(true);
+    setSaveError(null);
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        window.location.href = '/iniciar-sesion';
+        return;
+      }
+
+      const { error: insertError } = await supabase.from('exam_attempts').insert({
+        user_id: user.id,
+        course_type: courseType,
+        questions_shown: pendingResults.questionIds,
+        score: pendingResults.score,
+        passed: pendingResults.passed
+      });
+
+      if (insertError) {
+        throw insertError;
+      }
+
+      // Success! Show results
+      setPhase('done');
+    } catch (err) {
+      console.error('Error retrying save:', err);
+      setSaveError('Seguimos teniendo problemas para guardar. Verifique su conexión e intente de nuevo.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleRetry = () => {
@@ -341,13 +464,37 @@ export default function ExamPage() {
     setQuestions([]);
     setCurrentIndex(0);
     setCorrectCount(0);
+    setWrongAnswers([]);
     setSelectedAnswer(null);
     setSubmitted(false);
     setIsCorrect(false);
     setWrongRed('');
     setShowFeedback(false);
     setError(null);
+    setSaveError(null);
+    setPendingResults(null);
     setPhase('intro');
+  };
+
+  // ============================================
+  // HELPER: Get unique lessons to review (sorted, max 5)
+  // ============================================
+  const getLessonsToReview = () => {
+    const uniqueLessons = new Map<number, string>();
+    wrongAnswers.forEach(wa => {
+      if (!uniqueLessons.has(wa.lessonNumber)) {
+        uniqueLessons.set(wa.lessonNumber, wa.lessonRedirect);
+      }
+    });
+    
+    const sorted = Array.from(uniqueLessons.entries())
+      .sort((a, b) => a[0] - b[0]);
+    
+    return {
+      lessons: sorted.slice(0, 5),
+      hasMore: sorted.length > 5,
+      moreCount: sorted.length - 5
+    };
   };
 
   // ============================================
@@ -383,11 +530,92 @@ export default function ExamPage() {
   }
 
   // ============================================
+  // SAVING STATE - Show while saving or if error
+  // ============================================
+  if (phase === 'saving') {
+    return (
+      <main className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="bg-[#2A2A2A] rounded-2xl p-8 md:p-10 max-w-md w-full text-center border border-white/10">
+          {isSaving ? (
+            // Saving in progress
+            <>
+              <div className="relative w-20 h-20 mx-auto mb-6">
+                <svg className="w-full h-full" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
+                  <circle
+                    cx="50" cy="50" r="40"
+                    fill="none" stroke="#7EC8E3" strokeWidth="4"
+                    strokeLinecap="round" strokeDasharray="60 191"
+                    className="animate-spin origin-center"
+                    style={{ animationDuration: '1.5s' }}
+                  />
+                </svg>
+              </div>
+              <h1 className="text-xl font-bold text-white mb-2">Guardando Resultado...</h1>
+              <p className="text-white/60">Por favor espere un momento.</p>
+            </>
+          ) : saveError ? (
+            // Save failed - show error with retry
+            <>
+              <div className="w-20 h-20 bg-[#FFB347]/20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#FFB347]/30">
+                <svg className="w-10 h-10 text-[#FFB347]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              
+              <h1 className="text-xl font-bold text-white mb-2">Error al Guardar</h1>
+              <p className="text-white/60 mb-6">{saveError}</p>
+              
+              {/* Reassurance box */}
+              <div className="bg-[#1C1C1C] rounded-xl p-4 mb-6 text-left border border-white/10">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-[#77DD77]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-[#77DD77]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[#77DD77] text-sm">Su resultado está seguro</p>
+                    <p className="text-white/60 text-sm mt-1">
+                      Obtuvo <strong className="text-white">{pendingResults?.score}%</strong> ({pendingResults?.correctCount}/{QUESTIONS_PER_EXAM} correctas).
+                      Solo necesitamos guardarlo en el servidor.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <button 
+                onClick={retrySave}
+                className="flex items-center justify-center gap-2 w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold hover:bg-[#9DD8F3] transition-all mb-3 active:scale-[0.98]"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Intentar Guardar de Nuevo
+              </button>
+              
+              <p className="text-white/40 text-xs mt-4">
+                Si el problema continúa, contáctenos:{' '}
+                <a href="mailto:info@puttingkidsfirst.org" className="text-[#7EC8E3] hover:underline">
+                  info@puttingkidsfirst.org
+                </a>
+              </p>
+            </>
+          ) : null}
+        </div>
+      </main>
+    );
+  }
+
+  // ============================================
   // RESULTS SCREEN
   // ============================================
   if (phase === 'done') {
-    const passed = correctCount >= PASS_SCORE;
-    const score = Math.round((correctCount / QUESTIONS_PER_EXAM) * 100);
+    const passed = pendingResults?.passed ?? correctCount >= PASS_SCORE;
+    const score = pendingResults?.score ?? Math.round((correctCount / QUESTIONS_PER_EXAM) * 100);
+    const finalCorrectCount = pendingResults?.correctCount ?? correctCount;
+    const { lessons: lessonsToReview, hasMore, moreCount } = getLessonsToReview();
+    const lessonTitles = LESSON_TITLES[courseType] || LESSON_TITLES.coparenting;
     
     return (
       <main className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -429,9 +657,10 @@ export default function ExamPage() {
                 
                 <div className="inline-flex items-center gap-2 bg-[#77DD77]/10 border border-[#77DD77]/30 rounded-full px-5 py-2.5 mb-8">
                   <span className="text-[#77DD77] font-bold text-xl">{score}%</span>
-                  <span className="text-[#77DD77]/70 text-sm">({correctCount}/{QUESTIONS_PER_EXAM} correctas)</span>
+                  <span className="text-[#77DD77]/70 text-sm">({finalCorrectCount}/{QUESTIONS_PER_EXAM} correctas)</span>
                 </div>
                 
+                {/* Always go to /completar-perfil - certificate created there */}
                 <Link 
                   href="/completar-perfil"
                   className="flex items-center justify-center gap-2 w-full bg-[#77DD77] text-[#1C1C1C] py-4 rounded-xl font-bold text-lg hover:bg-[#88EE88] transition-all hover:shadow-lg hover:shadow-[#77DD77]/25 mb-3 active:scale-[0.98]"
@@ -460,12 +689,53 @@ export default function ExamPage() {
               </div>
               
               <h1 className="text-2xl font-bold text-white mb-2">No Aprobó Esta Vez</h1>
-              <p className="text-white/60 mb-2">Obtuvo {score}% — necesita 70% para aprobar</p>
+              <p className="text-white/60 mb-6">Obtuvo {score}% — necesita 70% para aprobar</p>
+              
+              {/* ============================================ */}
+              {/* TEMAS PARA REPASAR - New Enhancement */}
+              {/* ============================================ */}
+              {lessonsToReview.length > 0 && (
+                <div className="bg-[#1C1C1C] rounded-xl p-4 mb-6 text-left border border-white/10">
+                  <h3 className="font-semibold text-white mb-3 flex items-center gap-2">
+                    <span className="text-lg">📚</span>
+                    Temas para Repasar
+                  </h3>
+                  <div className="space-y-2">
+                    {lessonsToReview.map(([lessonNum]) => (
+                      <Link
+                        key={lessonNum}
+                        href={`/clase/${courseType}/leccion-${lessonNum}`}
+                        className="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#7EC8E3]/30 transition-all group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="w-8 h-8 bg-[#7EC8E3]/20 rounded-lg flex items-center justify-center text-[#7EC8E3] font-bold text-sm">
+                            {lessonNum}
+                          </span>
+                          <span className="text-white/80 text-sm group-hover:text-white transition-colors">
+                            {lessonTitles[lessonNum] || `Lección ${lessonNum}`}
+                          </span>
+                        </div>
+                        <svg className="w-4 h-4 text-white/30 group-hover:text-[#7EC8E3] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </Link>
+                    ))}
+                    {hasMore && (
+                      <p className="text-white/40 text-xs text-center pt-2">
+                        +{moreCount} lección{moreCount > 1 ? 'es' : ''} más
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
               
               <div className="bg-[#1C1C1C] rounded-xl p-4 mb-6 text-left border border-white/10">
                 <p className="text-white/60 text-sm">
                   <strong className="text-white">No se preocupe</strong> — puede retomar el examen las veces que necesite. 
-                  Le recomendamos revisar las lecciones antes de intentar de nuevo.
+                  {lessonsToReview.length > 0 
+                    ? ' Revise las lecciones indicadas arriba antes de intentar de nuevo.'
+                    : ' Le recomendamos revisar las lecciones antes de intentar de nuevo.'
+                  }
                 </p>
               </div>
               
@@ -480,10 +750,10 @@ export default function ExamPage() {
               </button>
               
               <Link 
-                href={`/curso/${courseType}`} 
+                href={`/clase/${courseType}`} 
                 className="block w-full bg-transparent border border-white/20 text-white py-3 rounded-xl hover:bg-white/5 transition-colors"
               >
-                Revisar el Curso
+                Revisar la Clase
               </Link>
             </>
           )}
@@ -510,13 +780,13 @@ export default function ExamPage() {
         <header className="bg-background border-b border-white/10 sticky top-0 z-50">
           <div className="max-w-4xl mx-auto px-4 md:px-6 py-4">
             <Link 
-              href={`/curso/${courseType}`} 
+              href={`/clase/${courseType}`} 
               className="text-white/60 hover:text-white text-sm font-medium flex items-center gap-2 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              Volver al Curso
+              Volver a la Clase
             </Link>
           </div>
         </header>
@@ -772,7 +1042,7 @@ export default function ExamPage() {
                   <div>
                     <p className="font-semibold text-[#FF9999] mb-1">Respuesta Incorrecta</p>
                     <p className="text-[#FF9999]/80 text-sm">
-                      Revisar: <strong>{wrongRed ? cleanRedirect(wrongRed) : 'el material del curso'}</strong>
+                      Revisar: <strong>{wrongRed ? cleanRedirect(wrongRed) : 'el material de la clase'}</strong>
                     </p>
                   </div>
                 </div>

@@ -136,6 +136,6 @@ Ese/esa es usted.
 
 ---
 
-*Ha completado todo el contenido del curso. Cuando esté listo/a, proceda al examen final.*
+*Ha completado Todo el contenido de la clase. Cuando esté listo/a, proceda al examen final.*
 
 *Para recursos de crisis, servicios de apoyo, e información específica de Florida, vea la Lección 14 (Recursos Adicionales).*

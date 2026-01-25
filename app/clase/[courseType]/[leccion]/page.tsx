@@ -7,6 +7,17 @@ import { useParams } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+// ============================================
+// CONSTANTS
+// ============================================
+
+// User must scroll to this percentage before they can mark complete
+const SCROLL_THRESHOLD = 95;
+
+// ============================================
+// MAIN COMPONENT
+// ============================================
+
 export default function ModulePage() {
   const params = useParams();
   const courseType = params.courseType as string;
@@ -19,6 +30,7 @@ export default function ModulePage() {
   const [loading, setLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [hasReachedBottom, setHasReachedBottom] = useState(false);
   const [isMarking, setIsMarking] = useState(false);
   
   const supabase = createClient();
@@ -48,7 +60,10 @@ export default function ModulePage() {
         .single();
 
       if (moduleId && progressData) {
-        setIsCompleted(progressData.lessons_completed.includes(moduleId));
+        const completed = progressData.lessons_completed.includes(moduleId);
+        setIsCompleted(completed);
+        // If already completed, they've already scrolled through once
+        if (completed) setHasReachedBottom(true);
       }
 
       // Use getContentFileName to get the correct path based on course type
@@ -74,20 +89,29 @@ export default function ModulePage() {
     loadContent();
   }, [courseType, moduleSlug, moduleId]);
 
+  // Track scroll progress
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
       setScrollProgress(progress);
+      
+      // Once user reaches threshold, unlock the button (stays unlocked)
+      if (progress >= SCROLL_THRESHOLD && !hasReachedBottom) {
+        setHasReachedBottom(true);
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
+    // Check initial scroll position (for short content or resumed reading)
+    handleScroll();
+    
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [hasReachedBottom]);
 
   const markComplete = async () => {
-    if (!moduleId || isMarking) return;
+    if (!moduleId || isMarking || !hasReachedBottom) return;
     setIsMarking(true);
 
     const { data: { user } } = await supabase.auth.getUser();
@@ -151,6 +175,9 @@ export default function ModulePage() {
 
   const nextModule = getNextModule();
   const prevModule = getPrevModule();
+  
+  // Calculate if button should be enabled
+  const canMarkComplete = hasReachedBottom && !isCompleted;
 
   return (
     <main className="min-h-screen bg-background">
@@ -169,13 +196,13 @@ export default function ModulePage() {
       <header className="bg-background border-b border-white/15 sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
           <Link 
-            href={`/curso/${courseType}`} 
+            href={`/clase/${courseType}`} 
             className="text-[#7EC8E3] hover:text-white text-sm font-medium flex items-center gap-2 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Volver al Curso
+            Volver a la Clase
           </Link>
           
           {isCompleted && (
@@ -226,32 +253,85 @@ export default function ModulePage() {
         {moduleId && !isSupplemental && (
           <div className="mb-8">
             {!isCompleted ? (
-              <div className="bg-[#7EC8E3]/10 border-2 border-[#7EC8E3]/30 rounded-2xl p-6 md:p-8 text-center">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#7EC8E3]/20 border border-[#7EC8E3]/30 mb-4">
-                  <svg className="w-7 h-7 text-[#7EC8E3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+              <div className={`border-2 rounded-2xl p-6 md:p-8 text-center transition-all duration-300 ${
+                hasReachedBottom 
+                  ? 'bg-[#7EC8E3]/10 border-[#7EC8E3]/30' 
+                  : 'bg-white/5 border-white/10'
+              }`}>
+                <div className={`inline-flex items-center justify-center w-14 h-14 rounded-full mb-4 transition-all duration-300 ${
+                  hasReachedBottom 
+                    ? 'bg-[#7EC8E3]/20 border border-[#7EC8E3]/30' 
+                    : 'bg-white/10 border border-white/10'
+                }`}>
+                  {hasReachedBottom ? (
+                    <svg className="w-7 h-7 text-[#7EC8E3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-7 h-7 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                  )}
                 </div>
-                <h3 className="font-bold text-white text-lg mb-2">¿Terminó de leer esta lección?</h3>
-                <p className="text-white/70 mb-6 text-sm max-w-md mx-auto">
-                  Marque como completada para desbloquear la siguiente lección y continuar su progreso.
+                
+                <h3 className={`font-bold text-lg mb-2 transition-colors ${
+                  hasReachedBottom ? 'text-white' : 'text-white/60'
+                }`}>
+                  {hasReachedBottom 
+                    ? '¿Terminó de leer esta lección?' 
+                    : 'Continúe leyendo...'}
+                </h3>
+                
+                <p className={`mb-6 text-sm max-w-md mx-auto transition-colors ${
+                  hasReachedBottom ? 'text-white/70' : 'text-white/50'
+                }`}>
+                  {hasReachedBottom 
+                    ? 'Marque como completada para desbloquear la siguiente lección y continuar su progreso.'
+                    : 'Desplácese hasta el final de la lección para continuar.'}
                 </p>
+                
+                {/* Progress indicator when not yet scrolled */}
+                {!hasReachedBottom && (
+                  <div className="mb-6">
+                    <div className="w-full max-w-xs mx-auto bg-white/10 rounded-full h-2 overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-[#7EC8E3] to-[#77DD77] transition-all duration-150 rounded-full"
+                        style={{ width: `${Math.min(scrollProgress, 100)}%` }}
+                      />
+                    </div>
+                    <p className="text-white/40 text-xs mt-2">
+                      {Math.round(scrollProgress)}% leído
+                    </p>
+                  </div>
+                )}
+                
                 <button
                   onClick={markComplete}
-                  disabled={isMarking}
-                  className="inline-flex items-center gap-2 bg-[#7EC8E3] text-[#1C1C1C] px-8 py-4 rounded-xl font-bold hover:bg-[#9DD8F3] transition-all hover:shadow-lg hover:shadow-[#7EC8E3]/25 disabled:opacity-70 disabled:cursor-not-allowed"
+                  disabled={!canMarkComplete || isMarking}
+                  className={`inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold transition-all ${
+                    canMarkComplete
+                      ? 'bg-[#7EC8E3] text-[#1C1C1C] hover:bg-[#9DD8F3] hover:shadow-lg hover:shadow-[#7EC8E3]/25 cursor-pointer'
+                      : 'bg-white/10 text-white/30 cursor-not-allowed'
+                  } disabled:opacity-70`}
                 >
                   {isMarking ? (
                     <>
                       <LoadingSpinner />
                       <span>Guardando...</span>
                     </>
-                  ) : (
+                  ) : canMarkComplete ? (
                     <>
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                       <span>Marcar como Completada</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                      </svg>
+                      <span>Desplácese para continuar</span>
                     </>
                   )}
                 </button>
@@ -268,7 +348,7 @@ export default function ModulePage() {
                 <div className="flex flex-col sm:flex-row justify-center gap-3">
                   {nextModule && (
                     <Link
-                      href={`/curso/${courseType}/${nextModule.slug}`}
+                      href={`/clase/${courseType}/${nextModule.slug}`}
                       className="inline-flex items-center justify-center gap-2 bg-[#77DD77] text-[#1C1C1C] px-6 py-3 rounded-xl font-bold hover:bg-[#88EE88] transition-all hover:shadow-lg hover:shadow-[#77DD77]/25"
                     >
                       Siguiente Lección
@@ -279,7 +359,7 @@ export default function ModulePage() {
                   )}
                   {moduleId === TOTAL_MODULES && (
                     <Link
-                      href={`/curso/${courseType}/examen`}
+                      href={`/clase/${courseType}/examen`}
                       className="inline-flex items-center justify-center gap-2 bg-[#FFB347] text-[#1C1C1C] px-6 py-3 rounded-xl font-bold hover:bg-[#FFC05C] transition-all hover:shadow-lg hover:shadow-[#FFB347]/25"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -298,7 +378,7 @@ export default function ModulePage() {
         <div className="flex justify-between items-center pt-6 border-t border-white/10">
           {prevModule ? (
             <Link
-              href={`/curso/${courseType}/${prevModule.slug}`}
+              href={`/clase/${courseType}/${prevModule.slug}`}
               className="flex items-center gap-2 text-white/70 hover:text-white font-medium transition-colors group"
             >
               <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -311,7 +391,7 @@ export default function ModulePage() {
           
           {nextModule && (
             <Link
-              href={`/curso/${courseType}/${nextModule.slug}`}
+              href={`/clase/${courseType}/${nextModule.slug}`}
               className="flex items-center gap-2 text-white/70 hover:text-white font-medium transition-colors group"
             >
               <span className="hidden sm:inline">Siguiente Lección</span>

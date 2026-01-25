@@ -17,12 +17,12 @@ const shortStack = Short_Stack({
 });
 
 export const metadata: Metadata = {
-  title: "Curso Para Padres Aceptado por la Corte | $60 | Certificado Instantáneo",
-  description: "Curso para padres aceptado por la corte en todos los estados. $60, 4 horas, certificado instantáneo. 100% en línea 24/7. Garantía de Aceptación del 100%. De confianza desde 1993.",
+  title: "Clases para Padres | El Certificado Más Aceptado",
+  description: "El Original. El Nombre Más Reconocido. Un precio. Aceptado en todo el país. Sin sorpresas.",
   alternates: {
-    canonical: "https://cursoparapadres.org",
+    canonical: "https://www.claseparapadres.com",
     languages: {
-      "es": "https://cursoparapadres.org",
+      "es": "https://www.claseparapadres.com",
       "en": "https://puttingkidsfirst.org",
       "x-default": "https://puttingkidsfirst.org",
     },

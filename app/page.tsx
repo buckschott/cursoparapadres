@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import { useToast } from '@/components/Toast';
 import CTAButton from '@/components/CTAButton';
 import CheckoutOverlay from '@/components/CheckoutOverlay';
+import BundleInterstitial from '@/components/BundleInterstitial';
 import { FEATURES } from '@/components/FeatureIcons';
 import { useScrollReveal, useDeviceAnimation } from '@/hooks/useScrollReveal';
 import { ANIMATION } from '@/constants/animation';
@@ -15,7 +16,11 @@ export default function Home() {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const { showToast } = useToast();
   
-  // Custom hooks for animations - no more raw useEffect with observers
+  // Bundle interstitial state
+  const [isInterstitialOpen, setIsInterstitialOpen] = useState(false);
+  const [pendingCourse, setPendingCourse] = useState<'coparenting' | 'parenting' | null>(null);
+  
+  // Custom hooks for animations
   const mainRef = useScrollReveal();
   const devicesRef = useDeviceAnimation();
 
@@ -60,22 +65,29 @@ export default function Home() {
     }
   };
 
-  // Safe checkout handlers with env var validation
-  const handleCoparentingCheckout = () => {
-    const priceId = process.env.NEXT_PUBLIC_PRICE_COPARENTING;
-    if (!priceId) {
-      showToast(
-        'error',
-        'Error de configuración',
-        'Por favor, contáctenos para completar su inscripción.'
-      );
-      return;
-    }
-    handleCheckout(priceId, 'coparenting');
+  // ============================================
+  // SINGLE CLASS HANDLERS - Open interstitial first
+  // ============================================
+  
+  const handleCoparentingClick = () => {
+    setPendingCourse('coparenting');
+    setIsInterstitialOpen(true);
   };
 
-  const handleParentingCheckout = () => {
-    const priceId = process.env.NEXT_PUBLIC_PRICE_PARENTING;
+  const handleParentingClick = () => {
+    setPendingCourse('parenting');
+    setIsInterstitialOpen(true);
+  };
+
+  // ============================================
+  // INTERSTITIAL HANDLERS
+  // ============================================
+
+  const handleChooseBundle = () => {
+    setIsInterstitialOpen(false);
+    setPendingCourse(null);
+    
+    const priceId = process.env.NEXT_PUBLIC_PRICE_BUNDLE;
     if (!priceId) {
       showToast(
         'error',
@@ -84,8 +96,40 @@ export default function Home() {
       );
       return;
     }
-    handleCheckout(priceId, 'parenting');
+    handleCheckout(priceId, 'bundle');
   };
+
+  const handleContinueSingle = () => {
+    setIsInterstitialOpen(false);
+    
+    if (!pendingCourse) return;
+    
+    const priceId = pendingCourse === 'coparenting'
+      ? process.env.NEXT_PUBLIC_PRICE_COPARENTING
+      : process.env.NEXT_PUBLIC_PRICE_PARENTING;
+    
+    if (!priceId) {
+      showToast(
+        'error',
+        'Error de configuración',
+        'Por favor, contáctenos para completar su inscripción.'
+      );
+      setPendingCourse(null);
+      return;
+    }
+    
+    handleCheckout(priceId, pendingCourse);
+    setPendingCourse(null);
+  };
+
+  const handleCloseInterstitial = () => {
+    setIsInterstitialOpen(false);
+    setPendingCourse(null);
+  };
+
+  // ============================================
+  // BUNDLE HANDLER - Direct checkout (no interstitial)
+  // ============================================
 
   const handleBundleCheckout = () => {
     const priceId = process.env.NEXT_PUBLIC_PRICE_BUNDLE;
@@ -103,39 +147,47 @@ export default function Home() {
   return (
     <>
       <CheckoutOverlay isVisible={isRedirecting} />
+      
+      {/* Bundle Upgrade Interstitial */}
+      <BundleInterstitial
+        isOpen={isInterstitialOpen}
+        originalCourse={pendingCourse || 'coparenting'}
+        onChooseBundle={handleChooseBundle}
+        onContinueSingle={handleContinueSingle}
+        onClose={handleCloseInterstitial}
+      />
+      
       <Header />
       
       <main ref={mainRef as React.RefObject<HTMLElement>} className="min-h-screen bg-background">
         {/* HERO SECTION */}
         <section className="relative w-full overflow-hidden bg-background hero-section flex justify-center z-0">
-          <div className="relative w-full max-w-7xl mx-auto px-4 md:px-6 text-center z-10 flex flex-col justify-between hero-content">
+          <div className="relative w-full max-w-6xl mx-auto px-4 text-center z-10 flex flex-col justify-between hero-content">
             
             <div className="flex justify-center">
-              <h1 className="hero-title text-5xl md:text-[54px] lg:text-[71px] font-bold text-white leading-[1.1] tracking-wide">
-                <span className="hero-line-1">Curso de Crianza Compartida</span><br />
-                <span className="hero-line-2">Aceptado por la Corte</span>
+              <h1 className="hero-title text-[22px] md:text-[40px] xl:text-[64px] font-bold text-white leading-[1.1] tracking-wide">
+                <span className="hero-line-1">Clases para Padres</span><br />
+                <span className="hero-line-2">Aceptadas en Todo el País</span>
               </h1>
             </div>
 
             <div className="flex justify-center">
-              <p className="hero-subheadline text-xl md:text-2xl lg:text-3xl font-normal text-white/70 max-w-4xl mx-auto leading-relaxed">
-                <span className="subtext-line subtext-line-1 inline-block">Un precio.</span><br />
-                <span className="subtext-line subtext-line-2 inline-block">Aceptado en todos los estados.</span><br />
-                <span className="subtext-line subtext-line-3 inline-block">Sin sorpresas.</span>
+              <p className="hero-subheadline text-base md:text-2xl lg:text-3xl font-normal text-white max-w-4xl mx-auto leading-relaxed">
+                <span className="subtext-line subtext-line-1 inline-block">El Original.</span><br />
+                <span className="subtext-line subtext-line-2 inline-block">El Nombre Más Reconocido.</span><br />
+                <span className="subtext-line subtext-line-3 inline-block">El Certificado Más Aceptado.</span>
               </p>
             </div>
 
             <div className="flex justify-center">
-              <div className="trust-badge-pill inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-3">
-                <span className="relative flex h-4 w-4 flex-shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#77DD77] opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-4 w-4 bg-[#77DD77]"></span>
-                </span>
-                <span className="trust-badge-text font-semibold text-white">
-                  <span className="trust-text-1">El Curso Original en Línea</span>
-                  <span className="trust-text-2 absolute left-0 right-0 text-center">De confianza desde 1993</span>
-                </span>
-              </div>
+              <span className="trust-badge-text font-semibold text-white whitespace-nowrap">
+                {/* Invisible spacer - longest text sets the width */}
+                <span className="invisible">Aceptado en todo el país.</span>
+                {/* All three texts absolutely positioned */}
+                <span className="trust-text-1 absolute inset-0">Un precio.</span>
+                <span className="trust-text-2 absolute inset-0">Aceptado en todo el país.</span>
+                <span className="trust-text-3 absolute inset-0">Sin sorpresas.</span>
+              </span>
             </div>
 
             {/* CTA with hand-drawn arrow */}
@@ -143,15 +195,6 @@ export default function Home() {
               <CTAButton href="#precios" showArrow={true}>
                 Inscríbase Ahora
               </CTAButton>
-            </div>
-
-            <div>
-              <a 
-                href="/garantia"
-                className="secondary-cta inline-block text-white/70 hover:text-white text-[19px] font-bold underline decoration-2 underline-offset-4 hover:decoration-white transition-colors"
-              >
-                Garantía de Aceptación del 100%
-              </a>
             </div>
           </div>
         </section>
@@ -162,13 +205,13 @@ export default function Home() {
           className="section-divider relative pt-8 pb-24 bg-background overflow-hidden z-20" 
           aria-labelledby="caracteristicas-heading"
         >
-          <div className="relative max-w-7xl mx-auto px-4 md:px-6 z-10">
+          <div className="relative max-w-6xl mx-auto px-4 z-10">
             <div className="text-center mb-16">
               <h2 id="caracteristicas-heading" className="scroll-reveal text-xl md:text-4xl font-bold text-white mb-4">
-                100% Aceptado por la Corte, Entrega Inmediata
+                La Clase Para Padres Original
               </h2>
               <p className="scroll-reveal text-base md:text-lg text-white/70 max-w-2xl mx-auto">
-                Nuestro proceso es simple, rápido y garantizado para cumplir con su fecha límite.
+                Su horario. Su ritmo. Su certificado.
               </p>
             </div>
 
@@ -200,13 +243,13 @@ export default function Home() {
           className="section-divider relative bg-background overflow-hidden z-20 py-24 pt-32" 
           aria-labelledby="dispositivos-heading"
         >
-          <div className="relative max-w-7xl mx-auto px-4 md:px-6">
+          <div className="relative max-w-6xl mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 id="dispositivos-heading" className="scroll-reveal text-lg md:text-4xl font-bold text-white mb-4">
-                Funciona en cualquier<br className="md:hidden" /> dispositivo
+              <h2 id="dispositivos-heading" className="scroll-reveal text-[22px] md:text-4xl font-bold text-white mb-4">
+                Donde Esté. Cuando Pueda.
               </h2>
               <p className="scroll-reveal text-base md:text-lg text-white/70 max-w-2xl mx-auto">
-                Comience en su teléfono, continúe en su computadora. Su progreso se sincroniza perfectamente en todos los dispositivos.
+                Teléfono. Tableta. Computadora. Su progreso siempre guardado.
               </p>
             </div>
 
@@ -237,18 +280,18 @@ export default function Home() {
           className="section-divider relative bg-background z-20 overflow-hidden py-24" 
           aria-labelledby="precios-heading"
         >
-          <div className="max-w-6xl mx-auto px-4 md:px-6">
+          <div className="max-w-6xl mx-auto px-4">
             <div className="text-center mb-16">
               <h2 id="precios-heading" className="scroll-reveal text-lg md:text-4xl font-bold text-white mb-4">
-                Clases de Crianza Aceptadas por la Corte
+                Clases Para Padres Aceptadas en Todo el País
               </h2>
-              <p className="scroll-reveal text-lg text-white/70">
-                Encuentre el programa garantizado y aceptado para sus requisitos específicos.
+              <p className="scroll-reveal text-lg md:text-xl lg:text-2xl text-white/70">
+                Una clase. Un precio. Listo.
               </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              {/* Coparenting Class - Active */}
+              {/* Coparenting Course */}
               <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/20 p-8 transition-all md:hover:shadow-2xl shadow-black/50 md:hover:border-[#FFFFFF]/50">
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold text-white mb-1">Clase de Coparentalidad</h3>
@@ -271,7 +314,7 @@ export default function Home() {
                 </div>
                 
                 <button 
-                  onClick={handleCoparentingCheckout}
+                  onClick={handleCoparentingClick}
                   disabled={loading === 'coparenting'}
                   className="group w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold transition-all duration-200 hover:bg-[#9DD8F3] hover:shadow-lg hover:shadow-[#7EC8E3]/30 active:scale-[0.98] active:bg-[#9DD8F3] mb-6 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
@@ -299,7 +342,7 @@ export default function Home() {
                 <div className="mb-6 pt-4 border-t border-[#FFFFFF]/15">
                   <h4 className="text-xs font-semibold text-white mb-2">Incluye:</h4>
                   <ul className="space-y-2">
-                    {["Garantía de Aceptación del 100%", "El Curso Original en Línea (Desde 1993)", "100% en Línea y a Su Ritmo", "Certificado Instantáneo con Código de Verificación Judicial"].map((item, i) => (
+                    {["Aceptado por Tribunales en Todo el País", "Cumple Requisitos de 4-6 Horas", "Acceso 24/7. A Su Ritmo.", "Certificado Verificable con Código de Seguridad", "Notificamos a Su Abogado al Completar"].map((item, i) => (
                       <li key={i} className="flex items-start gap-2">
                         <CheckIcon className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#77DD77]" />
                         <span className="text-white/70 text-xs">{item}</span>
@@ -308,18 +351,18 @@ export default function Home() {
                   </ul>
                 </div>
                 <div className="pt-4 border-t border-[#FFFFFF]/15">
-                  <h4 className="text-xs font-semibold text-white mb-2">Detalles del Curso:</h4>
-                  <p className="text-white/70 text-xs leading-relaxed italic">
-                    "Esta clase proporciona las habilidades esenciales para cambiar su enfoque del conflicto personal del divorcio a las necesidades de su hijo, ayudándole a crear un ambiente de 'dos hogares' estable, de apoyo y sin amenazas."
+                  <h4 className="text-xs font-semibold text-white mb-2">Nuestra Promesa</h4>
+                  <p className="text-white/70 text-xs leading-relaxed">
+                    Su requisito cumplido. Su certificado entregado. Su tiempo respetado.
                   </p>
                 </div>
               </article>
 
-              {/* Parenting Class - Active */}
+              {/* Parenting Course */}
               <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/20 p-8 transition-all md:hover:shadow-2xl shadow-black/50 md:hover:border-[#FFFFFF]/50">
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold text-white mb-1">Clase de Crianza</h3>
-                  <p className="text-sm text-white/70">Para Habilidades Fundamentales y Estabilidad del Hogar</p>
+                  <p className="text-sm text-white/70">Para Casos de Reunificación, Adopción y CPS</p>
                 </div>
                 <div className="mb-6">
                   <span className="text-5xl font-bold text-white">$60</span>
@@ -328,7 +371,7 @@ export default function Home() {
                 <div className="mb-6">
                   <h4 className="text-sm font-semibold text-white mb-3">Cumple con los requisitos para:</h4>
                   <ul className="space-y-2">
-                    {["Demostrar crianza positiva en la corte", "Crear un hogar estable y nutritivo", "Desarrollar autoestima infantil y disciplina positiva", "Procedimientos de adopción o cuidado temporal"].map((item, i) => (
+                    {["Casos de crianza ordenados por la corte", "Procedimientos de adopción o cuidado temporal", "Demostrar capacidad parental ante el tribunal", "Requisitos de reunificación familiar"].map((item, i) => (
                       <li key={i} className="flex items-start gap-3">
                         <CheckIcon className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#7EC8E3]" />
                         <span className="text-white text-sm">{item}</span>
@@ -338,7 +381,7 @@ export default function Home() {
                 </div>
                 
                 <button 
-                  onClick={handleParentingCheckout}
+                  onClick={handleParentingClick}
                   disabled={loading === 'parenting'}
                   className="group w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold transition-all duration-200 hover:bg-[#9DD8F3] hover:shadow-lg hover:shadow-[#7EC8E3]/30 active:scale-[0.98] active:bg-[#9DD8F3] mb-6 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
@@ -366,7 +409,7 @@ export default function Home() {
                 <div className="mb-6 pt-4 border-t border-[#FFFFFF]/15">
                   <h4 className="text-xs font-semibold text-white mb-2">Incluye:</h4>
                   <ul className="space-y-2">
-                    {["Garantía de Aceptación del 100%", "El Curso Original en Línea (Desde 1993)", "100% en Línea y a Su Ritmo", "Certificado Instantáneo con Código de Verificación Judicial"].map((item, i) => (
+                    {["Aceptado por Tribunales en Todo el País", "Cumple Requisitos de 4-6 Horas", "Acceso 24/7. A Su Ritmo.", "Certificado Verificable con Código de Seguridad", "Notificamos a Su Abogado al Completar"].map((item, i) => (
                       <li key={i} className="flex items-start gap-2">
                         <CheckIcon className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#77DD77]" />
                         <span className="text-white/70 text-xs">{item}</span>
@@ -375,20 +418,25 @@ export default function Home() {
                   </ul>
                 </div>
                 <div className="pt-4 border-t border-[#FFFFFF]/15">
-                  <h4 className="text-xs font-semibold text-white mb-2">Detalles del Curso:</h4>
-                  <p className="text-white/70 text-xs leading-relaxed italic">
-                    "Esta clase proporciona habilidades fundamentales de crianza para crear un hogar seguro, estable y nutritivo, ayudándole a desarrollar la autoestima de su hijo y manejar la disciplina de manera efectiva."
+                  <h4 className="text-xs font-semibold text-white mb-2">Nuestra Promesa</h4>
+                  <p className="text-white/70 text-xs leading-relaxed">
+                    Su requisito cumplido. Su certificado entregado. Su tiempo respetado.
                   </p>
                 </div>
               </article>
             </div>
 
-            {/* Bundle - Active */}
+            {/* Bundle */}
             <div className="max-w-4xl mx-auto mt-16 mb-14">
               <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/20 p-8 transition-all md:hover:shadow-2xl shadow-black/50 md:hover:border-[#FFFFFF]/50">
+                {/* Best Value Badge */}
+                <div className="absolute -top-3 right-6 bg-[#77DD77] text-[#1C1C1C] px-3 py-1 rounded-full text-xs font-bold tracking-wide">
+                  ⭐ Mejor Valor
+                </div>
+                
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold text-white mb-1">El Paquete Completo</h3>
-                  <p className="text-sm text-white/70">Demuestre Su Compromiso Total</p>
+                  <p className="text-sm text-white/70">Ambas Clases. Un Precio.</p>
                 </div>
                 <div className="mb-6">
                   <span className="text-5xl font-bold text-white">$80</span>
@@ -397,7 +445,7 @@ export default function Home() {
                 <div className="mb-6">
                   <h4 className="text-sm font-semibold text-white mb-3">Incluye ambas clases:</h4>
                   <ul className="space-y-2">
-                    {["Clase de Coparentalidad (Para Divorcio y Custodia)", "Clase de Habilidades de Crianza (Para Habilidades Fundamentales y Estabilidad del Hogar)", "Cumple con requisitos combinados o de nivel superior", "Garantía de Aceptación del 100%"].map((item, i) => (
+                    {["Clase de Coparentalidad + Clase de Crianza", "Dos Certificados Verificables", "Notificamos a Su Abogado al Completar Cada Clase", "Cumple Requisitos Combinados o de Nivel Superior"].map((item, i) => (
                       <li key={i} className="flex items-start gap-3">
                         <CheckIcon className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#7EC8E3]" />
                         <span className="text-white text-sm">{item}</span>
@@ -434,12 +482,24 @@ export default function Home() {
               </article>
             </div>
 
+            {/* Security badge */}
             <div className="text-center mt-12">
               <p className="flex items-center justify-center gap-2 text-sm text-white/60">
                 <LockIcon className="w-4 h-4" />
                 Transacción SSL 100% Segura
               </p>
             </div>
+
+            {/* Military/Indigent discount line */}
+            <p className="text-center mt-4 text-sm text-white/50">
+              ¿Servicio militar o dificultad financiera? Escríbanos a{' '}
+              <a 
+                href="mailto:info@claseparapadres.com?subject=Solicitud%20de%20descuento"
+                className="text-white/70 underline underline-offset-2 hover:text-white transition-colors"
+              >
+                info@claseparapadres.com
+              </a>
+            </p>
           </div>
         </section>
 
@@ -449,21 +509,21 @@ export default function Home() {
           className="section-divider py-24 bg-background relative z-20" 
           aria-labelledby="testimonios-heading"
         >
-          <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="max-w-6xl mx-auto px-4">
             <div className="text-center mb-16">
               <h2 id="testimonios-heading" className="text-lg md:text-4xl font-bold text-white mb-4">
                 Confiado por Padres, Aceptado por Cortes
               </h2>
               <p className="text-lg text-white/70">
-                Vea cómo padres como usted cumplieron con sus requisitos—rápidamente.
+                Vea lo que dicen otros padres.
               </p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
               {[
-                { name: "Roberto Méndez", location: "Houston, Texas", text: "Mi abogado me recomendó Putting Kids First específicamente. La corte aceptó mi certificado sin ninguna pregunta. Lo completé en un solo fin de semana." },
-                { name: "Lucía Fernández", location: "Atlanta, Georgia", text: "Como madre soltera con dos trabajos, necesitaba algo flexible. Hice todo el curso en mi teléfono entre turnos. El certificado llegó a mi correo al instante." },
-                { name: "Miguel Torres", location: "Jacksonville, Florida", text: "Esperaba solo cumplir con un requisito del tribunal. Realmente aprendí cosas que me ayudaron a ser mejor padre. Valió la pena." }
+                { name: "Roberto Méndez", location: "Houston, Texas", text: "Mi abogado me recomendó esta clase específicamente. Enviaron el certificado a mi abogado por correo electrónico. No tuve que preocuparme más." },
+                { name: "Lucía Fernández", location: "Atlanta, Georgia", text: "Como madre soltera con dos trabajos, necesitaba algo flexible. Hice toda la clase en mi teléfono cuando tenía tiempo. El certificado llegó a mi correo al terminar." },
+                { name: "Miguel Torres", location: "Jacksonville, Florida", text: "Tenía un requisito del tribunal y necesitaba resolverlo. Fue más fácil de lo que pensé. Requisito cumplido." }
               ].map((review, i) => (
                 <article key={i} className="bg-background border-2 border-[#FFFFFF]/15 rounded-2xl p-8 md:hover:border-[#7EC8E3]/30 md:hover:shadow-xl shadow-black/40 transition-all">
                   <div className="flex mb-4">
@@ -488,21 +548,21 @@ export default function Home() {
           className="section-divider py-24 bg-background relative z-20" 
           aria-labelledby="preguntas-frecuentes-heading"
         >
-          <div className="max-w-4xl mx-auto px-4 md:px-6">
+          <div className="max-w-4xl mx-auto px-4">
             <div className="text-center mb-16">
               <h2 id="preguntas-frecuentes-heading" className="text-lg md:text-4xl font-bold text-white mb-4">
                 Su Lista de Verificación Final
               </h2>
               <p className="text-lg text-white/70">
-                Detalles clave sobre la aceptación de la corte, su certificado y el acceso al curso.
+                Detalles clave sobre la aceptación de la corte, su certificado y el acceso a la clase.
               </p>
             </div>
             
             <div className="space-y-4">
               {[
-                { question: "¿Mi corte aceptará este certificado?", answer: "Sí. Nuestro programa está respaldado por una Garantía de Aceptación del 100%. Nuestras clases están diseñadas para cumplir con los requisitos de la corte. Si su certificado no es aceptado por cualquier razón, le proporcionaremos un reembolso completo." },
-                { question: "¿Cuándo recibo mi certificado?", answer: "Inmediatamente. En el momento en que complete la revisión final del curso, su certificado está listo para ser descargado, impreso o enviado por correo electrónico directamente a su abogado." },
-                { question: "¿Cuánto tiempo toma el curso?", answer: "Las clases de Coparentalidad y Crianza están diseñadas cada una para cumplir con un requisito de la corte de 4 horas. El Paquete Completo es nuestro programa más completo, diseñado para satisfacer requisitos combinados o de nivel superior.\n\nTodas nuestras clases son 100% a su propio ritmo, por lo que puede iniciar y cerrar sesión según sea necesario para completar el trabajo en su horario." }
+                { question: "¿Cuándo recibo mi certificado?", answer: "Inmediatamente al completar la clase. Su certificado llega a su correo electrónico y notificamos a su abogado automáticamente." },
+                { question: "¿Cuánto tiempo toma la clase?", answer: "La clase está diseñada para cumplir requisitos de 4-6 horas. Es 100% a su ritmo—puede empezar, pausar y continuar cuando quiera." },
+                { question: "¿Dónde es aceptado mi certificado?", answer: "En todo el país. Somos el original—el nombre más reconocido y el certificado más aceptado." }
               ].map((faq, i) => (
                 <details key={i} className="bg-background border-2 border-[#FFFFFF]/15 rounded-xl overflow-hidden group md:hover:border-[#7EC8E3]/30 transition-colors">
                   <summary className="flex justify-between items-center cursor-pointer p-6 font-bold text-white text-lg select-none">

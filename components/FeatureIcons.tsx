@@ -104,23 +104,23 @@ export function Access247Icon({ className = '' }: IconProps) {
  */
 export const FEATURES = [
   {
-    title: "Aceptado por la Corte",
-    description: "Reconocido por sistemas judiciales de familia en todo el país.",
+    title: "El Original",
+    description: "Aceptado por más tribunales de familia que cualquier otro.",
     Icon: CourtAcceptedIcon,
   },
   {
-    title: "Certificado Instantáneo",
-    description: "Descargue su certificado oficial de verificación judicial inmediatamente al completar.",
+    title: "Certificado al Terminar",
+    description: "Certificado oficial. Verificado por la corte. Notificación al abogado.",
     Icon: InstantCertificateIcon,
   },
   {
-    title: "Acceso Inmediato",
-    description: "Comience inmediatamente después de inscribirse. Sin programación, sin esperas. Empiece en minutos.",
-    Icon: ImmediateAccessIcon,
+    title: "Su Horario. A Su Tiempo.",
+    description: "Inscríbase ahora. Pare cuando necesite. Sin perder su progreso.",
+    Icon: Access247Icon,
   },
   {
-    title: "Acceso 24/7",
-    description: "Acceda a su curso en cualquier momento, día o noche. Aprenda en su horario, cuando le convenga.",
-    Icon: Access247Icon,
+    title: "Diseñado Para Completar",
+    description: "Paso a paso. Claro y directo. Listo cuando usted lo esté.",
+    Icon: ImmediateAccessIcon,
   },
 ] as const;

@@ -8,15 +8,28 @@ import { useState, useEffect, createContext, useContext, useCallback } from 'rea
 
 type ToastType = 'error' | 'success' | 'info';
 
+interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
+
 interface Toast {
   id: string;
   type: ToastType;
   message: string;
   subMessage?: string;
+  action?: ToastAction;
+  showHelpLink?: boolean; // Defaults to true for errors
 }
 
 interface ToastContextType {
-  showToast: (type: ToastType, message: string, subMessage?: string) => void;
+  showToast: (
+    type: ToastType, 
+    message: string, 
+    subMessage?: string,
+    action?: ToastAction,
+    showHelpLink?: boolean
+  ) => void;
 }
 
 const ToastContext = createContext<ToastContextType | null>(null);
@@ -30,15 +43,43 @@ export function useToast() {
 }
 
 // ============================================
+// TOAST TIMING CONSTANTS
+// ============================================
+
+const TOAST_TIMING = {
+  ERROR: 8000,    // Errors need more reading time
+  SUCCESS: 5000,  // Success can dismiss faster
+  INFO: 5000,     // Info same as success
+  EXIT_ANIMATION: 300,
+} as const;
+
+// ============================================
 // TOAST PROVIDER
 // ============================================
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = useCallback((type: ToastType, message: string, subMessage?: string) => {
+  const showToast = useCallback((
+    type: ToastType, 
+    message: string, 
+    subMessage?: string,
+    action?: ToastAction,
+    showHelpLink?: boolean
+  ) => {
     const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-    setToasts(prev => [...prev, { id, type, message, subMessage }]);
+    
+    // Default: show help link on errors unless explicitly disabled
+    const shouldShowHelpLink = showHelpLink ?? (type === 'error');
+    
+    setToasts(prev => [...prev, { 
+      id, 
+      type, 
+      message, 
+      subMessage, 
+      action,
+      showHelpLink: shouldShowHelpLink
+    }]);
   }, []);
 
   const dismissToast = useCallback((id: string) => {
@@ -99,6 +140,13 @@ function ToastItem({
   const [isVisible, setIsVisible] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
 
+  // Get timeout based on toast type
+  const timeout = toast.type === 'error' 
+    ? TOAST_TIMING.ERROR 
+    : toast.type === 'success' 
+      ? TOAST_TIMING.SUCCESS 
+      : TOAST_TIMING.INFO;
+
   useEffect(() => {
     const showTimer = requestAnimationFrame(() => {
       setIsVisible(true);
@@ -109,15 +157,22 @@ function ToastItem({
   useEffect(() => {
     const timer = setTimeout(() => {
       handleDismiss();
-    }, 5000);
+    }, timeout);
     return () => clearTimeout(timer);
-  }, []);
+  }, [timeout]);
 
   const handleDismiss = () => {
     setIsLeaving(true);
     setTimeout(() => {
       onDismiss(toast.id);
-    }, 300);
+    }, TOAST_TIMING.EXIT_ANIMATION);
+  };
+
+  const handleActionClick = () => {
+    if (toast.action?.onClick) {
+      toast.action.onClick();
+      handleDismiss();
+    }
   };
 
   const styles = {
@@ -164,21 +219,60 @@ function ToastItem({
       `}
     >
       <div className="flex items-start gap-3 p-4">
+        {/* Icon */}
         <div className={`flex-shrink-0 w-10 h-10 rounded-full ${style.iconBg} flex items-center justify-center`}>
           {style.icon}
         </div>
 
+        {/* Content */}
         <div className="flex-1 min-w-0 pt-1">
           <p className="text-white font-semibold text-sm leading-tight">
             {toast.message}
           </p>
+          
           {toast.subMessage && (
             <p className="text-white/60 text-sm mt-1">
               {toast.subMessage}
             </p>
           )}
+
+          {/* Action Button and/or Help Link */}
+          {(toast.action || toast.showHelpLink) && (
+            <div className="flex flex-wrap items-center gap-3 mt-3">
+              {/* Action Button */}
+              {toast.action && (
+                <button
+                  onClick={handleActionClick}
+                  className={`
+                    px-4 py-1.5 rounded-lg text-sm font-semibold
+                    transition-all duration-200
+                    ${toast.type === 'error' 
+                      ? 'bg-[#FFB347] text-[#1C1C1C] hover:bg-[#FFC060]' 
+                      : toast.type === 'success'
+                        ? 'bg-[#77DD77] text-[#1C1C1C] hover:bg-[#88EE88]'
+                        : 'bg-[#7EC8E3] text-[#1C1C1C] hover:bg-[#9DD8F3]'
+                    }
+                  `}
+                >
+                  {toast.action.label}
+                </button>
+              )}
+
+              {/* Help Link (auto-included for errors) */}
+              {toast.showHelpLink && (
+                <a 
+                  href="mailto:info@claseparapadres.com?subject=Necesito%20ayuda&body=Hola%2C%20necesito%20ayuda%20con..."
+                  className="text-[#7EC8E3] text-sm hover:underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  ¿Necesita ayuda?
+                </a>
+              )}
+            </div>
+          )}
         </div>
 
+        {/* Dismiss Button */}
         <button
           onClick={handleDismiss}
           className="flex-shrink-0 w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors"
@@ -190,11 +284,14 @@ function ToastItem({
         </button>
       </div>
 
+      {/* Progress Bar */}
       <div className="h-1 bg-white/10 rounded-b-xl overflow-hidden">
         <div 
           className={`h-full ${style.progressColor} toast-progress`}
           style={{
-            animation: isVisible && !isLeaving ? 'toastShrink 5s linear forwards' : 'none',
+            animation: isVisible && !isLeaving 
+              ? `toastShrink ${timeout}ms linear forwards` 
+              : 'none',
           }}
         />
       </div>
@@ -261,3 +358,95 @@ function InfoIcon() {
     </svg>
   );
 }
+
+// ============================================
+// PRE-BUILT ERROR HELPERS
+// ============================================
+
+/**
+ * Common error messages with standardized formatting.
+ * Use these instead of writing custom error strings.
+ * 
+ * Example:
+ *   const { showToast } = useToast();
+ *   showToast(...TOAST_ERRORS.NETWORK);
+ *   showToast(...TOAST_ERRORS.SAVE_FAILED(() => handleRetry()));
+ */
+export const TOAST_ERRORS = {
+  // Network/Connection errors
+  NETWORK: [
+    'error',
+    'Error de conexión',
+    'Verifique su internet e intente de nuevo.',
+    undefined,
+    true
+  ] as const,
+
+  // Generic save failure with retry
+  SAVE_FAILED: (retryFn: () => void) => [
+    'error',
+    'No se pudo guardar',
+    'Sus cambios no fueron guardados.',
+    { label: 'Reintentar', onClick: retryFn },
+    true
+  ] as const,
+
+  // Session expired
+  SESSION_EXPIRED: [
+    'error',
+    'Sesión expirada',
+    'Por favor, inicie sesión de nuevo.',
+    { label: 'Iniciar Sesión', onClick: () => window.location.href = '/iniciar-sesion' },
+    false
+  ] as const,
+
+  // Payment error
+  PAYMENT_FAILED: [
+    'error',
+    'Error en el pago',
+    'No pudimos procesar su pago. Intente con otra tarjeta.',
+    undefined,
+    true
+  ] as const,
+
+  // Load error with retry
+  LOAD_FAILED: (retryFn: () => void) => [
+    'error',
+    'Error al cargar',
+    'No pudimos cargar los datos.',
+    { label: 'Reintentar', onClick: retryFn },
+    true
+  ] as const,
+
+  // Generic error
+  GENERIC: [
+    'error',
+    'Algo salió mal',
+    'Por favor, intente de nuevo.',
+    undefined,
+    true
+  ] as const,
+} as const;
+
+/**
+ * Common success messages
+ */
+export const TOAST_SUCCESS = {
+  SAVED: [
+    'success',
+    '¡Guardado!',
+    'Sus cambios fueron guardados exitosamente.',
+  ] as const,
+
+  SENT: [
+    'success',
+    '¡Enviado!',
+    'Su mensaje fue enviado exitosamente.',
+  ] as const,
+
+  PROGRESS_SAVED: [
+    'success',
+    'Progreso guardado',
+    undefined,
+  ] as const,
+} as const;

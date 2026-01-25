@@ -1,23 +1,34 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      // Legacy /curso/ URLs → new /clase/ URLs (301 permanent)
+      {
+        source: '/curso/:path*',
+        destination: '/clase/:path*',
+        permanent: true,
+      },
+    ]
+  },
   async rewrites() {
     return [
+      // Spanish-friendly URLs → English courseType
       {
-        source: '/curso/coparentalidad',
-        destination: '/curso/coparenting',
+        source: '/clase/coparentalidad',
+        destination: '/clase/coparenting',
       },
       {
-        source: '/curso/coparentalidad/:path*',
-        destination: '/curso/coparenting/:path*',
+        source: '/clase/coparentalidad/:path*',
+        destination: '/clase/coparenting/:path*',
       },
       {
-        source: '/curso/crianza',
-        destination: '/curso/parenting',
+        source: '/clase/crianza',
+        destination: '/clase/parenting',
       },
       {
-        source: '/curso/crianza/:path*',
-        destination: '/curso/parenting/:path*',
+        source: '/clase/crianza/:path*',
+        destination: '/clase/parenting/:path*',
       },
     ]
   }

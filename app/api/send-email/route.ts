@@ -16,16 +16,16 @@ export async function POST(request: Request) {
     });
 
     const { data, error } = await resend.emails.send({
-      from: 'Atención al Cliente <atencionalcliente@cursoparapadres.org>',
-      to: ['info@cursoparapadres.org'],
-      subject: `📬 New Inquiry - ${nombre} - cursoparapadres.org`,
+      from: 'Atención al Cliente <atencionalcliente@claseparapadres.com>',
+      to: ['info@claseparapadres.com'],
+      subject: `📬 New Inquiry - ${nombre} - claseparapadres.com`,
       html: `
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>New Inquiry from cursoparapadres.org</title>
+  <title>New Inquiry from claseparapadres.com</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #1C1C1C; font-family: 'Courier Prime', Courier, monospace;">
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #1C1C1C;">
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
           <tr>
             <td align="center" style="padding-bottom: 24px;">
               <p style="color: rgba(255,255,255,0.5); font-size: 12px; margin: 0; font-family: 'Courier Prime', Courier, monospace;">
-                from cursoparapadres.org (Spanish Site)
+                from claseparapadres.com (Spanish Site)
               </p>
             </td>
           </tr>
@@ -165,7 +165,7 @@ export async function POST(request: Request) {
                 Received: ${timestamp} ET
               </p>
               <p style="color: rgba(255,255,255,0.2); font-size: 11px; margin: 8px 0 0 0; line-height: 18px; font-family: 'Courier Prime', Courier, monospace;">
-                This is an internal notification from cursoparapadres.org
+                This is an internal notification from claseparapadres.com
               </p>
             </td>
           </tr>

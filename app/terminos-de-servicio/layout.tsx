@@ -1,12 +1,7 @@
 import type { Metadata } from "next";
+import { pageMetadata } from '../seo-metadata-config';
 
-export const metadata: Metadata = {
-  title: "Términos de Servicio | Curso Para Padres",
-  description: "Términos y condiciones de uso del Curso Para Padres. Información sobre reembolsos, acceso al curso y certificados.",
-  alternates: {
-    canonical: "https://cursoparapadres.org/terminos-de-servicio",
-  },
-};
+export const metadata: Metadata = pageMetadata.terminos;
 
 export default function TerminosLayout({
   children,

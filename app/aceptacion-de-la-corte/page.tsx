@@ -10,14 +10,14 @@ import Footer from '@/components/Footer';
  */
 export default function AceptacionDeLaCorte() {
   const courtSystems = [
-    "District Courts (Texas, Kansas, Nevada, Oklahoma, Minnesota, Nebraska, Iowa)",
-    "Superior Courts (California, Arizona, Georgia, Washington, North Carolina, Alaska)",
-    "Circuit Courts (Florida, Illinois, Michigan, Virginia, Maryland, Oregon, Missouri)",
-    "Family Courts (Delaware, Rhode Island, South Carolina)",
-    "Probate & Family Courts (Massachusetts)",
-    "Courts of Common Pleas (Pennsylvania, Ohio)",
-    "Chancery Courts (Mississippi)",
-    "Supreme Court (New York)"
+    "Cortes de Distrito (Texas, Kansas, Nevada, Oklahoma, Minnesota, Nebraska, Iowa)",
+    "Cortes Superiores (California, Arizona, Georgia, Washington, North Carolina, Alaska)",
+    "Cortes de Circuito (Florida, Illinois, Michigan, Virginia, Maryland, Oregon, Missouri)",
+    "Cortes de Familia (Delaware, Rhode Island, South Carolina)",
+    "Cortes de Sucesiones y Familia (Massachusetts)",
+    "Cortes de Primera Instancia (Pennsylvania, Ohio)",
+    "Cortes de Equidad (Mississippi)",
+    "Corte Suprema (Nueva York)"
   ];
 
   const caseTypes = [
@@ -49,21 +49,6 @@ export default function AceptacionDeLaCorte() {
     "Código QR para verificación instantánea"
   ];
 
-  const faqs = [
-    {
-      question: '¿Qué pasa si mi corte requiere un curso específico?',
-      answer: 'Algunos tribunales tienen una lista de cursos preaprobados. Si el nuestro no está en la lista, pregunte si aceptan cursos que cumplan con requisitos similares (4 horas, certificado verificable, contenido de coparentalidad). En la mayoría de los casos, sí lo aceptan.',
-    },
-    {
-      question: '¿El certificado es válido para casos de divorcio Y custodia?',
-      answer: 'Sí. Nuestro curso de Coparentalidad está diseñado para cumplir con los requisitos de procedimientos de divorcio, disputas de custodia, casos de derechos parentales y modificaciones de custodia.',
-    },
-    {
-      question: '¿Cómo presento el certificado a la corte?',
-      answer: 'Al completar el curso, puede descargar e imprimir su certificado inmediatamente. También puede enviarlo por correo electrónico a su abogado o presentarlo directamente al secretario del tribunal. El código de verificación permite que la corte confirme su autenticidad.',
-    },
-  ];
-
   return (
     <>
       <Header />
@@ -78,7 +63,7 @@ export default function AceptacionDeLaCorte() {
             </div>
             
             <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto">
-              Nuestros certificados son aceptados. Garantizado.
+              El Original. El Certificado Más Aceptado. En todo el país.
             </p>
           </div>
         </section>
@@ -88,9 +73,9 @@ export default function AceptacionDeLaCorte() {
           <div className="max-w-5xl mx-auto px-6">
             <div className="grid grid-cols-3 gap-8 text-center">
               {[
-                { value: '30+', label: 'Años de Experiencia' },
-                { value: '100%', label: 'Garantía de Reembolso' },
-                { value: '24/7', label: 'Acceso al Curso' },
+                { value: '4', label: 'Horas Para Completar' },
+                { value: '100%', label: 'Aceptado en Todo el País' },
+                { value: '24/7', label: 'Acceso a la Clase' },
               ].map((stat, index) => (
                 <div key={index} className="p-4">
                   <div className="text-3xl md:text-4xl font-bold text-[#7EC8E3] mb-2">
@@ -165,34 +150,6 @@ export default function AceptacionDeLaCorte() {
             </ul>
           </div>
         </section>
-
-        {/* FAQ Section */}
-        <section className="border-t border-[#FFFFFF]/10 py-16 bg-background">
-          <div className="max-w-4xl mx-auto px-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-white text-center mb-12">
-              Preguntas Frecuentes
-            </h2>
-            
-            <div className="space-y-4">
-              {faqs.map((faq, index) => (
-                <details 
-                  key={index}
-                  className="bg-background border border-[#FFFFFF]/15 rounded-xl overflow-hidden group hover:border-[#7EC8E3]/30 transition-colors"
-                >
-                  <summary className="flex justify-between items-center cursor-pointer p-6 font-bold text-white text-lg select-none">
-                    <span>{faq.question}</span>
-                    <ChevronIcon className="w-5 h-5 text-white/70 transition-transform group-open:rotate-180" />
-                  </summary>
-                  <div className="px-6 pb-6 pt-2">
-                    <p className="text-white/70 leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  </div>
-                </details>
-              ))}
-            </div>
-          </div>
-        </section>
       </main>
 
       <Footer />
@@ -216,14 +173,6 @@ function CheckIcon({ className = '' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-    </svg>
-  );
-}
-
-function ChevronIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
     </svg>
   );
 }

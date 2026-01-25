@@ -102,7 +102,7 @@ export default function GlobalError({
               fontSize: '0.875rem',
               marginTop: '1.5rem'
             }}>
-              ¿Necesita ayuda? <a href="mailto:info@cursoparapadres.org" style={{ color: '#2563eb' }}>Contáctenos</a>
+              ¿Necesita ayuda? <a href="mailto:info@claseparapadres.com" style={{ color: '#2563eb' }}>Contáctenos</a>
             </p>
           </div>
         </div>

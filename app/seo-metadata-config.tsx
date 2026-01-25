@@ -1,9 +1,8 @@
 // ============================================
-// SEO METADATA CONFIGURATION - cursoparapadres.org
+// SEO METADATA CONFIGURATION - claseparapadres.com
 // ============================================
 // Ready for Next.js App Router implementation
-// Last updated: December 2024
-// Approved by: Spanish Market Specialist
+// Last updated: January 2026
 // ============================================
 
 import type { Metadata } from 'next'
@@ -13,17 +12,17 @@ import type { Metadata } from 'next'
 // ============================================
 
 export const SITE_CONFIG = {
-  name: 'Curso Para Padres',
+  name: 'Clases para Padres',
   legalName: 'Putting Kids First®',
-  url: 'https://cursoparapadres.org',
+  url: 'https://claseparapadres.com',
   englishUrl: 'https://puttingkidsfirst.org',
   locale: 'es_US',
   language: 'es',
   themeColor: '#2563eb',
-  foundedYear: '1993',
+  foundedYear: '1993', // Structured data only — never in visible copy
   phone: '888-777-2298',
   phoneFormatted: '+1-888-777-2298',
-  email: 'info@cursoparapadres.org',
+  email: 'info@claseparapadres.com',
   prices: {
     coparenting: 60,
     parenting: 60,
@@ -32,90 +31,6 @@ export const SITE_CONFIG = {
   duration: '4 horas',
   durationISO: 'PT4H',
 } as const
-
-// ============================================
-// HOMEPAGE METADATA
-// ============================================
-
-export const homepageMetadata: Metadata = {
-  title: 'Curso Para Padres Aceptado por la Corte | Desde 1993',
-  description: 'El curso original de coparentalidad en línea. Aceptado en todos los estados. Certificado instantáneo. $60. Garantía de aceptación del 100%. 100% en español.',
-  
-  keywords: [
-    // Primary - exact match to domain
-    'curso para padres',
-    // Product keywords
-    'curso de coparentalidad',
-    'curso de crianza',
-    'curso para padres divorciados',
-    'curso para padres separados',
-    // Search capture variants (users may search "clase")
-    'clase de coparentalidad',
-    'clase para padres',
-    'clase de padres para la corte',
-    // Court/legal intent
-    'curso para padres ordenado por la corte',
-    'curso de padres aceptado por la corte',
-    'certificado de coparentalidad',
-  ],
-
-  authors: [{ name: 'Putting Kids First®', url: SITE_CONFIG.url }],
-  creator: 'Putting Kids First®',
-  publisher: 'Putting Kids First®',
-
-  openGraph: {
-    type: 'website',
-    locale: 'es_US',
-    url: SITE_CONFIG.url,
-    siteName: 'Curso Para Padres',
-    title: 'Curso Para Padres Aceptado por la Corte | Desde 1993',
-    description: 'El curso original de coparentalidad en línea. Aceptado en todos los estados. Certificado instantáneo. $60. Garantía de aceptación del 100%.',
-    images: [
-      {
-        url: `${SITE_CONFIG.url}/og-image.png`,
-        width: 1200,
-        height: 630,
-        alt: 'Curso Para Padres - El Curso Original de Coparentalidad Desde 1993',
-      },
-    ],
-  },
-
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Curso Para Padres Aceptado por la Corte | Desde 1993',
-    description: 'Curso de coparentalidad aceptado por la corte en todos los estados. Certificado instantáneo. $60. 100% en español.',
-    images: [`${SITE_CONFIG.url}/og-image.png`],
-  },
-
-  alternates: {
-    canonical: SITE_CONFIG.url,
-    languages: {
-      'es': SITE_CONFIG.url,
-      'en': SITE_CONFIG.englishUrl,
-      'x-default': SITE_CONFIG.englishUrl,
-    },
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-
-  verification: {
-    // Add these once accounts are set up
-    // google: 'google-site-verification-code',
-    // yandex: 'yandex-verification-code',
-  },
-
-  category: 'education',
-}
 
 // ============================================
 // SUBPAGE METADATA GENERATOR
@@ -130,29 +45,29 @@ export function generatePageMetadata(
   const url = `${SITE_CONFIG.url}${path}`
   
   return {
-    title: `${title} | Curso Para Padres`,
+    title: `${title} | Clases para Padres`,
     description,
     
     openGraph: {
       type: 'website',
       locale: 'es_US',
       url,
-      siteName: 'Curso Para Padres',
-      title: `${title} | Curso Para Padres`,
+      siteName: 'Clases para Padres',
+      title: `${title} | Clases para Padres`,
       description,
       images: [
         {
           url: `${SITE_CONFIG.url}/og-image.png`,
           width: 1200,
           height: 630,
-          alt: 'Curso Para Padres - El Curso Original de Coparentalidad Desde 1993',
+          alt: 'Clases para Padres - El Certificado Más Aceptado',
         },
       ],
     },
 
     twitter: {
       card: 'summary_large_image',
-      title: `${title} | Curso Para Padres`,
+      title: `${title} | Clases para Padres`,
       description,
       images: [`${SITE_CONFIG.url}/og-image.png`],
     },
@@ -177,40 +92,34 @@ export function generatePageMetadata(
 
 export const pageMetadata = {
   // Public pages
-  garantia: generatePageMetadata(
-    'Garantía de Aceptación del 100%',
-    'Si su tribunal no acepta nuestro certificado, le devolvemos el 100% de su dinero. Sin preguntas. Garantía válida por 1 año.',
-    '/garantia'
-  ),
-  
   aceptacionCorte: generatePageMetadata(
-    'Aceptación de la Corte en Todos los Estados',
-    'Nuestro curso de coparentalidad es aceptado por tribunales en los 50 estados de EE.UU. Confiable desde 1993.',
+    'Aceptación por la Corte',
+    'El Certificado Más Aceptado. Nuestra clase de coparentalidad es aceptada por tribunales en todo el país.',
     '/aceptacion-de-la-corte'
   ),
   
   preguntasFrecuentes: generatePageMetadata(
     'Preguntas Frecuentes',
-    'Respuestas a las preguntas más comunes sobre nuestro curso de coparentalidad en línea. Precio, duración, certificado, y más.',
+    'Respuestas a las preguntas más comunes sobre nuestra clase de coparentalidad en línea. Certificado, duración, y más.',
     '/preguntas-frecuentes'
   ),
   
   privacidad: generatePageMetadata(
     'Política de Privacidad',
-    'Cómo protegemos su información personal. Política de privacidad de Curso Para Padres / Putting Kids First®.',
+    'Cómo protegemos su información personal. Política de privacidad de Clases para Padres / Putting Kids First®.',
     '/politica-de-privacidad'
   ),
   
   terminos: generatePageMetadata(
-    'Términos de Servicio',
-    'Términos y condiciones de uso del curso de coparentalidad en línea de Putting Kids First®.',
+    'Términos y Condiciones',
+    'Términos y condiciones de uso de la clase de coparentalidad en línea de Putting Kids First®.',
     '/terminos-de-servicio'
   ),
 
   // Auth pages (noIndex)
   iniciarSesion: generatePageMetadata(
     'Iniciar Sesión',
-    'Acceda a su cuenta para continuar su curso de coparentalidad.',
+    'Acceda a su cuenta para continuar su clase de coparentalidad.',
     '/iniciar-sesion',
     true // noIndex
   ),
@@ -232,7 +141,7 @@ export const pageMetadata = {
   // User pages (noIndex)
   panel: generatePageMetadata(
     'Mi Panel',
-    'Acceda a sus cursos y certificados.',
+    'Acceda a sus clases y certificados.',
     '/panel',
     true // noIndex
   ),
@@ -260,10 +169,12 @@ interface StateInfo {
   name: string
   nameEs: string
   slug: string
+  hasStateApproval?: boolean
+  stateCredential?: string
 }
 
 export const states: StateInfo[] = [
-  { name: 'Florida', nameEs: 'Florida', slug: 'florida' },
+  { name: 'Florida', nameEs: 'Florida', slug: 'florida', hasStateApproval: true, stateCredential: 'Aprobado por el Estado de Florida' },
   { name: 'Texas', nameEs: 'Texas', slug: 'texas' },
   { name: 'California', nameEs: 'California', slug: 'california' },
   { name: 'New York', nameEs: 'Nueva York', slug: 'nueva-york' },
@@ -275,12 +186,54 @@ export const states: StateInfo[] = [
   { name: 'Colorado', nameEs: 'Colorado', slug: 'colorado' },
   { name: 'Nevada', nameEs: 'Nevada', slug: 'nevada' },
   { name: 'New Mexico', nameEs: 'Nuevo México', slug: 'nuevo-mexico' },
-  // Add remaining states as needed
+  // Tier 1 expansion - High Hispanic population
+  { name: 'Puerto Rico', nameEs: 'Puerto Rico', slug: 'puerto-rico' },
+  { name: 'Washington', nameEs: 'Washington', slug: 'washington' },
+  { name: 'Oregon', nameEs: 'Oregón', slug: 'oregon' },
+  { name: 'Massachusetts', nameEs: 'Massachusetts', slug: 'massachusetts' },
+  { name: 'Connecticut', nameEs: 'Connecticut', slug: 'connecticut' },
+  { name: 'Maryland', nameEs: 'Maryland', slug: 'maryland' },
+  { name: 'Virginia', nameEs: 'Virginia', slug: 'virginia' },
+  { name: 'Pennsylvania', nameEs: 'Pensilvania', slug: 'pensilvania' },
+  // Tier 2 expansion - Medium Hispanic population
+  { name: 'Michigan', nameEs: 'Míchigan', slug: 'michigan' },
+  { name: 'Ohio', nameEs: 'Ohio', slug: 'ohio' },
+  { name: 'Indiana', nameEs: 'Indiana', slug: 'indiana' },
+  { name: 'Wisconsin', nameEs: 'Wisconsin', slug: 'wisconsin' },
+  { name: 'Minnesota', nameEs: 'Minnesota', slug: 'minnesota' },
+  { name: 'Tennessee', nameEs: 'Tennessee', slug: 'tennessee' },
+  { name: 'Oklahoma', nameEs: 'Oklahoma', slug: 'oklahoma' },
+  { name: 'Utah', nameEs: 'Utah', slug: 'utah' },
+  // Tier 3 expansion - Complete coverage
+  { name: 'Alabama', nameEs: 'Alabama', slug: 'alabama' },
+  { name: 'Alaska', nameEs: 'Alaska', slug: 'alaska' },
+  { name: 'Arkansas', nameEs: 'Arkansas', slug: 'arkansas' },
+  { name: 'Delaware', nameEs: 'Delaware', slug: 'delaware' },
+  { name: 'Hawaii', nameEs: 'Hawái', slug: 'hawai' },
+  { name: 'Idaho', nameEs: 'Idaho', slug: 'idaho' },
+  { name: 'Iowa', nameEs: 'Iowa', slug: 'iowa' },
+  { name: 'Kansas', nameEs: 'Kansas', slug: 'kansas' },
+  { name: 'Kentucky', nameEs: 'Kentucky', slug: 'kentucky' },
+  { name: 'Louisiana', nameEs: 'Luisiana', slug: 'luisiana' },
+  { name: 'Maine', nameEs: 'Maine', slug: 'maine' },
+  { name: 'Mississippi', nameEs: 'Misisipi', slug: 'misisipi' },
+  { name: 'Missouri', nameEs: 'Misuri', slug: 'misuri' },
+  { name: 'Montana', nameEs: 'Montana', slug: 'montana' },
+  { name: 'Nebraska', nameEs: 'Nebraska', slug: 'nebraska' },
+  { name: 'New Hampshire', nameEs: 'Nuevo Hampshire', slug: 'nuevo-hampshire' },
+  { name: 'North Dakota', nameEs: 'Dakota del Norte', slug: 'dakota-del-norte' },
+  { name: 'Rhode Island', nameEs: 'Rhode Island', slug: 'rhode-island' },
+  { name: 'South Carolina', nameEs: 'Carolina del Sur', slug: 'carolina-del-sur' },
+  { name: 'South Dakota', nameEs: 'Dakota del Sur', slug: 'dakota-del-sur' },
+  { name: 'Vermont', nameEs: 'Vermont', slug: 'vermont' },
+  { name: 'West Virginia', nameEs: 'Virginia Occidental', slug: 'virginia-occidental' },
+  { name: 'Wyoming', nameEs: 'Wyoming', slug: 'wyoming' },
+  { name: 'District of Columbia', nameEs: 'Washington D.C.', slug: 'washington-dc' },
 ]
 
 export function generateStateMetadata(state: StateInfo): Metadata {
-  const title = `Curso Para Padres en ${state.nameEs} | Aceptado por la Corte`
-  const description = `Curso de coparentalidad en línea aceptado por tribunales en ${state.nameEs}. Certificado instantáneo. $60. 100% en español. Garantía de aceptación del 100%.`
+  const title = `Clases para Padres en ${state.nameEs} | El Certificado Más Aceptado`
+  const description = `Clase de coparentalidad aceptada por tribunales en ${state.nameEs}. Certificado instantáneo. 100% en español. Líderes en educación parental desde hace décadas.`
   const path = `/estados/${state.slug}`
   
   return {
@@ -288,10 +241,13 @@ export function generateStateMetadata(state: StateInfo): Metadata {
     description,
     
     keywords: [
+      // Lead with 'clases' variants
+      `clases para padres ${state.nameEs}`,
+      `clase coparentalidad ${state.nameEs}`,
+      `clases padres divorciados ${state.nameEs}`,
+      // Keep 'curso' variants for search capture
       `curso para padres ${state.nameEs}`,
       `curso coparentalidad ${state.nameEs}`,
-      `clase padres ${state.nameEs}`,
-      `curso padres divorciados ${state.nameEs}`,
       `parenting class ${state.name} español`,
     ],
 
@@ -299,7 +255,7 @@ export function generateStateMetadata(state: StateInfo): Metadata {
       type: 'website',
       locale: 'es_US',
       url: `${SITE_CONFIG.url}${path}`,
-      siteName: 'Curso Para Padres',
+      siteName: 'Clases para Padres',
       title,
       description,
       images: [
@@ -307,7 +263,7 @@ export function generateStateMetadata(state: StateInfo): Metadata {
           url: `${SITE_CONFIG.url}/og-image.png`,
           width: 1200,
           height: 630,
-          alt: `Curso Para Padres en ${state.nameEs}`,
+          alt: `Clases para Padres en ${state.nameEs}`,
         },
       ],
     },
@@ -338,10 +294,10 @@ export const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Putting Kids First®',
-  alternateName: 'Curso Para Padres',
+  alternateName: 'Clases para Padres',
   url: SITE_CONFIG.url,
   logo: `${SITE_CONFIG.url}/logo.png`,
-  foundingDate: SITE_CONFIG.foundedYear,
+  foundingDate: SITE_CONFIG.foundedYear, // Structured data only
   telephone: SITE_CONFIG.phoneFormatted,
   email: SITE_CONFIG.email,
   address: {
@@ -357,8 +313,8 @@ export const organizationSchema = {
 export const courseSchema = {
   '@context': 'https://schema.org',
   '@type': 'Course',
-  name: 'Curso de Coparentalidad Para Padres',
-  description: 'Curso de coparentalidad en línea aceptado por tribunales en todos los estados de EE.UU. Diseñado para padres en proceso de divorcio o separación. 100% en español.',
+  name: 'Clase de Coparentalidad Para Padres',
+  description: 'Clase de coparentalidad en línea aceptada por tribunales en todo el país. Diseñada para padres en proceso de divorcio o separación. 100% en español.',
   provider: {
     '@type': 'Organization',
     name: 'Putting Kids First®',
@@ -387,26 +343,18 @@ export const faqSchema = {
   mainEntity: [
     {
       '@type': 'Question',
-      name: '¿Este curso es aceptado en mi estado?',
+      name: '¿Esta clase es aceptada en mi estado?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Sí. Nuestro curso es aceptado por tribunales en los 50 estados de EE.UU. Ofrecemos una garantía de aceptación del 100% — si su tribunal no acepta nuestro certificado, le devolvemos su dinero.',
+        text: 'Sí. Somos El Original — el nombre más reconocido y el certificado más aceptado por tribunales en todo el país.',
       },
     },
     {
       '@type': 'Question',
-      name: '¿Cuánto cuesta el curso?',
+      name: '¿Cuánto tiempo toma completar la clase?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'El curso de coparentalidad cuesta $60. El curso de crianza cuesta $60. El paquete combinado (ambos cursos, ambos certificados) cuesta $80. No hay costos ocultos ni sorpresas.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: '¿Cuánto tiempo toma completar el curso?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'El curso toma aproximadamente 4 horas para completar. Puede trabajar a su propio ritmo, pausar cuando necesite, y su progreso se guarda automáticamente.',
+        text: 'La clase toma aproximadamente 4 horas para completar. Puede trabajar a su propio ritmo, pausar cuando necesite, y su progreso se guarda automáticamente.',
       },
     },
     {
@@ -414,7 +362,7 @@ export const faqSchema = {
       name: '¿El certificado está en español?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'El curso está 100% en español, pero el certificado se emite en inglés para su aceptación por los tribunales de Estados Unidos. Esto es estándar para todos los cursos de coparentalidad.',
+        text: 'La clase está 100% en español, pero el certificado se emite en inglés para su aceptación por los tribunales de Estados Unidos. Esto es estándar para todas las clases de coparentalidad.',
       },
     },
     {
@@ -422,7 +370,7 @@ export const faqSchema = {
       name: '¿Cuándo recibo mi certificado?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Recibe su certificado PDF inmediatamente después de completar el curso. Puede descargarlo e imprimirlo al instante. El certificado incluye un código QR para verificación.',
+        text: 'Recibe su certificado PDF inmediatamente después de completar la clase. Puede descargarlo e imprimirlo al instante. El certificado incluye un código QR para verificación.',
       },
     },
     {
@@ -430,7 +378,7 @@ export const faqSchema = {
       name: '¿Hay ayuda disponible en español?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Sí. Todo nuestro sitio web, curso, y soporte al cliente están disponibles en español. Puede contactarnos en info@cursoparapadres.org o llamar al 888-777-2298.',
+        text: 'Sí. Todo nuestro sitio web, clase, y soporte al cliente están disponibles en español. Puede contactarnos en info@claseparapadres.com o llamar al 888-777-2298.',
       },
     },
     {
@@ -443,10 +391,10 @@ export const faqSchema = {
     },
     {
       '@type': 'Question',
-      name: '¿Puedo tomar el curso en mi teléfono?',
+      name: '¿Puedo tomar la clase en mi teléfono?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Sí. Nuestro curso funciona perfectamente en teléfonos móviles, tabletas, y computadoras. Puede comenzar en un dispositivo y continuar en otro — su progreso se guarda automáticamente.',
+        text: 'Sí. Nuestra clase funciona perfectamente en teléfonos móviles, tabletas, y computadoras. Puede comenzar en un dispositivo y continuar en otro — su progreso se guarda automáticamente.',
       },
     },
     {
@@ -489,14 +437,13 @@ export function JsonLd({ data }: { data: object }) {
 // ============================================
 /*
 import { 
-  homepageMetadata, 
   organizationSchema, 
   courseSchema, 
   faqSchema,
   JsonLd 
 } from './seo-metadata-config'
 
-export const metadata = homepageMetadata
+// Note: Homepage metadata is defined directly in layout.tsx
 
 export default function RootLayout({ children }) {
   return (
@@ -516,12 +463,12 @@ export default function RootLayout({ children }) {
 // USAGE EXAMPLE IN SUBPAGE
 // ============================================
 /*
-// app/garantia/page.tsx
+// app/aceptacion-de-la-corte/page.tsx
 import { pageMetadata } from '../seo-metadata-config'
 
-export const metadata = pageMetadata.garantia
+export const metadata = pageMetadata.aceptacionCorte
 
-export default function GarantiaPage() {
+export default function AceptacionCortePage() {
   return (...)
 }
 */

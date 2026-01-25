@@ -1,21 +1,81 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { createClient } from '@/lib/supabase';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+
+// ============================================
+// MAIN COMPONENT (with Suspense boundary)
+// ============================================
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginLoading />}>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
+// ============================================
+// LOADING STATE
+// ============================================
+
+function LoginLoading() {
+  return (
+    <main className="min-h-screen bg-background flex items-center justify-center px-6 py-12">
+      <div className="max-w-md w-full">
+        <div className="bg-background rounded-2xl shadow-xl shadow-black/40 p-8 border border-[#FFFFFF]/15">
+          <div className="flex items-center justify-center gap-3">
+            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span className="text-white">Cargando...</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+// ============================================
+// LOGIN CONTENT
+// ============================================
+
+function LoginContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [authError, setAuthError] = useState<{ message: string; showRecoveryLink: boolean } | null>(null);
+  const [loginAttempts, setLoginAttempts] = useState(0);
 
   const supabase = createClient();
+  const searchParams = useSearchParams();
+
+  // Handle auth callback errors from URL params
+  useEffect(() => {
+    const errorParam = searchParams.get('error');
+    
+    if (errorParam === 'invalid_token') {
+      setAuthError({
+        message: 'El enlace ha expirado o no es valido. Por favor, solicite uno nuevo.',
+        showRecoveryLink: true,
+      });
+    } else if (errorParam === 'auth') {
+      setAuthError({
+        message: 'Hubo un problema con la autenticacion. Por favor, intente de nuevo.',
+        showRecoveryLink: false,
+      });
+    }
+  }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setAuthError(null);
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -23,7 +83,8 @@ export default function LoginPage() {
     });
 
     if (error) {
-      setError('Correo electrónico o contraseña incorrectos. Por favor, intente de nuevo.');
+      setLoginAttempts(prev => prev + 1);
+      setError('login_failed');
       setLoading(false);
     } else {
       window.location.href = '/panel';
@@ -36,37 +97,90 @@ export default function LoginPage() {
         {/* Login Card */}
         <div className="bg-background rounded-2xl shadow-xl shadow-black/40 p-8 border border-[#FFFFFF]/15">
           <h2 className="text-2xl font-bold text-white mb-2">
-            Iniciar Sesión
+            Iniciar Sesion
           </h2>
           <p className="text-white/70 mb-6">
-            Acceda a su cuenta para continuar su curso
+            Acceda a su cuenta para continuar su clase
           </p>
 
-          {error && (
-            <div className="bg-[#FF9999]/10 border border-[#FF9999]/30 text-[#FF9999] px-4 py-3 rounded-lg mb-6">
-              {error}
+          {/* Auth callback error (from redirect) */}
+          {authError && (
+            <div className="bg-[#FFE566]/10 border border-[#FFE566]/30 text-[#FFE566] px-4 py-3 rounded-lg mb-6">
+              <p>{authError.message}</p>
+              {authError.showRecoveryLink && (
+                <Link 
+                  href="/recuperar-contrasena" 
+                  className="inline-block mt-2 text-sm font-medium underline hover:text-white"
+                >
+                  Solicitar nuevo enlace
+                </Link>
+              )}
             </div>
           )}
 
-          <div className="space-y-4">
+          {/* Login error (from form submission) - IMPROVED */}
+          {error === 'login_failed' && (
+            <div className="bg-[#FF9999]/10 border border-[#FF9999]/30 rounded-lg mb-6 overflow-hidden">
+              <div className="px-4 py-3">
+                <p className="text-[#FF9999] font-medium mb-2">
+                  No pudimos iniciar sesion
+                </p>
+                <p className="text-[#FF9999]/80 text-sm">
+                  Verifique que su correo y contrasena esten correctos.
+                </p>
+              </div>
+              
+              {/* Helpful hints after failed attempts */}
+              <div className="bg-[#1C1C1C] px-4 py-3 border-t border-[#FF9999]/20">
+                <p className="text-white/60 text-sm mb-2">Sugerencias:</p>
+                <ul className="text-white/50 text-sm space-y-1">
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#7EC8E3]">-</span>
+                    <span>Revise que no haya espacios extra en el correo</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#7EC8E3]">-</span>
+                    <span>Verifique mayusculas y minusculas en la contrasena</span>
+                  </li>
+                  {loginAttempts >= 2 && (
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#FFB347]">-</span>
+                      <span className="text-[#FFB347]">
+                        Si no recuerda su contrasena, puede{' '}
+                        <Link 
+                          href="/recuperar-contrasena" 
+                          className="underline hover:text-white"
+                        >
+                          restablecerla aqui
+                        </Link>
+                      </span>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-white mb-1">
-                Correo Electrónico
+                Correo Electronico
               </label>
               <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-[#FFFFFF]/20 rounded-lg focus:ring-2 focus:ring-[#FFFFFF] focus:border-[#FFFFFF] transition-colors text-white"
+                className="w-full px-4 py-3 border border-[#FFFFFF]/20 rounded-lg focus:ring-2 focus:ring-[#FFFFFF] focus:border-[#FFFFFF] transition-colors text-white bg-background"
                 placeholder="nombre@ejemplo.com"
                 required
+                autoComplete="email"
               />
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-white mb-1">
-                Contraseña
+                Contrasena
               </label>
               <div className="relative">
                 <input
@@ -74,14 +188,16 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 border border-[#FFFFFF]/20 rounded-lg focus:ring-2 focus:ring-[#FFFFFF] focus:border-[#FFFFFF] transition-colors text-white"
-                  placeholder="••••••••"
+                  className="w-full px-4 py-3 pr-12 border border-[#FFFFFF]/20 rounded-lg focus:ring-2 focus:ring-[#FFFFFF] focus:border-[#FFFFFF] transition-colors text-white bg-background"
+                  placeholder="Su contrasena"
                   required
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white focus:outline-none"
+                  tabIndex={-1}
                 >
                   {showPassword ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,23 +213,24 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {/* Password reset link - ALWAYS VISIBLE */}
             <div className="flex justify-end">
               <Link
                 href="/recuperar-contrasena"
-                className="text-sm text-[#7EC8E3] hover:text-[#FFFFFF] font-medium"
+                className="text-sm text-[#7EC8E3] hover:text-[#FFFFFF] font-medium transition-colors"
               >
-                ¿Olvidó su contraseña?
+                No recuerdo mi contrasena
               </Link>
             </div>
 
             <button
-              onClick={handleLogin}
+              type="submit"
               disabled={loading || !email || !password}
-              className="w-full bg-[#77DD77] text-white py-3 rounded-lg font-bold hover:bg-[#66CC66] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#77DD77] text-[#1C1C1C] py-3 rounded-lg font-bold hover:bg-[#66CC66] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+              {loading ? 'Iniciando sesion...' : 'Iniciar Sesion'}
             </button>
-          </div>
+          </form>
         </div>
 
         {/* Back to home */}
@@ -122,7 +239,7 @@ export default function LoginPage() {
             href="/"
             className="text-white/70 hover:text-white text-sm"
           >
-            ← Volver al inicio
+            Volver al inicio
           </Link>
         </div>
       </div>

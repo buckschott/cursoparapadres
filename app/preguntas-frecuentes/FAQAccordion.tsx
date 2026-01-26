@@ -243,7 +243,7 @@ export default function FAQAccordion() {
           <h2 className="text-xl md:text-2xl font-bold text-white mb-4 px-4">
             {category.category}
           </h2>
-          <div className="bg-[#252525] rounded-xl overflow-hidden">
+          <div className="bg-background rounded-xl overflow-hidden border border-[#FFFFFF]/15 shadow-xl shadow-black/40">
             {category.questions.map((item, index) => (
               <FAQItem
                 key={index}

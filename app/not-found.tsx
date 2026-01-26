@@ -29,7 +29,7 @@ export default function NotFound() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <div className="bg-background rounded-2xl border border-white/10 p-8 md:p-12 max-w-lg w-full text-center">
+      <div className="bg-background rounded-2xl border border-[#FFFFFF]/15 shadow-xl shadow-black/40 p-8 md:p-12 max-w-lg w-full text-center">
         
         {/* 404 Badge */}
         <div className="w-20 h-20 bg-[#2A2A2A] rounded-full flex items-center justify-center mx-auto mb-6">

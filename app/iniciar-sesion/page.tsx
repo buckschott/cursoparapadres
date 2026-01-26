@@ -39,6 +39,93 @@ function LoginLoading() {
 }
 
 // ============================================
+// HAND-DRAWN WELCOME BRACKETS
+// ============================================
+
+function WelcomeBrackets({ children }: { children: React.ReactNode }) {
+  const [isVisible, setIsVisible] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    // Check for reduced motion preference
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(motionQuery.matches);
+
+    // Small delay before starting animation
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Hand-drawn bracket paths (slightly wobbly for organic feel)
+  // Left bracket: draws from top-left corner down and around
+  const leftBracketPath = "M 24 8 Q 22 8 20 10 Q 14 14 12 24 Q 10 34 12 44 Q 14 54 20 58 Q 22 60 24 60";
+  // Right bracket: draws from bottom-right corner up and around  
+  const rightBracketPath = "M 8 60 Q 10 60 12 58 Q 18 54 20 44 Q 22 34 20 24 Q 18 14 12 10 Q 10 8 8 8";
+
+  const pathLength = 80; // Approximate path length
+
+  return (
+    <div className="relative flex items-center justify-center gap-3 mb-2">
+      {/* Left Bracket */}
+      <svg 
+        width="32" 
+        height="68" 
+        viewBox="0 0 32 68" 
+        fill="none" 
+        className="flex-shrink-0"
+        aria-hidden="true"
+      >
+        <path
+          d={leftBracketPath}
+          stroke="#77DD77"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+          style={{
+            strokeDasharray: pathLength,
+            strokeDashoffset: prefersReducedMotion ? 0 : (isVisible ? 0 : pathLength),
+            transition: prefersReducedMotion ? 'none' : 'stroke-dashoffset 0.6s ease-out',
+          }}
+        />
+      </svg>
+
+      {/* Welcome Text */}
+      <div className="text-center">
+        {children}
+      </div>
+
+      {/* Right Bracket */}
+      <svg 
+        width="32" 
+        height="68" 
+        viewBox="0 0 32 68" 
+        fill="none" 
+        className="flex-shrink-0"
+        aria-hidden="true"
+      >
+        <path
+          d={rightBracketPath}
+          stroke="#77DD77"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+          style={{
+            strokeDasharray: pathLength,
+            strokeDashoffset: prefersReducedMotion ? 0 : (isVisible ? 0 : pathLength),
+            transition: prefersReducedMotion ? 'none' : 'stroke-dashoffset 0.6s ease-out 0.15s', // Slight delay for right bracket
+          }}
+        />
+      </svg>
+    </div>
+  );
+}
+
+// ============================================
 // LOGIN CONTENT
 // ============================================
 
@@ -60,12 +147,12 @@ function LoginContent() {
     
     if (errorParam === 'invalid_token') {
       setAuthError({
-        message: 'El enlace ha expirado o no es valido. Por favor, solicite uno nuevo.',
+        message: 'El enlace ha expirado o no es válido. Por favor, solicite uno nuevo.',
         showRecoveryLink: true,
       });
     } else if (errorParam === 'auth') {
       setAuthError({
-        message: 'Hubo un problema con la autenticacion. Por favor, intente de nuevo.',
+        message: 'Hubo un problema con la autenticación. Por favor, intente de nuevo.',
         showRecoveryLink: false,
       });
     }
@@ -96,11 +183,16 @@ function LoginContent() {
       <div className="max-w-md w-full">
         {/* Login Card */}
         <div className="bg-background rounded-2xl shadow-xl shadow-black/40 p-8 border border-[#FFFFFF]/15">
-          <h2 className="text-2xl font-bold text-white mb-2">
-            Iniciar Sesion
-          </h2>
-          <p className="text-white/70 mb-6">
-            Acceda a su cuenta para continuar su clase
+          
+          {/* Welcome Header with Hand-Drawn Brackets */}
+          <WelcomeBrackets>
+            <h1 className="text-2xl font-bold text-white">
+              ¡Bienvenido de nuevo!
+            </h1>
+          </WelcomeBrackets>
+          
+          <p className="text-white/70 mb-6 text-center">
+            Está a solo un paso de continuar su clase.
           </p>
 
           {/* Auth callback error (from redirect) */}
@@ -123,10 +215,10 @@ function LoginContent() {
             <div className="bg-[#FF9999]/10 border border-[#FF9999]/30 rounded-lg mb-6 overflow-hidden">
               <div className="px-4 py-3">
                 <p className="text-[#FF9999] font-medium mb-2">
-                  No pudimos iniciar sesion
+                  No pudimos iniciar sesión
                 </p>
                 <p className="text-[#FF9999]/80 text-sm">
-                  Verifique que su correo y contrasena esten correctos.
+                  Verifique que su correo y contraseña estén correctos.
                 </p>
               </div>
               
@@ -135,23 +227,23 @@ function LoginContent() {
                 <p className="text-white/60 text-sm mb-2">Sugerencias:</p>
                 <ul className="text-white/50 text-sm space-y-1">
                   <li className="flex items-start gap-2">
-                    <span className="text-[#7EC8E3]">-</span>
+                    <span className="text-[#7EC8E3]">•</span>
                     <span>Revise que no haya espacios extra en el correo</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-[#7EC8E3]">-</span>
-                    <span>Verifique mayusculas y minusculas en la contrasena</span>
+                    <span className="text-[#7EC8E3]">•</span>
+                    <span>Verifique mayúsculas y minúsculas en la contraseña</span>
                   </li>
                   {loginAttempts >= 2 && (
                     <li className="flex items-start gap-2">
-                      <span className="text-[#FFB347]">-</span>
+                      <span className="text-[#FFB347]">•</span>
                       <span className="text-[#FFB347]">
-                        Si no recuerda su contrasena, puede{' '}
+                        Si no recuerda su contraseña, puede{' '}
                         <Link 
                           href="/recuperar-contrasena" 
                           className="underline hover:text-white"
                         >
-                          restablecerla aqui
+                          restablecerla aquí
                         </Link>
                       </span>
                     </li>
@@ -164,14 +256,14 @@ function LoginContent() {
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-white mb-1">
-                Correo Electronico
+                Correo Electrónico
               </label>
               <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-[#FFFFFF]/20 rounded-lg focus:ring-2 focus:ring-[#FFFFFF] focus:border-[#FFFFFF] transition-colors text-white bg-background"
+                className="w-full px-4 py-3 border border-[#FFFFFF]/20 rounded-lg focus:ring-2 focus:ring-[#77DD77] focus:border-[#77DD77] transition-colors text-white bg-background"
                 placeholder="nombre@ejemplo.com"
                 required
                 autoComplete="email"
@@ -180,7 +272,7 @@ function LoginContent() {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-white mb-1">
-                Contrasena
+                Contraseña
               </label>
               <div className="relative">
                 <input
@@ -188,8 +280,8 @@ function LoginContent() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 border border-[#FFFFFF]/20 rounded-lg focus:ring-2 focus:ring-[#FFFFFF] focus:border-[#FFFFFF] transition-colors text-white bg-background"
-                  placeholder="Su contrasena"
+                  className="w-full px-4 py-3 pr-12 border border-[#FFFFFF]/20 rounded-lg focus:ring-2 focus:ring-[#77DD77] focus:border-[#77DD77] transition-colors text-white bg-background"
+                  placeholder="Su contraseña"
                   required
                   autoComplete="current-password"
                 />
@@ -198,6 +290,7 @@ function LoginContent() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white focus:outline-none"
                   tabIndex={-1}
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                 >
                   {showPassword ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -219,16 +312,16 @@ function LoginContent() {
                 href="/recuperar-contrasena"
                 className="text-sm text-[#7EC8E3] hover:text-[#FFFFFF] font-medium transition-colors"
               >
-                No recuerdo mi contrasena
+                ¿Olvidó su contraseña?
               </Link>
             </div>
 
             <button
               type="submit"
               disabled={loading || !email || !password}
-              className="w-full bg-[#77DD77] text-[#1C1C1C] py-3 rounded-lg font-bold hover:bg-[#66CC66] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#77DD77] text-[#1C1C1C] py-3 rounded-lg font-bold hover:bg-[#88EE88] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Iniciando sesion...' : 'Iniciar Sesion'}
+              {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
             </button>
           </form>
         </div>
@@ -237,9 +330,9 @@ function LoginContent() {
         <div className="text-center mt-6">
           <Link
             href="/"
-            className="text-white/70 hover:text-white text-sm"
+            className="text-white/70 hover:text-white text-sm transition-colors"
           >
-            Volver al inicio
+            ← Volver al inicio
           </Link>
         </div>
       </div>

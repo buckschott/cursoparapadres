@@ -185,7 +185,7 @@ function ExitoContent() {
       }
       
       if (!sessionId) {
-        setSessionError('No se encontro informacion de la compra.');
+        setSessionError('No se encontró información de la compra.');
         setVerifying(false);
         return;
       }
@@ -218,7 +218,7 @@ function ExitoContent() {
         }
 
       } catch (err) {
-        setSessionError('Error de conexion.');
+        setSessionError('Error de conexión.');
         setVerifying(false);
       }
     };
@@ -234,7 +234,7 @@ function ExitoContent() {
     await new Promise(resolve => setTimeout(resolve, 500));
     
     if (!sessionId) {
-      setSessionError('No se encontro informacion de la compra.');
+      setSessionError('No se encontró información de la compra.');
       setVerifying(false);
       setIsRetrying(false);
       return;
@@ -270,7 +270,7 @@ function ExitoContent() {
       }
 
     } catch (err) {
-      setSessionError('Error de conexion.');
+      setSessionError('Error de conexión.');
       setVerifying(false);
       setIsRetrying(false);
     }
@@ -284,13 +284,13 @@ function ExitoContent() {
     e.preventDefault();
     
     if (isPreview) {
-      setError('Modo de prueba: El formulario no envia datos reales. Use una compra real para probar el flujo completo.');
+      setError('Modo de prueba: El formulario no envía datos reales. Use una compra real para probar el flujo completo.');
       return;
     }
     
     if (!canSubmit) return;
     if (!sessionId) {
-      setError('Sesion no valida. Por favor, contacte soporte.');
+      setError('Sesión no válida. Por favor, contacte soporte.');
       return;
     }
 
@@ -307,7 +307,7 @@ function ExitoContent() {
       const data = await response.json();
 
       if (!data.success) {
-        setError(data.error || 'Algo salio mal. Por favor, intente de nuevo.');
+        setError(data.error || 'Algo salió mal. Por favor, intente de nuevo.');
         setIsSubmitting(false);
         return;
       }
@@ -320,7 +320,7 @@ function ExitoContent() {
 
       if (signInError) {
         console.error('Client sign-in error:', signInError);
-        setError('Cuenta creada. Por favor, inicie sesion.');
+        setError('Cuenta creada. Por favor, inicie sesión.');
         setTimeout(() => {
           router.push('/iniciar-sesion');
         }, 2000);
@@ -333,7 +333,7 @@ function ExitoContent() {
       }, 800);
 
     } catch (err) {
-      setError('Error de conexion. Por favor, intente de nuevo.');
+      setError('Error de conexión. Por favor, intente de nuevo.');
       setIsSubmitting(false);
     }
   };
@@ -348,28 +348,13 @@ function ExitoContent() {
   if (sessionError) {
     return (
       <main className="min-h-screen bg-background">
-        <header className="bg-background border-b border-white/10">
-          <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 flex items-center justify-center">
-            <Link href="/" className="flex items-center gap-2 group">
-              <img 
-                src="/logo.svg" 
-                alt="" 
-                className="h-6 w-auto opacity-80 group-hover:opacity-100 transition-opacity" 
-                aria-hidden="true" 
-              />
-              <span className="text-lg font-semibold text-white font-brand">
-                Putting Kids First<sup className="text-[8px] relative -top-2">&reg;</sup>
-              </span>
-            </Link>
-          </div>
-        </header>
-
         <div className="flex items-center justify-center px-4 py-12 md:py-16">
           <div className="max-w-lg w-full">
-            <div className="bg-[#2A2A2A] rounded-2xl p-8 md:p-10 border border-white/10">
+            {/* Gold standard card styling */}
+            <div className="bg-background rounded-2xl p-8 md:p-10 border border-[#FFFFFF]/15 shadow-xl shadow-black/40">
               
               {/* Payment Confirmed - Reassurance First */}
-              <div className="flex items-center justify-center gap-3 mb-6 pb-6 border-b border-white/10">
+              <div className="flex items-center justify-center gap-3 mb-6 pb-6 border-b border-[#FFFFFF]/10">
                 <div className="w-10 h-10 bg-[#77DD77] rounded-full flex items-center justify-center flex-shrink-0">
                   <svg className="w-5 h-5 text-[#1C1C1C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
@@ -382,14 +367,18 @@ function ExitoContent() {
               
               {/* Still Processing Message */}
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-[#7EC8E3]/20 rounded-full flex items-center justify-center mx-auto mb-5">
-                  <svg className="w-8 h-8 text-[#7EC8E3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                {/* Universal clock icon */}
+                <div className="w-16 h-16 mx-auto mb-5">
+                  <img 
+                    src="/clock.svg" 
+                    alt="" 
+                    className="w-full h-full"
+                    aria-hidden="true"
+                  />
                 </div>
                 
                 <h1 className="text-2xl font-bold text-white mb-3">
-                  Su cuenta se esta configurando
+                  Su cuenta se está configurando
                 </h1>
                 
                 <p className="text-white/70">
@@ -398,25 +387,25 @@ function ExitoContent() {
               </div>
 
               {/* What to Do - Clear Steps */}
-              <div className="bg-[#1C1C1C] rounded-xl p-5 mb-6 border border-white/5">
-                <p className="text-white/50 text-xs uppercase tracking-widest mb-4">Que hacer ahora</p>
+              <div className="bg-[#1C1C1C] rounded-xl p-5 mb-6 border border-white/10">
+                <p className="text-white/50 text-xs uppercase tracking-widest mb-4">Qué hacer ahora</p>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-[#7EC8E3]/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-6 h-6 bg-[#7EC8E3]/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border border-[#7EC8E3]/30">
                       <span className="text-[#7EC8E3] text-xs font-bold">1</span>
                     </div>
                     <div>
-                      <p className="text-white font-medium">Revise su correo electronico</p>
-                      <p className="text-white/50 text-sm">Le enviamos instrucciones de acceso (revise spam tambien)</p>
+                      <p className="text-white font-medium">Revise su correo electrónico</p>
+                      <p className="text-white/50 text-sm">Le enviamos instrucciones de acceso (revise spam también)</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-[#7EC8E3]/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-6 h-6 bg-[#7EC8E3]/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border border-[#7EC8E3]/30">
                       <span className="text-[#7EC8E3] text-xs font-bold">2</span>
                     </div>
                     <div>
                       <p className="text-white font-medium">O intente de nuevo en unos segundos</p>
-                      <p className="text-white/50 text-sm">A veces solo necesita un momento mas</p>
+                      <p className="text-white/50 text-sm">A veces solo necesita un momento más</p>
                     </div>
                   </div>
                 </div>
@@ -427,7 +416,7 @@ function ExitoContent() {
                 <button
                   onClick={handleRetry}
                   disabled={isRetrying}
-                  className="w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 px-6 rounded-xl font-bold hover:bg-[#9DD8F3] transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                  className="w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 px-6 rounded-xl font-bold hover:bg-[#9DD8F3] transition-all flex items-center justify-center gap-2 disabled:opacity-70 active:scale-[0.98]"
                 >
                   {isRetrying ? (
                     <>
@@ -451,18 +440,18 @@ function ExitoContent() {
                   href="/iniciar-sesion"
                   className="block w-full bg-white/10 text-white py-4 px-6 rounded-xl font-medium hover:bg-white/20 transition-colors text-center"
                 >
-                  Ya tengo mi contrasena - Iniciar Sesion
+                  Ya tengo mi contraseña - Iniciar Sesión
                 </Link>
               </div>
               
               {/* Support - Minimized */}
               <p className="text-white/40 text-xs text-center mt-6">
-                Sigue sin funcionar despues de varios intentos?{' '}
+                ¿Sigue sin funcionar después de varios intentos?{' '}
                 <a
-                  href="mailto:info@claseparapadres.com?subject=Problema%20al%20crear%20cuenta%20despues%20de%20pagar"
+                  href="mailto:info@claseparapadres.com?subject=Problema%20al%20crear%20cuenta%20después%20de%20pagar"
                   className="text-[#7EC8E3] hover:text-[#9DD8F3] underline underline-offset-2"
                 >
-                  Escribanos
+                  Escríbanos
                 </a>
                 {' '}y lo resolvemos inmediatamente.
               </p>
@@ -478,33 +467,16 @@ function ExitoContent() {
       {/* Preview Mode Banner */}
       {isPreview && (
         <div className="bg-[#FFE566] text-[#1C1C1C] text-center py-2 px-4 text-sm font-bold">
-          MODO DE PRUEBA - Los datos son simulados. El formulario no enviara.
+          MODO DE PRUEBA - Los datos son simulados. El formulario no enviará.
         </div>
       )}
-      
-      {/* Minimal Header */}
-      <header className="bg-background border-b border-white/10">
-        <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 flex items-center justify-center">
-          <div className="flex items-center gap-2">
-            <img 
-              src="/logo.svg" 
-              alt="" 
-              className="h-6 w-auto opacity-80" 
-              aria-hidden="true" 
-            />
-            <span className="text-lg font-semibold text-white font-brand">
-              Putting Kids First<sup className="text-[8px] relative -top-2">&reg;</sup>
-            </span>
-          </div>
-        </div>
-      </header>
 
       {/* Main Content */}
       <div className="flex items-center justify-center px-4 py-8 md:py-12">
         <div className={`max-w-md w-full transition-all duration-500 ${pageReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           
-          {/* Main Card */}
-          <div className="bg-[#2A2A2A] rounded-2xl p-6 md:p-8 border border-white/10 relative overflow-hidden">
+          {/* Main Card - Gold standard styling */}
+          <div className="bg-background rounded-2xl p-6 md:p-8 border border-[#FFFFFF]/15 shadow-xl shadow-black/40 relative overflow-hidden">
             
             {/* Subtle glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#77DD77]/10 rounded-full blur-3xl pointer-events-none" />
@@ -525,7 +497,7 @@ function ExitoContent() {
               </div>
 
               {/* Divider */}
-              <div className="h-px bg-white/10 mb-6" />
+              <div className="h-px bg-[#FFFFFF]/10 mb-6" />
 
               {/* Step 2: FINAL STEP */}
               <div className="text-center mb-6">
@@ -542,7 +514,7 @@ function ExitoContent() {
 
               {/* Purchase Summary */}
               {purchaseDetails && (
-                <div className="bg-[#1C1C1C] rounded-xl p-4 mb-6 border border-white/5">
+                <div className="bg-[#1C1C1C] rounded-xl p-4 mb-6 border border-white/10">
                   <div className="flex justify-between items-center text-sm">
                     <div>
                       <p className="text-white/50 text-xs mb-1">Clase</p>
@@ -561,12 +533,12 @@ function ExitoContent() {
                 
                 {success ? (
                   <div className="py-6 text-center">
-                    <div className="inline-flex items-center justify-center w-14 h-14 mb-4 bg-[#77DD77]/20 rounded-full">
+                    <div className="inline-flex items-center justify-center w-14 h-14 mb-4 bg-[#77DD77]/20 rounded-full border border-[#77DD77]/30">
                       <svg className="w-7 h-7 text-[#77DD77]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
-                    <p className="text-white text-lg font-semibold mb-1">Cuenta creada!</p>
+                    <p className="text-white text-lg font-semibold mb-1">¡Cuenta creada!</p>
                     <p className="text-white/60 text-sm">Redirigiendo a su clase...</p>
                   </div>
                 ) : (
@@ -575,7 +547,7 @@ function ExitoContent() {
                     {purchaseDetails && (
                       <div>
                         <label className="block text-sm font-medium text-white/60 mb-2">
-                          Correo electronico
+                          Correo electrónico
                         </label>
                         <div className="w-full bg-[#1C1C1C] border border-white/10 rounded-xl px-4 py-3 text-white/70">
                           {purchaseDetails.email}
@@ -586,7 +558,7 @@ function ExitoContent() {
                     {/* Password Field */}
                     <div>
                       <label htmlFor="password" className="block text-sm font-medium text-white/80 mb-2">
-                        Crear contrasena
+                        Crear contraseña
                       </label>
                       <div className="relative">
                         <input
@@ -594,8 +566,8 @@ function ExitoContent() {
                           type={showPassword ? 'text' : 'password'}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="w-full bg-[#1C1C1C] border border-white/15 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#7EC8E3] focus:ring-1 focus:ring-[#7EC8E3] transition-colors pr-12"
-                          placeholder="Minimo 6 caracteres"
+                          className="w-full bg-[#1C1C1C] border border-[#FFFFFF]/15 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#7EC8E3] focus:ring-1 focus:ring-[#7EC8E3] transition-colors pr-12"
+                          placeholder="Mínimo 6 caracteres"
                           disabled={isSubmitting}
                           autoComplete="new-password"
                           autoFocus
@@ -624,7 +596,7 @@ function ExitoContent() {
                             />
                           </div>
                           <span className={`text-xs ${passwordLength ? 'text-[#77DD77]' : 'text-white/40'}`}>
-                            {passwordLength ? String.fromCharCode(10003) : `${6 - password.length} mas`}
+                            {passwordLength ? '✓' : `${6 - password.length} más`}
                           </span>
                         </div>
                       )}
@@ -633,7 +605,7 @@ function ExitoContent() {
                     {/* Confirm Password Field */}
                     <div>
                       <label htmlFor="confirmPassword" className="block text-sm font-medium text-white/80 mb-2">
-                        Confirmar contrasena
+                        Confirmar contraseña
                       </label>
                       <div className="relative">
                         <input
@@ -646,9 +618,9 @@ function ExitoContent() {
                               ? passwordsMatch 
                                 ? 'border-[#77DD77] focus:border-[#77DD77] focus:ring-1 focus:ring-[#77DD77]' 
                                 : 'border-[#FF9999] focus:border-[#FF9999] focus:ring-1 focus:ring-[#FF9999]'
-                              : 'border-white/15 focus:border-[#7EC8E3] focus:ring-1 focus:ring-[#7EC8E3]'
+                              : 'border-[#FFFFFF]/15 focus:border-[#7EC8E3] focus:ring-1 focus:ring-[#7EC8E3]'
                           }`}
-                          placeholder="Repita su contrasena"
+                          placeholder="Repita su contraseña"
                           disabled={isSubmitting}
                           autoComplete="new-password"
                         />
@@ -667,7 +639,7 @@ function ExitoContent() {
                         )}
                       </div>
                       {confirmPassword.length > 0 && !passwordsMatch && (
-                        <p className="mt-1 text-xs text-[#FF9999]">Las contrasenas no coinciden</p>
+                        <p className="mt-1 text-xs text-[#FF9999]">Las contraseñas no coinciden</p>
                       )}
                     </div>
 
@@ -718,7 +690,7 @@ function ExitoContent() {
 
           {/* Fallback hint */}
           <p className={`text-white/30 text-xs text-center mt-4 transition-all duration-500 delay-300 ${showForm ? 'opacity-100' : 'opacity-0'}`}>
-            Necesita salir? Revise su correo - le enviamos instrucciones de acceso.
+            ¿Necesita salir? Revise su correo - le enviamos instrucciones de acceso.
           </p>
 
           {/* Trust Reassurance */}
@@ -727,7 +699,7 @@ function ExitoContent() {
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
-              Conexion segura
+              Conexión segura
             </p>
           </div>
         </div>

@@ -219,7 +219,7 @@ export default function Home() {
               {FEATURES.map((feature, i) => (
                 <article 
                   key={i} 
-                  className="scroll-reveal group p-8 rounded-2xl border border-[#FFFFFF]/15 md:hover:border-[#7EC8E3]/30 md:hover:shadow-xl shadow-black/40 transition-all duration-300 md:hover:-translate-y-1 bg-background"
+                  className="scroll-reveal group p-8 rounded-2xl border border-[#FFFFFF]/15 shadow-xl shadow-black/40 md:hover:border-[#7EC8E3]/30 md:hover:shadow-2xl transition-all duration-300 md:hover:-translate-y-1 bg-background"
                 >
                   <div className="w-16 h-16 mb-6 relative overflow-visible">
                     <feature.Icon className="w-full h-full" />
@@ -292,7 +292,7 @@ export default function Home() {
 
             <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
               {/* Coparenting Course */}
-              <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/20 p-8 transition-all md:hover:shadow-2xl shadow-black/50 md:hover:border-[#FFFFFF]/50">
+              <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/20 p-8 shadow-xl shadow-black/40 transition-all md:hover:shadow-2xl md:hover:border-[#FFFFFF]/50">
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold text-white mb-1">Clase de Coparentalidad</h3>
                   <p className="text-sm text-white/70">Para Divorcio, Separación y Custodia</p>
@@ -359,7 +359,7 @@ export default function Home() {
               </article>
 
               {/* Parenting Course */}
-              <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/20 p-8 transition-all md:hover:shadow-2xl shadow-black/50 md:hover:border-[#FFFFFF]/50">
+              <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/20 p-8 shadow-xl shadow-black/40 transition-all md:hover:shadow-2xl md:hover:border-[#FFFFFF]/50">
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold text-white mb-1">Clase de Crianza</h3>
                   <p className="text-sm text-white/70">Para Casos de Reunificación, Adopción y CPS</p>
@@ -428,7 +428,7 @@ export default function Home() {
 
             {/* Bundle */}
             <div className="max-w-4xl mx-auto mt-16 mb-14">
-              <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/20 p-8 transition-all md:hover:shadow-2xl shadow-black/50 md:hover:border-[#FFFFFF]/50">
+              <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/20 p-8 shadow-xl shadow-black/40 transition-all md:hover:shadow-2xl md:hover:border-[#FFFFFF]/50">
                 {/* Best Value Badge */}
                 <div className="absolute -top-3 right-6 bg-[#77DD77] text-[#1C1C1C] px-3 py-1 rounded-full text-xs font-bold tracking-wide">
                   ⭐ Mejor Valor
@@ -525,7 +525,7 @@ export default function Home() {
                 { name: "Lucía Fernández", location: "Atlanta, Georgia", text: "Como madre soltera con dos trabajos, necesitaba algo flexible. Hice toda la clase en mi teléfono cuando tenía tiempo. El certificado llegó a mi correo al terminar." },
                 { name: "Miguel Torres", location: "Jacksonville, Florida", text: "Tenía un requisito del tribunal y necesitaba resolverlo. Fue más fácil de lo que pensé. Requisito cumplido." }
               ].map((review, i) => (
-                <article key={i} className="bg-background border-2 border-[#FFFFFF]/15 rounded-2xl p-8 md:hover:border-[#7EC8E3]/30 md:hover:shadow-xl shadow-black/40 transition-all">
+                <article key={i} className="bg-background border-2 border-[#FFFFFF]/15 rounded-2xl p-8 shadow-xl shadow-black/40 md:hover:border-[#7EC8E3]/30 md:hover:shadow-2xl transition-all">
                   <div className="flex mb-4">
                     {[...Array(5)].map((_, j) => (
                       <StarIcon key={j} className="w-5 h-5 text-[#FFE566]" />
@@ -564,7 +564,7 @@ export default function Home() {
                 { question: "¿Cuánto tiempo toma la clase?", answer: "La clase está diseñada para cumplir requisitos de 4-6 horas. Es 100% a su ritmo—puede empezar, pausar y continuar cuando quiera." },
                 { question: "¿Dónde es aceptado mi certificado?", answer: "En todo el país. Somos el original—el nombre más reconocido y el certificado más aceptado." }
               ].map((faq, i) => (
-                <details key={i} className="bg-background border-2 border-[#FFFFFF]/15 rounded-xl overflow-hidden group md:hover:border-[#7EC8E3]/30 transition-colors">
+                <details key={i} className="bg-background border-2 border-[#FFFFFF]/15 rounded-xl overflow-hidden group shadow-xl shadow-black/40 md:hover:border-[#7EC8E3]/30 transition-colors">
                   <summary className="flex justify-between items-center cursor-pointer p-6 font-bold text-white text-lg select-none">
                     <span>{faq.question}</span>
                     <ChevronIcon className="w-6 h-6 text-white/70 transition-transform group-open:rotate-180" />

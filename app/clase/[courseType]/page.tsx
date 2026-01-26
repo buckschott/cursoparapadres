@@ -178,7 +178,7 @@ export default function CourseOverviewPage() {
   return (
     <main className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-background border-b border-white/10 sticky top-0 z-50">
+      <header className="bg-background border-b border-[#FFFFFF]/10 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 md:px-6 py-4">
           <Link href="/panel" className="text-[#7EC8E3] hover:text-white text-sm font-medium flex items-center gap-2 transition-colors">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

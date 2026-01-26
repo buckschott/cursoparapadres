@@ -535,7 +535,7 @@ export default function ExamPage() {
   if (phase === 'saving') {
     return (
       <main className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="bg-[#2A2A2A] rounded-2xl p-8 md:p-10 max-w-md w-full text-center border border-white/10">
+        <div className="bg-background rounded-2xl p-8 md:p-10 max-w-md w-full text-center border border-[#FFFFFF]/15 shadow-xl shadow-black/40">
           {isSaving ? (
             // Saving in progress
             <>
@@ -619,7 +619,7 @@ export default function ExamPage() {
     
     return (
       <main className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="bg-[#2A2A2A] rounded-2xl p-8 md:p-10 max-w-md w-full text-center border border-white/10 relative overflow-hidden">
+        <div className="bg-background rounded-2xl p-8 md:p-10 max-w-md w-full text-center border border-[#FFFFFF]/15 shadow-xl shadow-black/40 relative overflow-hidden">
           {passed ? (
             <>
               {/* Success celebration particles */}
@@ -777,7 +777,7 @@ export default function ExamPage() {
     return (
       <main className="min-h-screen bg-background">
         {/* Header */}
-        <header className="bg-background border-b border-white/10 sticky top-0 z-50">
+        <header className="bg-background border-b border-[#FFFFFF]/10 sticky top-0 z-50">
           <div className="max-w-4xl mx-auto px-4 md:px-6 py-4">
             <Link 
               href={`/clase/${courseType}`} 
@@ -792,7 +792,7 @@ export default function ExamPage() {
         </header>
 
         <div className="max-w-2xl mx-auto px-4 md:px-6 py-8 md:py-12">
-          <div className="bg-[#2A2A2A] rounded-2xl p-6 md:p-8 border border-white/10">
+          <div className="bg-background rounded-2xl p-6 md:p-8 border border-[#FFFFFF]/15 shadow-xl shadow-black/40">
             {/* Icon */}
             <div className="text-center mb-6">
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#7EC8E3]/10 border-2 border-[#7EC8E3]/30 mb-4">
@@ -935,7 +935,7 @@ export default function ExamPage() {
   return (
     <main className="min-h-screen bg-background">
       {/* Progress Header */}
-      <header className="bg-[#2A2A2A] border-b border-white/10 sticky top-0 z-50">
+      <header className="bg-background border-b border-[#FFFFFF]/10 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 md:px-6 py-4">
           <div className="flex justify-between items-center text-sm mb-3">
             <span className="text-white font-medium flex items-center gap-2">
@@ -965,7 +965,7 @@ export default function ExamPage() {
 
       {/* Question Card */}
       <div className="max-w-2xl mx-auto px-4 md:px-6 py-6 md:py-8">
-        <div className="bg-[#2A2A2A] rounded-2xl p-6 md:p-8 border border-white/10">
+        <div className="bg-background rounded-2xl p-6 md:p-8 border border-[#FFFFFF]/15 shadow-xl shadow-black/40">
           {/* Question Text */}
           <h2 className="text-lg md:text-xl font-semibold text-white mb-6 leading-relaxed">
             {q.question_text}

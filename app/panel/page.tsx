@@ -417,7 +417,7 @@ export default function DashboardPage() {
     return (
       <main className="min-h-screen bg-background">
         {/* Header */}
-        <header className="bg-background border-b border-white/10 sticky top-0 z-50">
+        <header className="bg-background border-b border-[#FFFFFF]/10 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 group">
               <img src="/logo.svg" alt="" className="h-6 w-auto opacity-80 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
@@ -438,11 +438,16 @@ export default function DashboardPage() {
         </header>
 
         <div className="max-w-xl mx-auto px-4 md:px-6 py-12">
-          <div className="bg-[#2A2A2A] rounded-2xl p-8 border border-white/10 text-center">
-            <div className="w-16 h-16 bg-[#FFE566]/20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-8 h-8 text-[#FFE566]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+          {/* Gold standard card styling */}
+          <div className="bg-background rounded-2xl p-8 border border-[#FFFFFF]/15 shadow-xl shadow-black/40 text-center">
+            {/* Universal clock icon */}
+            <div className="w-16 h-16 mx-auto mb-6">
+              <img 
+                src="/clock.svg" 
+                alt="" 
+                className="w-full h-full"
+                aria-hidden="true"
+              />
             </div>
 
             <h2 className="text-xl font-bold text-white mb-3">
@@ -497,7 +502,7 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-background border-b border-white/10 sticky top-0 z-50">
+      <header className="bg-background border-b border-[#FFFFFF]/10 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
             <img src="/logo.svg" alt="" className="h-6 w-auto opacity-80 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
@@ -531,14 +536,14 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            {/* Quick Stats */}
+            {/* Quick Stats - Gold standard card styling */}
             {accessibleCourses.length > 0 && (
               <div className="flex gap-4">
-                <div className="bg-[#2A2A2A] rounded-xl px-4 py-3 border border-white/10">
+                <div className="bg-background rounded-xl px-4 py-3 border border-[#FFFFFF]/15 shadow-lg shadow-black/30">
                   <p className="text-2xl font-bold text-[#77DD77]">{getActiveCertificateCount()}</p>
                   <p className="text-xs text-white/50">Certificados</p>
                 </div>
-                <div className="bg-[#2A2A2A] rounded-xl px-4 py-3 border border-white/10">
+                <div className="bg-background rounded-xl px-4 py-3 border border-[#FFFFFF]/15 shadow-lg shadow-black/30">
                   <p className="text-2xl font-bold text-[#7EC8E3]">{accessibleCourses.length}</p>
                   <p className="text-xs text-white/50">Clases</p>
                 </div>
@@ -550,7 +555,7 @@ export default function DashboardPage() {
         {/* First Visit Welcome Banner */}
         {isFirstVisit && accessibleCourses.length > 0 && (
           <section className={`mb-8 transition-all duration-700 delay-50 ${pageReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-            <div className="bg-[#77DD77]/15 border border-[#77DD77]/30 rounded-2xl p-6 relative overflow-hidden">
+            <div className="bg-[#77DD77]/15 border border-[#77DD77]/30 rounded-2xl p-6 relative overflow-hidden shadow-xl shadow-black/20">
               {/* Celebration particles */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {[
@@ -604,7 +609,7 @@ export default function DashboardPage() {
         {/* This is now optional and available before passing the exam */}
         {profile && !profile.profile_completed && accessibleCourses.length > 0 && !isFirstVisit && (
           <section className={`mb-8 transition-all duration-700 delay-50 ${pageReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-            <div className="bg-[#7EC8E3]/15 border border-[#7EC8E3]/30 rounded-2xl p-6">
+            <div className="bg-[#7EC8E3]/15 border border-[#7EC8E3]/30 rounded-2xl p-6 shadow-xl shadow-black/20">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-[#7EC8E3]/20 rounded-full flex items-center justify-center flex-shrink-0">
                   <svg className="w-6 h-6 text-[#7EC8E3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -678,7 +683,8 @@ export default function DashboardPage() {
         {/* No Courses State */}
         {accessibleCourses.length === 0 && (
           <section className={`transition-all duration-700 delay-100 ${pageReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-            <div className="bg-[#2A2A2A] rounded-2xl p-8 md:p-12 text-center border border-white/10 relative overflow-hidden">
+            {/* Gold standard card styling */}
+            <div className="bg-background rounded-2xl p-8 md:p-12 text-center border border-[#FFFFFF]/15 shadow-xl shadow-black/40 relative overflow-hidden">
               {/* Background decoration */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-[#7EC8E3]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#77DD77]/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
@@ -772,7 +778,7 @@ function CourseCard({
   // ============================================
   if (certificate && isExpired) {
     return (
-      <div className="bg-[#2A2A2A] rounded-2xl p-6 md:p-8 border-2 border-white/10 h-full relative overflow-hidden opacity-75">
+      <div className="bg-background rounded-2xl p-6 md:p-8 border border-[#FFFFFF]/10 shadow-xl shadow-black/40 h-full relative overflow-hidden opacity-75">
         {/* Expired badge */}
         <div className="absolute top-4 right-4 bg-white/10 text-white/60 px-3 py-1 rounded-full text-xs font-medium">
           Expirado
@@ -784,12 +790,16 @@ function CourseCard({
             <p className="text-sm text-white/40">{subtitle}</p>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-6">
+          <div className="bg-[#1C1C1C] border border-[#FFFFFF]/10 rounded-xl p-4 mb-6">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              {/* Universal clock icon */}
+              <div className="w-10 h-10 flex-shrink-0">
+                <img 
+                  src="/clock.svg" 
+                  alt="" 
+                  className="w-full h-full opacity-50"
+                  aria-hidden="true"
+                />
               </div>
               <div>
                 <p className="font-semibold text-white/60 mb-1">Certificado Expirado</p>
@@ -800,7 +810,7 @@ function CourseCard({
             </div>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-xl p-3 mb-6">
+          <div className="bg-[#1C1C1C] border border-[#FFFFFF]/10 rounded-xl p-3 mb-6">
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
               <span className="text-white/40">
                 Certificado: <span className="font-mono text-white/50">{certificate.certificate_number}</span>
@@ -827,7 +837,7 @@ function CourseCard({
   // ============================================
   if (isComplete) {
     return (
-      <div className="bg-[#2A2A2A] rounded-2xl p-6 md:p-8 border-2 border-[#77DD77]/30 h-full relative overflow-hidden group hover:border-[#77DD77]/50 transition-colors">
+      <div className="bg-background rounded-2xl p-6 md:p-8 border-2 border-[#77DD77]/30 shadow-xl shadow-black/40 h-full relative overflow-hidden group hover:border-[#77DD77]/50 transition-colors">
         {/* Success glow */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-[#77DD77]/10 rounded-full blur-2xl" />
 
@@ -876,7 +886,7 @@ function CourseCard({
   // ============================================
   if (isProfileRequired) {
     return (
-      <div className="bg-[#2A2A2A] rounded-2xl p-6 md:p-8 border-2 border-[#77DD77]/30 h-full relative overflow-hidden group hover:border-[#77DD77]/50 transition-colors">
+      <div className="bg-background rounded-2xl p-6 md:p-8 border-2 border-[#77DD77]/30 shadow-xl shadow-black/40 h-full relative overflow-hidden group hover:border-[#77DD77]/50 transition-colors">
         {/* Success glow */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-[#77DD77]/10 rounded-full blur-2xl" />
 
@@ -919,7 +929,7 @@ function CourseCard({
   // ============================================
   if (isExamReady) {
     return (
-      <div className="bg-[#2A2A2A] rounded-2xl p-6 md:p-8 border-2 border-[#FFB347]/30 h-full relative overflow-hidden group hover:border-[#FFB347]/50 transition-colors">
+      <div className="bg-background rounded-2xl p-6 md:p-8 border-2 border-[#FFB347]/30 shadow-xl shadow-black/40 h-full relative overflow-hidden group hover:border-[#FFB347]/50 transition-colors">
         {/* Glow effect */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFB347]/10 rounded-full blur-2xl" />
 
@@ -961,7 +971,7 @@ function CourseCard({
   // STATE 4: In Progress
   // ============================================
   return (
-    <div className="bg-[#2A2A2A] rounded-2xl p-6 md:p-8 border border-white/10 h-full hover:border-white/20 transition-colors group">
+    <div className="bg-background rounded-2xl p-6 md:p-8 border border-[#FFFFFF]/15 shadow-xl shadow-black/40 h-full hover:border-[#FFFFFF]/30 transition-colors group">
       <div className="mb-6">
         <div className="flex items-start justify-between mb-1">
           <h3 className="text-xl md:text-2xl font-bold text-white">{title}</h3>
@@ -984,7 +994,7 @@ function CourseCard({
           <span className="text-white/60">Progreso</span>
           <span className="text-white font-medium">{completedCount} de {totalLessons} lecciones</span>
         </div>
-        <div className="relative w-full bg-[#1C1C1C] rounded-full h-3 border border-white/10 overflow-hidden">
+        <div className="relative w-full bg-[#1C1C1C] rounded-full h-3 border border-[#FFFFFF]/10 overflow-hidden">
           {/* Animated fill */}
           <div
             className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#7EC8E3] to-[#77DD77] rounded-full transition-all duration-1000 ease-out"
@@ -1028,7 +1038,7 @@ function CourseCard({
 
 function HelpSection() {
   return (
-    <div className="bg-[#2A2A2A] rounded-2xl p-6 border border-white/10">
+    <div className="bg-background rounded-2xl p-6 border border-[#FFFFFF]/15 shadow-xl shadow-black/40">
       <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
         <QuestionIcon className="w-5 h-5 text-white/60" />
         ¿Necesita Ayuda?
@@ -1036,7 +1046,7 @@ function HelpSection() {
       <div className="grid md:grid-cols-2 gap-4">
         <Link
           href="/preguntas-frecuentes"
-          className="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:border-[#7EC8E3]/30 hover:bg-[#7EC8E3]/5 transition-all group"
+          className="flex items-center gap-4 p-4 rounded-xl border border-[#FFFFFF]/10 hover:border-[#7EC8E3]/30 hover:bg-[#7EC8E3]/5 transition-all group"
         >
           <div className="w-12 h-12 rounded-xl bg-[#7EC8E3]/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#7EC8E3]/20 transition-colors">
             <svg className="w-6 h-6 text-[#7EC8E3]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1052,7 +1062,7 @@ function HelpSection() {
         </Link>
         <a
           href="mailto:info@claseparapadres.com"
-          className="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:border-[#FFB347]/30 hover:bg-[#FFB347]/5 transition-all group"
+          className="flex items-center gap-4 p-4 rounded-xl border border-[#FFFFFF]/10 hover:border-[#FFB347]/30 hover:bg-[#FFB347]/5 transition-all group"
         >
           <div className="w-12 h-12 rounded-xl bg-[#FFB347]/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#FFB347]/20 transition-colors">
             <svg className="w-6 h-6 text-[#FFB347]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

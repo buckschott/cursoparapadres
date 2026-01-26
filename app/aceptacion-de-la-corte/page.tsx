@@ -120,7 +120,7 @@ export default function AceptacionDeLaCorte() {
               {caseTypes.map((item, i) => (
                 <div 
                   key={i} 
-                  className="bg-background rounded-xl p-6 border border-[#FFFFFF]/15 hover:border-[#7EC8E3]/30 transition-colors"
+                  className="bg-background rounded-xl p-6 border border-[#FFFFFF]/15 shadow-xl shadow-black/40 hover:border-[#7EC8E3]/30 transition-colors"
                 >
                   <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
                   <p className="text-white/70 leading-relaxed">{item.text}</p>

@@ -185,182 +185,182 @@ body {
 }
 
 /* 
- * Sequential draw animation: paths draw one at a time
- * Cycle: 20s total
- * - Draw phase: 0-30% (6s) - paths draw sequentially, ~1.8% each
- * - Hold phase: 30-80% (10s) - all paths visible
- * - Undraw phase: 80-90% (2s) - all paths erase together
- * - Pause: 90-100% (2s)
+ * Sequential draw animation: paths draw one at a time (1 second each)
+ * Cycle: 31s total
+ * - Draw phase: 0-55% (17s) - paths draw sequentially, 3.2% each
+ * - Hold phase: 55-87% (10s) - all paths visible
+ * - Undraw phase: 87-94% (2s) - all paths erase together
+ * - Pause: 94-100% (2s)
  */
 
-.scroll-reveal-active .draw-svg path:nth-child(1) { animation: drawSeq1 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(2) { animation: drawSeq2 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(3) { animation: drawSeq3 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(4) { animation: drawSeq4 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(5) { animation: drawSeq5 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(6) { animation: drawSeq6 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(7) { animation: drawSeq7 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(8) { animation: drawSeq8 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(9) { animation: drawSeq9 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(10) { animation: drawSeq10 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(11) { animation: drawSeq11 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(12) { animation: drawSeq12 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(13) { animation: drawSeq13 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(14) { animation: drawSeq14 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(15) { animation: drawSeq15 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(16) { animation: drawSeq16 20s ease-in-out infinite; }
-.scroll-reveal-active .draw-svg path:nth-child(17) { animation: drawSeq17 20s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(1) { animation: drawSeq1 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(2) { animation: drawSeq2 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(3) { animation: drawSeq3 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(4) { animation: drawSeq4 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(5) { animation: drawSeq5 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(6) { animation: drawSeq6 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(7) { animation: drawSeq7 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(8) { animation: drawSeq8 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(9) { animation: drawSeq9 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(10) { animation: drawSeq10 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(11) { animation: drawSeq11 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(12) { animation: drawSeq12 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(13) { animation: drawSeq13 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(14) { animation: drawSeq14 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(15) { animation: drawSeq15 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(16) { animation: drawSeq16 31s ease-in-out infinite; }
+.scroll-reveal-active .draw-svg path:nth-child(17) { animation: drawSeq17 31s ease-in-out infinite; }
 
-/* Path 1: draws 0% → 1.8% */
+/* Path 1: draws 0% → 3.2% */
 @keyframes drawSeq1 {
   0% { stroke-dashoffset: 4000; }
-  1.8% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  3.2% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 2: waits, then draws 1.8% → 3.6% */
+/* Path 2: draws 3.2% → 6.5% */
 @keyframes drawSeq2 {
-  0%, 1.8% { stroke-dashoffset: 4000; }
-  3.6% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 3.2% { stroke-dashoffset: 4000; }
+  6.5% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 3: draws 3.6% → 5.4% */
+/* Path 3: draws 6.5% → 9.7% */
 @keyframes drawSeq3 {
-  0%, 3.6% { stroke-dashoffset: 4000; }
-  5.4% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 6.5% { stroke-dashoffset: 4000; }
+  9.7% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 4: draws 5.4% → 7.2% */
+/* Path 4: draws 9.7% → 12.9% */
 @keyframes drawSeq4 {
-  0%, 5.4% { stroke-dashoffset: 4000; }
-  7.2% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 9.7% { stroke-dashoffset: 4000; }
+  12.9% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 5: draws 7.2% → 9% */
+/* Path 5: draws 12.9% → 16.1% */
 @keyframes drawSeq5 {
-  0%, 7.2% { stroke-dashoffset: 4000; }
-  9% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 12.9% { stroke-dashoffset: 4000; }
+  16.1% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 6: draws 9% → 10.8% */
+/* Path 6: draws 16.1% → 19.4% */
 @keyframes drawSeq6 {
-  0%, 9% { stroke-dashoffset: 4000; }
-  10.8% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 16.1% { stroke-dashoffset: 4000; }
+  19.4% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 7: draws 10.8% → 12.6% */
+/* Path 7: draws 19.4% → 22.6% */
 @keyframes drawSeq7 {
-  0%, 10.8% { stroke-dashoffset: 4000; }
-  12.6% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 19.4% { stroke-dashoffset: 4000; }
+  22.6% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 8: draws 12.6% → 14.4% */
+/* Path 8: draws 22.6% → 25.8% */
 @keyframes drawSeq8 {
-  0%, 12.6% { stroke-dashoffset: 4000; }
-  14.4% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 22.6% { stroke-dashoffset: 4000; }
+  25.8% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 9: draws 14.4% → 16.2% */
+/* Path 9: draws 25.8% → 29% */
 @keyframes drawSeq9 {
-  0%, 14.4% { stroke-dashoffset: 4000; }
-  16.2% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 25.8% { stroke-dashoffset: 4000; }
+  29% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 10: draws 16.2% → 18% */
+/* Path 10: draws 29% → 32.3% */
 @keyframes drawSeq10 {
-  0%, 16.2% { stroke-dashoffset: 4000; }
-  18% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 29% { stroke-dashoffset: 4000; }
+  32.3% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 11: draws 18% → 19.8% */
+/* Path 11: draws 32.3% → 35.5% */
 @keyframes drawSeq11 {
-  0%, 18% { stroke-dashoffset: 4000; }
-  19.8% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 32.3% { stroke-dashoffset: 4000; }
+  35.5% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 12: draws 19.8% → 21.6% */
+/* Path 12: draws 35.5% → 38.7% */
 @keyframes drawSeq12 {
-  0%, 19.8% { stroke-dashoffset: 4000; }
-  21.6% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 35.5% { stroke-dashoffset: 4000; }
+  38.7% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 13: draws 21.6% → 23.4% */
+/* Path 13: draws 38.7% → 41.9% */
 @keyframes drawSeq13 {
-  0%, 21.6% { stroke-dashoffset: 4000; }
-  23.4% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 38.7% { stroke-dashoffset: 4000; }
+  41.9% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 14: draws 23.4% → 25.2% */
+/* Path 14: draws 41.9% → 45.2% */
 @keyframes drawSeq14 {
-  0%, 23.4% { stroke-dashoffset: 4000; }
-  25.2% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 41.9% { stroke-dashoffset: 4000; }
+  45.2% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 15: draws 25.2% → 27% */
+/* Path 15: draws 45.2% → 48.4% */
 @keyframes drawSeq15 {
-  0%, 25.2% { stroke-dashoffset: 4000; }
-  27% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 45.2% { stroke-dashoffset: 4000; }
+  48.4% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 16: draws 27% → 28.8% */
+/* Path 16: draws 48.4% → 51.6% */
 @keyframes drawSeq16 {
-  0%, 27% { stroke-dashoffset: 4000; }
-  28.8% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 48.4% { stroke-dashoffset: 4000; }
+  51.6% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 
-/* Path 17: draws 28.8% → 30.6% */
+/* Path 17: draws 51.6% → 54.8% */
 @keyframes drawSeq17 {
-  0%, 28.8% { stroke-dashoffset: 4000; }
-  30.6% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; }
-  90% { stroke-dashoffset: 4000; }
+  0%, 51.6% { stroke-dashoffset: 4000; }
+  54.8% { stroke-dashoffset: 0; }
+  87% { stroke-dashoffset: 0; }
+  94% { stroke-dashoffset: 4000; }
   100% { stroke-dashoffset: 4000; }
 }
 

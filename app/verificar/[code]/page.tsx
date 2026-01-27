@@ -99,7 +99,7 @@ export default function VerifyPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#2A2A2A] py-12 px-6">
+    <main className="min-h-screen bg-background py-12 px-6">
       <div className="max-w-lg mx-auto">
         <div className="text-center mb-8">
           <div className="inline-block mb-4">
@@ -110,7 +110,7 @@ export default function VerifyPage() {
         </div>
 
         {error ? (
-          <div className="bg-background rounded-2xl shadow-lg shadow-black/30 overflow-hidden">
+          <div className="bg-background rounded-2xl border border-[#FFFFFF]/15 shadow-xl shadow-black/40 overflow-hidden">
             <div className="bg-[#FF9999]/100 px-6 py-4 flex items-center gap-3">
               <div className="w-10 h-10 bg-background/20 rounded-full flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -131,7 +131,7 @@ export default function VerifyPage() {
             </div>
           </div>
         ) : (
-          <div className="bg-background rounded-2xl shadow-lg shadow-black/30 overflow-hidden">
+          <div className="bg-background rounded-2xl border border-[#FFFFFF]/15 shadow-xl shadow-black/40 overflow-hidden">
             <div className="bg-[#77DD77] px-6 py-4 flex items-center gap-3">
               <div className="w-10 h-10 bg-background/20 rounded-full flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>

@@ -377,12 +377,126 @@ body {
 .device-animate .device-img {
   opacity: 0.3;
   filter: grayscale(100%);
-  transition: opacity var(--timing-slow) ease-out, filter var(--timing-slow) ease-out;
 }
 
-.device-animate.device-active .device-img {
-  opacity: 1;
-  filter: grayscale(0%);
+/* 
+ * Looping device animation: 10s cycle
+ * - Phone lights at 0%, Tablet at 8%, Laptop at 16%, Desktop at 24%
+ * - All stay bright until 70%
+ * - All dim together 70-80%
+ * - Pause 80-100%
+ */
+
+.device-phone.device-active .device-img {
+  animation: devicePhone 10s ease-in-out infinite;
+}
+
+.device-tablet.device-active .device-img {
+  animation: deviceTablet 10s ease-in-out infinite;
+}
+
+.device-laptop.device-active .device-img {
+  animation: deviceLaptop 10s ease-in-out infinite;
+}
+
+.device-desktop.device-active .device-img {
+  animation: deviceDesktop 10s ease-in-out infinite;
+}
+
+/* Phone: lights up immediately */
+@keyframes devicePhone {
+  0% {
+    opacity: 0.3;
+    filter: grayscale(100%);
+  }
+  5% {
+    opacity: 1;
+    filter: grayscale(0%);
+  }
+  70% {
+    opacity: 1;
+    filter: grayscale(0%);
+  }
+  80% {
+    opacity: 0.3;
+    filter: grayscale(100%);
+  }
+  100% {
+    opacity: 0.3;
+    filter: grayscale(100%);
+  }
+}
+
+/* Tablet: lights up at 8% (0.8s) */
+@keyframes deviceTablet {
+  0%, 8% {
+    opacity: 0.3;
+    filter: grayscale(100%);
+  }
+  13% {
+    opacity: 1;
+    filter: grayscale(0%);
+  }
+  70% {
+    opacity: 1;
+    filter: grayscale(0%);
+  }
+  80% {
+    opacity: 0.3;
+    filter: grayscale(100%);
+  }
+  100% {
+    opacity: 0.3;
+    filter: grayscale(100%);
+  }
+}
+
+/* Laptop: lights up at 16% (1.6s) */
+@keyframes deviceLaptop {
+  0%, 16% {
+    opacity: 0.3;
+    filter: grayscale(100%);
+  }
+  21% {
+    opacity: 1;
+    filter: grayscale(0%);
+  }
+  70% {
+    opacity: 1;
+    filter: grayscale(0%);
+  }
+  80% {
+    opacity: 0.3;
+    filter: grayscale(100%);
+  }
+  100% {
+    opacity: 0.3;
+    filter: grayscale(100%);
+  }
+}
+
+/* Desktop: lights up at 24% (2.4s) */
+@keyframes deviceDesktop {
+  0%, 24% {
+    opacity: 0.3;
+    filter: grayscale(100%);
+  }
+  29% {
+    opacity: 1;
+    filter: grayscale(0%);
+  }
+  70% {
+    opacity: 1;
+    filter: grayscale(0%);
+  }
+  80% {
+    opacity: 0.3;
+    filter: grayscale(100%);
+  }
+  100% {
+    opacity: 0.3;
+    filter: grayscale(100%);
+  }
 }
 
 .device-text-below { 

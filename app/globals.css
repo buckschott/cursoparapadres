@@ -372,12 +372,11 @@ body {
 
 /* 
  * Device "power on" sequence - 25s cycle
- * Each device fades in sequentially, all fade out together, 10s pause
+ * Devices fade in sequentially, stay bright, then all fade out completely
  */
 
 .device-animate .device-img {
-  opacity: 0.3;
-  filter: grayscale(100%);
+  opacity: 0;
 }
 
 .device-phone .device-img {
@@ -399,96 +398,76 @@ body {
 /* Phone: fades in at 0s */
 @keyframes devicePowerPhone {
   0% {
-    opacity: 0.3;
-    filter: grayscale(100%);
+    opacity: 0;
   }
-  2% {
+  3% {
     opacity: 1;
-    filter: grayscale(0%);
   }
   56% {
     opacity: 1;
-    filter: grayscale(0%);
   }
-  60% {
-    opacity: 0.3;
-    filter: grayscale(100%);
+  64% {
+    opacity: 0;
   }
   100% {
-    opacity: 0.3;
-    filter: grayscale(100%);
+    opacity: 0;
   }
 }
 
 /* Tablet: fades in at 2s (8%) */
 @keyframes devicePowerTablet {
   0%, 8% {
-    opacity: 0.3;
-    filter: grayscale(100%);
+    opacity: 0;
   }
-  10% {
+  11% {
     opacity: 1;
-    filter: grayscale(0%);
   }
   56% {
     opacity: 1;
-    filter: grayscale(0%);
   }
-  60% {
-    opacity: 0.3;
-    filter: grayscale(100%);
+  64% {
+    opacity: 0;
   }
   100% {
-    opacity: 0.3;
-    filter: grayscale(100%);
+    opacity: 0;
   }
 }
 
 /* Laptop: fades in at 4s (16%) */
 @keyframes devicePowerLaptop {
   0%, 16% {
-    opacity: 0.3;
-    filter: grayscale(100%);
+    opacity: 0;
   }
-  18% {
+  19% {
     opacity: 1;
-    filter: grayscale(0%);
   }
   56% {
     opacity: 1;
-    filter: grayscale(0%);
   }
-  60% {
-    opacity: 0.3;
-    filter: grayscale(100%);
+  64% {
+    opacity: 0;
   }
   100% {
-    opacity: 0.3;
-    filter: grayscale(100%);
+    opacity: 0;
   }
 }
 
 /* Desktop: fades in at 6s (24%) */
 @keyframes devicePowerDesktop {
   0%, 24% {
-    opacity: 0.3;
-    filter: grayscale(100%);
+    opacity: 0;
   }
-  26% {
+  27% {
     opacity: 1;
-    filter: grayscale(0%);
   }
   56% {
     opacity: 1;
-    filter: grayscale(0%);
   }
-  60% {
-    opacity: 0.3;
-    filter: grayscale(100%);
+  64% {
+    opacity: 0;
   }
   100% {
-    opacity: 0.3;
-    filter: grayscale(100%);
+    opacity: 0;
   }
 }
 

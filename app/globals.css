@@ -371,8 +371,9 @@ body {
 /* ===== DEVICE ANIMATIONS ===== */
 
 /* 
- * Device "power on" sequence - 25s cycle
- * Devices fade in sequentially, stay bright, then all fade out completely
+ * Device "power on" sequence - 24s cycle
+ * Devices fade in sequentially (2s apart), all visible for 15s, fade out together
+ * Loop restarts immediately after fade out
  */
 
 .device-animate .device-img {
@@ -380,19 +381,19 @@ body {
 }
 
 .device-phone .device-img {
-  animation: devicePowerPhone 25s ease-in-out infinite;
+  animation: devicePowerPhone 24s ease-in-out infinite;
 }
 
 .device-tablet .device-img {
-  animation: devicePowerTablet 25s ease-in-out infinite;
+  animation: devicePowerTablet 24s ease-in-out infinite;
 }
 
 .device-laptop .device-img {
-  animation: devicePowerLaptop 25s ease-in-out infinite;
+  animation: devicePowerLaptop 24s ease-in-out infinite;
 }
 
 .device-desktop .device-img {
-  animation: devicePowerDesktop 25s ease-in-out infinite;
+  animation: devicePowerDesktop 24s ease-in-out infinite;
 }
 
 /* Phone: fades in at 0s */
@@ -403,11 +404,8 @@ body {
   3% {
     opacity: 1;
   }
-  56% {
+  91% {
     opacity: 1;
-  }
-  64% {
-    opacity: 0;
   }
   100% {
     opacity: 0;
@@ -422,49 +420,40 @@ body {
   11% {
     opacity: 1;
   }
-  56% {
+  91% {
     opacity: 1;
-  }
-  64% {
-    opacity: 0;
   }
   100% {
     opacity: 0;
   }
 }
 
-/* Laptop: fades in at 4s (16%) */
+/* Laptop: fades in at 4s (17%) */
 @keyframes devicePowerLaptop {
-  0%, 16% {
+  0%, 17% {
     opacity: 0;
   }
-  19% {
+  20% {
     opacity: 1;
   }
-  56% {
+  91% {
     opacity: 1;
-  }
-  64% {
-    opacity: 0;
   }
   100% {
     opacity: 0;
   }
 }
 
-/* Desktop: fades in at 6s (24%) */
+/* Desktop: fades in at 6s (25%) */
 @keyframes devicePowerDesktop {
-  0%, 24% {
+  0%, 25% {
     opacity: 0;
   }
-  27% {
+  28% {
     opacity: 1;
   }
-  56% {
+  91% {
     opacity: 1;
-  }
-  64% {
-    opacity: 0;
   }
   100% {
     opacity: 0;

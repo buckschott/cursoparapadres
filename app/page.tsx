@@ -8,7 +8,7 @@ import CTAButton from '@/components/CTAButton';
 import CheckoutOverlay from '@/components/CheckoutOverlay';
 import BundleInterstitial from '@/components/BundleInterstitial';
 import { FEATURES } from '@/components/FeatureIcons';
-import { useScrollReveal, useDeviceAnimation } from '@/hooks/useScrollReveal';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { ANIMATION } from '@/constants/animation';
 
 export default function Home() {
@@ -20,9 +20,8 @@ export default function Home() {
   const [isInterstitialOpen, setIsInterstitialOpen] = useState(false);
   const [pendingCourse, setPendingCourse] = useState<'coparenting' | 'parenting' | null>(null);
   
-  // Custom hooks for animations
+  // Custom hook for scroll animations
   const mainRef = useScrollReveal();
-  const devicesRef = useDeviceAnimation();
 
   const handleCheckout = async (priceId: string, productName: string) => {
     setLoading(productName);
@@ -238,7 +237,6 @@ export default function Home() {
         
         {/* DEVICES SECTION */}
         <section 
-          ref={devicesRef as React.RefObject<HTMLElement>}
           id="dispositivos"
           className="section-divider relative bg-background overflow-hidden z-20 py-24 pt-32" 
           aria-labelledby="dispositivos-heading"
@@ -263,7 +261,7 @@ export default function Home() {
                 <div key={device.name} className={`device-animate device-${device.name} flex flex-col items-center gap-3`}>
                   <div className={`relative h-28 md:h-40 ${device.container}`}>
                     <img 
-                      src={`/${device.name}.svg`} 
+                      src={`/${device.name}-2-es.svg`} 
                       alt={device.label} 
                       className={`device-img ${device.size} absolute bottom-0 left-0`} 
                     />

@@ -369,55 +369,48 @@ body {
 }
 
 /* ===== DEVICE ANIMATIONS ===== */
-.device-animate {
-  opacity: 1;
-  transition: transform var(--timing-slow) ease-out;
-}
+
+/* 
+ * Device "power on" sequence - 25s cycle
+ * Each device fades in sequentially, all fade out together, 10s pause
+ */
 
 .device-animate .device-img {
   opacity: 0.3;
   filter: grayscale(100%);
 }
 
-/* 
- * Looping device animation: 10s cycle
- * - Phone lights at 0%, Tablet at 8%, Laptop at 16%, Desktop at 24%
- * - All stay bright until 70%
- * - All dim together 70-80%
- * - Pause 80-100%
- */
-
-.device-phone.device-active .device-img {
-  animation: devicePhone 10s ease-in-out infinite;
+.device-phone .device-img {
+  animation: devicePowerPhone 25s ease-in-out infinite;
 }
 
-.device-tablet.device-active .device-img {
-  animation: deviceTablet 10s ease-in-out infinite;
+.device-tablet .device-img {
+  animation: devicePowerTablet 25s ease-in-out infinite;
 }
 
-.device-laptop.device-active .device-img {
-  animation: deviceLaptop 10s ease-in-out infinite;
+.device-laptop .device-img {
+  animation: devicePowerLaptop 25s ease-in-out infinite;
 }
 
-.device-desktop.device-active .device-img {
-  animation: deviceDesktop 10s ease-in-out infinite;
+.device-desktop .device-img {
+  animation: devicePowerDesktop 25s ease-in-out infinite;
 }
 
-/* Phone: lights up immediately */
-@keyframes devicePhone {
+/* Phone: fades in at 0s */
+@keyframes devicePowerPhone {
   0% {
     opacity: 0.3;
     filter: grayscale(100%);
   }
-  5% {
+  2% {
     opacity: 1;
     filter: grayscale(0%);
   }
-  70% {
+  56% {
     opacity: 1;
     filter: grayscale(0%);
   }
-  80% {
+  60% {
     opacity: 0.3;
     filter: grayscale(100%);
   }
@@ -427,21 +420,21 @@ body {
   }
 }
 
-/* Tablet: lights up at 8% (0.8s) */
-@keyframes deviceTablet {
+/* Tablet: fades in at 2s (8%) */
+@keyframes devicePowerTablet {
   0%, 8% {
     opacity: 0.3;
     filter: grayscale(100%);
   }
-  13% {
+  10% {
     opacity: 1;
     filter: grayscale(0%);
   }
-  70% {
+  56% {
     opacity: 1;
     filter: grayscale(0%);
   }
-  80% {
+  60% {
     opacity: 0.3;
     filter: grayscale(100%);
   }
@@ -451,21 +444,21 @@ body {
   }
 }
 
-/* Laptop: lights up at 16% (1.6s) */
-@keyframes deviceLaptop {
+/* Laptop: fades in at 4s (16%) */
+@keyframes devicePowerLaptop {
   0%, 16% {
     opacity: 0.3;
     filter: grayscale(100%);
   }
-  21% {
+  18% {
     opacity: 1;
     filter: grayscale(0%);
   }
-  70% {
+  56% {
     opacity: 1;
     filter: grayscale(0%);
   }
-  80% {
+  60% {
     opacity: 0.3;
     filter: grayscale(100%);
   }
@@ -475,21 +468,21 @@ body {
   }
 }
 
-/* Desktop: lights up at 24% (2.4s) */
-@keyframes deviceDesktop {
+/* Desktop: fades in at 6s (24%) */
+@keyframes devicePowerDesktop {
   0%, 24% {
     opacity: 0.3;
     filter: grayscale(100%);
   }
-  29% {
+  26% {
     opacity: 1;
     filter: grayscale(0%);
   }
-  70% {
+  56% {
     opacity: 1;
     filter: grayscale(0%);
   }
-  80% {
+  60% {
     opacity: 0.3;
     filter: grayscale(100%);
   }
@@ -497,18 +490,6 @@ body {
     opacity: 0.3;
     filter: grayscale(100%);
   }
-}
-
-.device-text-below { 
-  transition: opacity 0.4s ease-out 0.3s; 
-}
-
-.device-active .device-text-below { 
-  opacity: 1 !important; 
-}
-
-.device-desktop.device-active .sparkles-overlay { 
-  opacity: 1; 
 }
 
 .sparkles-position {

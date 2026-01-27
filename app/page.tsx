@@ -244,7 +244,7 @@ export default function Home() {
           <div className="relative max-w-6xl mx-auto px-4">
             <div className="text-center mb-16">
               <h2 id="dispositivos-heading" className="scroll-reveal text-[22px] md:text-4xl font-bold text-white mb-4">
-                Donde Esté. Cuando Pueda.
+                Tome Su Clase Donde Esté
               </h2>
               <p className="scroll-reveal text-base md:text-lg text-white/70 max-w-2xl mx-auto">
                 Teléfono. Tableta. Computadora. Su progreso siempre guardado.
@@ -281,7 +281,7 @@ export default function Home() {
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center mb-16">
               <h2 id="precios-heading" className="scroll-reveal text-lg md:text-4xl font-bold text-white mb-4">
-                Clases Para Padres Aceptadas en Todo el País
+                Elija Su Clase. Cumpla Su Requisito.
               </h2>
               <p className="scroll-reveal text-lg md:text-xl lg:text-2xl text-white/70">
                 Una clase. Un precio. Listo.
@@ -510,7 +510,7 @@ export default function Home() {
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center mb-16">
               <h2 id="testimonios-heading" className="text-lg md:text-4xl font-bold text-white mb-4">
-                Confiado por Padres, Aceptado por Cortes
+                Padres Confían. Cortes Aceptan.
               </h2>
               <p className="text-lg text-white/70">
                 Vea lo que dicen otros padres.
@@ -549,7 +549,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto px-4">
             <div className="text-center mb-16">
               <h2 id="preguntas-frecuentes-heading" className="text-lg md:text-4xl font-bold text-white mb-4">
-                Su Lista de Verificación Final
+                Preguntas Frecuentes Sobre Su Clase
               </h2>
               <p className="text-lg text-white/70">
                 Detalles clave sobre la aceptación de la corte, su certificado y el acceso a la clase.

@@ -242,7 +242,7 @@ export default function CourseOverviewPage() {
 
         {/* Progress Bar */}
         <section className={`mb-8 transition-all duration-700 delay-150 ${pageReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          <div className="bg-[#2A2A2A] rounded-xl border border-white/10 p-6">
+          <div className="bg-background rounded-xl border border-[#FFFFFF]/15 shadow-xl shadow-black/40 p-6">
             <div className="flex justify-between text-sm mb-3">
               <span className="text-white/60">Progreso de la Clase</span>
               <span className="text-white font-medium">{completedCount} de {TOTAL_MODULES} lecciones</span>

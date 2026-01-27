@@ -89,7 +89,7 @@ export default function StatePageContent({ slug }: StatePageContentProps) {
             </p>
 
             {/* Expandable County List */}
-            <details className="scroll-reveal bg-background border-2 border-[#FFFFFF]/15 rounded-xl overflow-hidden group mb-10">
+            <details className="scroll-reveal bg-background border-2 border-[#FFFFFF]/15 rounded-xl overflow-hidden group mb-10 shadow-xl shadow-black/40">
               <summary className="flex justify-between items-center cursor-pointer p-6 font-bold text-white text-lg select-none hover:bg-white/5 transition-colors">
                 <span className="flex items-center gap-3">
                   <span className="text-[#77DD77]">✓</span>
@@ -137,7 +137,7 @@ export default function StatePageContent({ slug }: StatePageContentProps) {
               {STATE_FEATURES.map((feature, i) => (
                 <article 
                   key={i} 
-                  className="scroll-reveal group p-6 bg-background rounded-2xl border border-[#FFFFFF]/15 hover:border-[#7EC8E3]/30 hover:shadow-xl shadow-black/40 transition-all duration-300"
+                  className="scroll-reveal group p-6 bg-background rounded-2xl border border-[#FFFFFF]/15 shadow-xl shadow-black/40 hover:border-[#7EC8E3]/30 hover:shadow-2xl transition-all duration-300"
                 >
                   <feature.Icon className="w-16 h-16 mb-4" />
                   <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#7EC8E3] transition-colors">
@@ -163,7 +163,7 @@ export default function StatePageContent({ slug }: StatePageContentProps) {
               {state.faqs.map((faq, i) => (
                 <details 
                   key={i} 
-                  className="scroll-reveal bg-background border-2 border-[#FFFFFF]/15 rounded-xl overflow-hidden group hover:border-[#7EC8E3]/30 transition-colors"
+                  className="scroll-reveal bg-background border-2 border-[#FFFFFF]/15 rounded-xl overflow-hidden group shadow-xl shadow-black/40 hover:border-[#7EC8E3]/30 transition-colors"
                 >
                   <summary className="flex justify-between items-center cursor-pointer p-6 font-bold text-white text-lg select-none">
                     <span className="pr-4">{faq.question}</span>

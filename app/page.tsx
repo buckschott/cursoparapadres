@@ -253,15 +253,15 @@ export default function Home() {
 
             <div className="flex justify-center gap-4 md:gap-12 max-w-4xl mx-auto">
               {[
-                { name: 'phone', label: 'Teléfono', size: 'w-12 h-12 md:w-[54px] md:h-[54px]', container: 'w-12 md:w-[54px]' },
-                { name: 'tablet', label: 'Tableta', size: 'w-16 h-16 md:w-[84px] md:h-[84px]', container: 'w-16 md:w-[84px]' },
-                { name: 'laptop', label: 'Portátil', size: 'w-20 h-20 md:w-32 md:h-32', container: 'w-20 md:w-32' },
-                { name: 'desktop', label: 'Escritorio', size: 'w-24 h-24 md:w-36 md:h-36', container: 'w-24 md:w-36' }
+                { name: 'phone', label: 'Teléfono', size: 'w-12 h-12 md:w-[54px] md:h-[54px]', container: 'w-12 md:w-[54px]', src: '/phone.svg' },
+                { name: 'tablet', label: 'Tableta', size: 'w-16 h-16 md:w-[84px] md:h-[84px]', container: 'w-16 md:w-[84px]', src: '/tablet-es.svg' },
+                { name: 'laptop', label: 'Portátil', size: 'w-20 h-20 md:w-32 md:h-32', container: 'w-20 md:w-32', src: '/laptop-es.svg' },
+                { name: 'desktop', label: 'Escritorio', size: 'w-24 h-24 md:w-36 md:h-36', container: 'w-24 md:w-36', src: '/desktop-es.svg' }
               ].map((device) => (
                 <div key={device.name} className={`device-animate device-${device.name} flex flex-col items-center gap-3`}>
                   <div className={`relative h-28 md:h-40 ${device.container}`}>
                     <img 
-                      src={`/${device.name}-2-es.svg`} 
+                      src={device.src} 
                       alt={device.label} 
                       className={`device-img ${device.size} absolute bottom-0 left-0`} 
                     />

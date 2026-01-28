@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase';
 
 // ============================================================================
@@ -106,18 +106,22 @@ interface DashboardStats {
   totalCustomers: number;
   totalGraduates: number;
   completionRate: number;
-  attorneyPercentage: number;
+  attorneyRate: number;
   avgDaysToComplete: number;
-  examPassRate: number;
   courseBreakdown: {
     coparenting: number;
     parenting: number;
     bundle: number;
   };
-  stateBreakdown: Array<{ state: string; count: number }>;
-  last7Days: {
+  topStates: Array<{ state: string; count: number }>;
+  recentActivity: {
     purchases: number;
     graduates: number;
+  };
+  examStats: {
+    passRate: number;
+    firstAttemptPassRate: number;
+    totalAttempts: number;
   };
   stuckStudents: number;
 }
@@ -166,6 +170,21 @@ export default function AdminSupportPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
   const [showAllStates, setShowAllStates] = useState(false);
+
+  // Customer Service state
+  const [incomingEmail, setIncomingEmail] = useState('');
+  const [englishTranslation, setEnglishTranslation] = useState('');
+  const [detectedEmail, setDetectedEmail] = useState<string | null>(null);
+  const [detectedTopic, setDetectedTopic] = useState<string | null>(null);
+  const [detectedSummary, setDetectedSummary] = useState<string | null>(null);
+  const [isTranslatingIncoming, setIsTranslatingIncoming] = useState(false);
+  const [responseMode, setResponseMode] = useState<'template' | 'custom'>('template');
+  const [customResponse, setCustomResponse] = useState('');
+  const [spanishResponse, setSpanishResponse] = useState('');
+  const [responseSubject, setResponseSubject] = useState('');
+  const [isTranslatingOutgoing, setIsTranslatingOutgoing] = useState(false);
+  const [csMessage, setCsMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const responseTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   // UI state
   const [searchQuery, setSearchQuery] = useState('');
@@ -257,7 +276,7 @@ export default function AdminSupportPage() {
   const fetchStats = async () => {
     setStatsLoading(true);
     try {
-      const data = await apiCall('/api/admin/support/stats', {}, 'GET');
+      const data = await apiCall('/api/admin/support/dashboard-stats', {}, 'GET');
       setStats(data);
     } catch (err) {
       console.error('Failed to fetch stats:', err);
@@ -282,6 +301,143 @@ export default function AdminSupportPage() {
         lastCheck: new Date().toISOString(),
       });
     }
+  };
+
+  // ============================================================================
+  // CUSTOMER SERVICE FUNCTIONS
+  // ============================================================================
+
+  const translateIncoming = async () => {
+    if (!incomingEmail.trim()) return;
+
+    setIsTranslatingIncoming(true);
+    setEnglishTranslation('');
+    setDetectedEmail(null);
+    setDetectedTopic(null);
+    setDetectedSummary(null);
+
+    try {
+      const result = await apiCall('/api/admin/support/translate', {
+        action: 'translate_incoming',
+        text: incomingEmail,
+      });
+
+      setEnglishTranslation(result.translation);
+      setDetectedEmail(result.detectedEmail);
+      setDetectedTopic(result.detectedTopic);
+      setDetectedSummary(result.summary);
+
+      // Auto-fill search if email detected
+      if (result.detectedEmail) {
+        setSearchQuery(result.detectedEmail);
+        setSearchType('email');
+      }
+    } catch (err) {
+      setCsMessage({ type: 'error', text: 'Translation failed. Check API key.' });
+    } finally {
+      setIsTranslatingIncoming(false);
+    }
+  };
+
+  const loadTemplate = async (templateId: string) => {
+    try {
+      const customerName = customer?.profile?.full_name?.split(' ')[0] || '';
+      const result = await apiCall('/api/admin/support/translate', {
+        action: 'get_template',
+        template: templateId,
+        customerName,
+      });
+
+      setSpanishResponse(result.body);
+      setResponseSubject(result.subject);
+      setResponseMode('template');
+    } catch (err) {
+      setCsMessage({ type: 'error', text: 'Failed to load template' });
+    }
+  };
+
+  const translateOutgoing = async () => {
+    if (!customResponse.trim()) return;
+
+    setIsTranslatingOutgoing(true);
+
+    try {
+      const result = await apiCall('/api/admin/support/translate', {
+        action: 'translate_outgoing',
+        text: customResponse,
+      });
+
+      setSpanishResponse(result.translation);
+      setResponseSubject('Re: Su consulta - Clase para Padres');
+    } catch (err) {
+      setCsMessage({ type: 'error', text: 'Translation failed' });
+    } finally {
+      setIsTranslatingOutgoing(false);
+    }
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCsMessage({ type: 'success', text: 'Copied to clipboard!' });
+      setTimeout(() => setCsMessage(null), 2000);
+    } catch (err) {
+      setCsMessage({ type: 'error', text: 'Failed to copy' });
+    }
+  };
+
+  const openInMacMail = () => {
+    const to = detectedEmail || customer?.profile?.email || '';
+    const subject = encodeURIComponent(responseSubject);
+    const body = encodeURIComponent(spanishResponse);
+    window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+  };
+
+  const sendViaResend = async () => {
+    const toEmail = detectedEmail || customer?.profile?.email;
+    if (!toEmail) {
+      setCsMessage({ type: 'error', text: 'No recipient email' });
+      return;
+    }
+
+    try {
+      await apiCall('/api/admin/support/send-email', {
+        to: toEmail,
+        subject: responseSubject,
+        body: spanishResponse,
+      });
+
+      setCsMessage({ type: 'success', text: `Email sent to ${toEmail}` });
+      
+      // Log the action
+      setActionLog((prev) => [
+        {
+          id: Date.now().toString(),
+          action: 'send_support_email',
+          target_user: toEmail,
+          details: `Subject: ${responseSubject}`,
+          timestamp: new Date().toISOString(),
+        },
+        ...prev,
+      ]);
+
+      // Clear the form
+      setSpanishResponse('');
+      setCustomResponse('');
+    } catch (err) {
+      setCsMessage({ type: 'error', text: 'Failed to send email' });
+    }
+  };
+
+  const clearCustomerService = () => {
+    setIncomingEmail('');
+    setEnglishTranslation('');
+    setDetectedEmail(null);
+    setDetectedTopic(null);
+    setDetectedSummary(null);
+    setCustomResponse('');
+    setSpanishResponse('');
+    setResponseSubject('');
   };
 
   // ============================================================================
@@ -498,8 +654,225 @@ export default function AdminSupportPage() {
       {/* Header */}
       <header className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Support Admin Panel</h1>
-        <p className="text-white/60">Diagnose and resolve customer issues without touching the database directly.</p>
+        <p className="text-white/60">Diagnose and resolve customer issues</p>
       </header>
+
+      {/* ================================================================== */}
+      {/* CUSTOMER SERVICE SECTION */}
+      {/* ================================================================== */}
+      <section className="mb-8 p-6 rounded-xl bg-gradient-to-br from-[#7EC8E3]/10 to-[#77DD77]/10 border border-[#7EC8E3]/30">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">📧 Customer Service (Paste from Mac Mail)</h2>
+          {(incomingEmail || spanishResponse) && (
+            <button
+              onClick={clearCustomerService}
+              className="text-sm text-white/50 hover:text-white"
+            >
+              Clear All
+            </button>
+          )}
+        </div>
+
+        {/* CS Message Toast */}
+        {csMessage && (
+          <div
+            className={`mb-4 px-4 py-2 rounded-lg ${
+              csMessage.type === 'success' ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'
+            }`}
+          >
+            {csMessage.text}
+          </div>
+        )}
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* LEFT SIDE: Incoming Email */}
+          <div>
+            <label className="block text-sm text-white/60 mb-2">
+              📥 Paste Spanish email here:
+            </label>
+            <textarea
+              value={incomingEmail}
+              onChange={(e) => setIncomingEmail(e.target.value)}
+              placeholder="Hola, necesito ayuda con mi clase..."
+              className="w-full h-32 px-4 py-3 rounded-lg bg-white/10 border border-white/20 
+                text-white placeholder:text-white/40 focus:outline-none focus:border-[#7EC8E3] resize-none"
+            />
+            <button
+              onClick={translateIncoming}
+              disabled={!incomingEmail.trim() || isTranslatingIncoming}
+              className="mt-2 px-4 py-2 rounded-lg bg-[#7EC8E3] text-[#1C1C1C] font-semibold
+                hover:bg-[#9DD8F3] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {isTranslatingIncoming ? 'Translating...' : 'Translate to English →'}
+            </button>
+
+            {/* English Translation */}
+            {englishTranslation && (
+              <div className="mt-4">
+                <label className="block text-sm text-white/60 mb-2">🇺🇸 English Translation:</label>
+                <div className="p-4 rounded-lg bg-white/5 border border-white/10 text-white/90">
+                  {englishTranslation}
+                </div>
+
+                {/* Detected Info */}
+                <div className="mt-3 flex flex-wrap gap-3">
+                  {detectedEmail && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-white/50">📧 Email:</span>
+                      <span className="text-[#7EC8E3]">{detectedEmail}</span>
+                      <button
+                        onClick={() => {
+                          setSearchQuery(detectedEmail);
+                          setSearchType('email');
+                          handleSearch();
+                        }}
+                        className="text-xs px-2 py-1 rounded bg-[#7EC8E3]/20 text-[#7EC8E3] hover:bg-[#7EC8E3]/30"
+                      >
+                        Look Up →
+                      </button>
+                    </div>
+                  )}
+                  {detectedTopic && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-white/50">💡 Topic:</span>
+                      <StatusBadge status="info">{detectedTopic}</StatusBadge>
+                    </div>
+                  )}
+                </div>
+                {detectedSummary && (
+                  <p className="mt-2 text-sm text-white/60 italic">{detectedSummary}</p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT SIDE: Response */}
+          <div>
+            <label className="block text-sm text-white/60 mb-2">📤 Your Response:</label>
+
+            {/* Template Buttons */}
+            <div className="flex flex-wrap gap-2 mb-3">
+              <button
+                onClick={() => loadTemplate('password')}
+                className={`px-3 py-1.5 rounded-lg text-sm border transition-all
+                  ${detectedTopic === 'password' ? 'bg-[#FFE566]/20 border-[#FFE566]/50 text-[#FFE566]' : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}`}
+              >
+                🔑 Password
+              </button>
+              <button
+                onClick={() => loadTemplate('access')}
+                className={`px-3 py-1.5 rounded-lg text-sm border transition-all
+                  ${detectedTopic === 'access' ? 'bg-[#FFE566]/20 border-[#FFE566]/50 text-[#FFE566]' : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}`}
+              >
+                📚 Access
+              </button>
+              <button
+                onClick={() => loadTemplate('certificate')}
+                className={`px-3 py-1.5 rounded-lg text-sm border transition-all
+                  ${detectedTopic === 'certificate' ? 'bg-[#FFE566]/20 border-[#FFE566]/50 text-[#FFE566]' : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}`}
+              >
+                🏆 Certificate
+              </button>
+              <button
+                onClick={() => loadTemplate('refund')}
+                className={`px-3 py-1.5 rounded-lg text-sm border transition-all
+                  ${detectedTopic === 'refund' ? 'bg-[#FFE566]/20 border-[#FFE566]/50 text-[#FFE566]' : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}`}
+              >
+                💸 Refund
+              </button>
+              <button
+                onClick={() => loadTemplate('exam')}
+                className={`px-3 py-1.5 rounded-lg text-sm border transition-all
+                  ${detectedTopic === 'exam' ? 'bg-[#FFE566]/20 border-[#FFE566]/50 text-[#FFE566]' : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}`}
+              >
+                📝 Exam
+              </button>
+              <button
+                onClick={() => loadTemplate('payment_issue')}
+                className="px-3 py-1.5 rounded-lg text-sm bg-white/5 border border-white/20 text-white/70 hover:bg-white/10"
+              >
+                💳 Payment
+              </button>
+              <button
+                onClick={() => loadTemplate('attorney_copy')}
+                className="px-3 py-1.5 rounded-lg text-sm bg-white/5 border border-white/20 text-white/70 hover:bg-white/10"
+              >
+                👨‍⚖️ Attorney
+              </button>
+              <button
+                onClick={() => {
+                  setResponseMode('custom');
+                  setSpanishResponse('');
+                  responseTextareaRef.current?.focus();
+                }}
+                className="px-3 py-1.5 rounded-lg text-sm bg-white/5 border border-white/20 text-white/70 hover:bg-white/10"
+              >
+                ✏️ Custom
+              </button>
+            </div>
+
+            {/* Custom Response Input */}
+            {responseMode === 'custom' && (
+              <>
+                <textarea
+                  ref={responseTextareaRef}
+                  value={customResponse}
+                  onChange={(e) => setCustomResponse(e.target.value)}
+                  placeholder="Type your response in English..."
+                  className="w-full h-24 px-4 py-3 rounded-lg bg-white/10 border border-white/20 
+                    text-white placeholder:text-white/40 focus:outline-none focus:border-[#7EC8E3] resize-none"
+                />
+                <button
+                  onClick={translateOutgoing}
+                  disabled={!customResponse.trim() || isTranslatingOutgoing}
+                  className="mt-2 px-4 py-2 rounded-lg bg-[#7EC8E3] text-[#1C1C1C] font-semibold
+                    hover:bg-[#9DD8F3] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  {isTranslatingOutgoing ? 'Translating...' : 'Translate to Spanish →'}
+                </button>
+              </>
+            )}
+
+            {/* Spanish Response Output */}
+            {spanishResponse && (
+              <div className="mt-4">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm text-white/60">🇪🇸 Spanish Response:</label>
+                  {responseSubject && (
+                    <span className="text-xs text-white/40">Subject: {responseSubject}</span>
+                  )}
+                </div>
+                <div className="p-4 rounded-lg bg-[#77DD77]/10 border border-[#77DD77]/30 text-white/90 whitespace-pre-wrap">
+                  {spanishResponse}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="mt-3 flex flex-wrap gap-3">
+                  <button
+                    onClick={() => copyToClipboard(spanishResponse)}
+                    className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all"
+                  >
+                    📋 Copy to Clipboard
+                  </button>
+                  <button
+                    onClick={openInMacMail}
+                    className="px-4 py-2 rounded-lg bg-[#7EC8E3]/20 border border-[#7EC8E3]/30 text-[#7EC8E3] hover:bg-[#7EC8E3]/30 transition-all"
+                  >
+                    📧 Open in Mac Mail
+                  </button>
+                  <button
+                    onClick={sendViaResend}
+                    disabled={!detectedEmail && !customer?.profile?.email}
+                    className="px-4 py-2 rounded-lg bg-[#77DD77] text-[#1C1C1C] font-semibold hover:bg-[#88EE88] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    📤 Send via Resend
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
 
       {/* Dashboard Stats */}
       <section className="mb-8">
@@ -514,7 +887,7 @@ export default function AdminSupportPage() {
               <StatCard value={stats.totalCustomers} label="Customers" subtext="with purchases" />
               <StatCard value={stats.totalGraduates} label="Graduates" subtext="with certificates" color="green" />
               <StatCard value={`${stats.completionRate}%`} label="Completion Rate" color="blue" />
-              <StatCard value={`${stats.attorneyPercentage}%`} label="Attorney Rate" color="yellow" />
+              <StatCard value={`${stats.attorneyRate}%`} label="Attorney Rate" color="yellow" />
               <StatCard value={`${stats.avgDaysToComplete}`} label="Avg Days" subtext="to complete" />
             </div>
 
@@ -558,21 +931,21 @@ export default function AdminSupportPage() {
               <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                 <h3 className="font-semibold mb-3 text-white/80">Top States (Graduates)</h3>
                 <div className="space-y-2">
-                  {(showAllStates ? stats.stateBreakdown : stats.stateBreakdown.slice(0, 5)).map((item) => (
+                  {(showAllStates ? stats.topStates : stats.topStates.slice(0, 5)).map((item) => (
                     <div key={item.state} className="flex justify-between text-sm">
                       <span>{item.state}</span>
                       <span className="text-[#77DD77]">{item.count}</span>
                     </div>
                   ))}
-                  {stats.stateBreakdown.length === 0 && (
+                  {stats.topStates.length === 0 && (
                     <p className="text-white/40 text-sm">No state data yet</p>
                   )}
-                  {stats.stateBreakdown.length > 5 && (
+                  {stats.topStates.length > 5 && (
                     <button
                       onClick={() => setShowAllStates(!showAllStates)}
                       className="text-[#7EC8E3] text-sm hover:underline mt-2"
                     >
-                      {showAllStates ? 'Show less' : `Show all ${stats.stateBreakdown.length} states`}
+                      {showAllStates ? 'Show less' : `Show all ${stats.topStates.length} states`}
                     </button>
                   )}
                 </div>
@@ -585,11 +958,11 @@ export default function AdminSupportPage() {
                   <h3 className="font-semibold mb-3 text-white/80">Last 7 Days</h3>
                   <div className="flex gap-6">
                     <div>
-                      <span className="text-2xl font-bold text-[#77DD77]">+{stats.last7Days.purchases}</span>
+                      <span className="text-2xl font-bold text-[#77DD77]">+{stats.recentActivity.purchases}</span>
                       <span className="text-white/50 text-sm ml-2">purchases</span>
                     </div>
                     <div>
-                      <span className="text-2xl font-bold text-[#7EC8E3]">+{stats.last7Days.graduates}</span>
+                      <span className="text-2xl font-bold text-[#7EC8E3]">+{stats.recentActivity.graduates}</span>
                       <span className="text-white/50 text-sm ml-2">graduates</span>
                     </div>
                   </div>
@@ -601,8 +974,8 @@ export default function AdminSupportPage() {
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Exam Pass Rate (1st try)</span>
-                      <span className={stats.examPassRate >= 80 ? 'text-[#77DD77]' : 'text-[#FFE566]'}>
-                        {stats.examPassRate}%
+                      <span className={stats.examStats.firstAttemptPassRate >= 80 ? 'text-[#77DD77]' : 'text-[#FFE566]'}>
+                        {stats.examStats.firstAttemptPassRate}%
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">

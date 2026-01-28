@@ -6,15 +6,6 @@ import Anthropic from '@anthropic-ai/sdk';
 const ADMIN_EMAILS = ['jonescraig@me.com'];
 
 export async function POST(request: NextRequest) {
-  // Initialize Anthropic client inside handler (env vars available at runtime)
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  
-  if (!apiKey) {
-    console.error('ANTHROPIC_API_KEY not found in environment');
-    return NextResponse.json({ error: 'Translation service not configured' }, { status: 500 });
-  }
-
-  const anthropic = new Anthropic({ apiKey });
   const supabase = createServerClient();
 
   try {
@@ -46,6 +37,12 @@ export async function POST(request: NextRequest) {
       if (!text) {
         return NextResponse.json({ error: 'Missing text' }, { status: 400 });
       }
+
+      const apiKey = process.env.ANTHROPIC_API_KEY;
+      if (!apiKey) {
+        return NextResponse.json({ error: 'Translation service not configured' }, { status: 500 });
+      }
+      const anthropic = new Anthropic({ apiKey });
 
       const message = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',
@@ -98,6 +95,12 @@ ${text}`
       if (!text) {
         return NextResponse.json({ error: 'Missing text' }, { status: 400 });
       }
+
+      const apiKey = process.env.ANTHROPIC_API_KEY;
+      if (!apiKey) {
+        return NextResponse.json({ error: 'Translation service not configured' }, { status: 500 });
+      }
+      const anthropic = new Anthropic({ apiKey });
 
       const message = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',

@@ -1,9 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
-import Anthropic from '@anthropic-ai/sdk';
 
 // Admin emails that can access this endpoint
 const ADMIN_EMAILS = ['jonescraig@me.com'];
+
+// Call Anthropic API directly via fetch
+async function callClaude(prompt: string): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  
+  if (!apiKey) {
+    throw new Error('ANTHROPIC_API_KEY not configured');
+  }
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      messages: [
+        { role: 'user', content: prompt }
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    console.error('Anthropic API error:', response.status, error);
+    throw new Error(`Anthropic API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.content?.[0]?.text || '';
+}
 
 export async function POST(request: NextRequest) {
   const supabase = createServerClient();
@@ -38,19 +71,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Missing text' }, { status: 400 });
       }
 
-      const apiKey = process.env.ANTHROPIC_API_KEY;
-      if (!apiKey) {
-        return NextResponse.json({ error: 'Translation service not configured' }, { status: 500 });
-      }
-      const anthropic = new Anthropic({ apiKey });
-
-      const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2000,
-        messages: [
-          {
-            role: 'user',
-            content: `You are a translator for a customer service team. Translate this Spanish customer email to English. Also extract any email addresses mentioned.
+      const prompt = `You are a translator for a customer service team. Translate this Spanish customer email to English. Also extract any email addresses mentioned.
 
 Return your response in this exact JSON format:
 {
@@ -61,16 +82,11 @@ Return your response in this exact JSON format:
 }
 
 Spanish email to translate:
-${text}`
-          }
-        ],
-      });
+${text}`;
 
-      // Parse the response
-      const responseText = message.content[0].type === 'text' ? message.content[0].text : '';
+      const responseText = await callClaude(prompt);
       
       try {
-        // Try to extract JSON from response
         const jsonMatch = responseText.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
@@ -96,19 +112,7 @@ ${text}`
         return NextResponse.json({ error: 'Missing text' }, { status: 400 });
       }
 
-      const apiKey = process.env.ANTHROPIC_API_KEY;
-      if (!apiKey) {
-        return NextResponse.json({ error: 'Translation service not configured' }, { status: 500 });
-      }
-      const anthropic = new Anthropic({ apiKey });
-
-      const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2000,
-        messages: [
-          {
-            role: 'user',
-            content: `You are a translator for a Spanish-language parenting class company called "Clase para Padres". Translate this English customer service response to Spanish.
+      const prompt = `You are a translator for a Spanish-language parenting class company called "Clase para Padres". Translate this English customer service response to Spanish.
 
 Use a warm, professional tone. Use "usted" (formal you). 
 
@@ -116,12 +120,9 @@ End with:
 — El equipo de Clase para Padres
 
 English response to translate:
-${text}`
-          }
-        ],
-      });
+${text}`;
 
-      const responseText = message.content[0].type === 'text' ? message.content[0].text : '';
+      const responseText = await callClaude(prompt);
       
       return NextResponse.json({
         translation: responseText,

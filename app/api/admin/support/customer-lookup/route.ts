@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
         const { data: profileByEmail } = await supabase
           .from('profiles')
           .select('*')
-          .ilike('email', email)
+          .ilike('email', email!)
           .single();
 
         if (profileByEmail) {
@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
             const { data: profileByStripe } = await supabase
               .from('profiles')
               .select('*')
-              .ilike('email', email)
+              .ilike('email', email!)
               .single();
 
             if (profileByStripe) {

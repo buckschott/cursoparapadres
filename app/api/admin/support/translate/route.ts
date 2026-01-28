@@ -5,11 +5,16 @@ import Anthropic from '@anthropic-ai/sdk';
 // Admin emails that can access this endpoint
 const ADMIN_EMAILS = ['jonescraig@me.com'];
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
-
 export async function POST(request: NextRequest) {
+  // Initialize Anthropic client inside handler (env vars available at runtime)
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  
+  if (!apiKey) {
+    console.error('ANTHROPIC_API_KEY not found in environment');
+    return NextResponse.json({ error: 'Translation service not configured' }, { status: 500 });
+  }
+
+  const anthropic = new Anthropic({ apiKey });
   const supabase = createServerClient();
 
   try {

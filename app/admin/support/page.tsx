@@ -102,6 +102,26 @@ interface SystemHealth {
   lastCheck: string;
 }
 
+interface DashboardStats {
+  totalCustomers: number;
+  totalGraduates: number;
+  completionRate: number;
+  attorneyPercentage: number;
+  avgDaysToComplete: number;
+  examPassRate: number;
+  courseBreakdown: {
+    coparenting: number;
+    parenting: number;
+    bundle: number;
+  };
+  stateBreakdown: Array<{ state: string; count: number }>;
+  last7Days: {
+    purchases: number;
+    graduates: number;
+  };
+  stuckStudents: number;
+}
+
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
@@ -142,6 +162,11 @@ export default function AdminSupportPage() {
   // Auth state
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
+  // Dashboard stats
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [showAllStates, setShowAllStates] = useState(false);
+
   // UI state
   const [searchQuery, setSearchQuery] = useState('');
   const [searchType, setSearchType] = useState<'email' | 'name' | 'phone' | 'stripe'>('email');
@@ -178,9 +203,10 @@ export default function AdminSupportPage() {
     checkAuth();
   }, []);
 
-  // Check system health on mount
+  // Load stats and system health on mount
   useEffect(() => {
     if (isAuthorized) {
+      fetchStats();
       checkSystemHealth();
     }
   }, [isAuthorized]);
@@ -195,22 +221,26 @@ export default function AdminSupportPage() {
   };
 
   // ============================================================================
-  // API CALL HELPER (matches testing panel pattern)
+  // API CALL HELPER
   // ============================================================================
 
-  const apiCall = async (endpoint: string, data: Record<string, unknown> = {}) => {
+  const apiCall = async (endpoint: string, data: Record<string, unknown> = {}, method: 'POST' | 'GET' = 'POST') => {
     const supabase = createClient();
     const { data: { session } } = await supabase.auth.getSession();
 
-    const response = await fetch(endpoint, {
-      method: 'POST',
+    const options: RequestInit = {
+      method,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${session?.access_token || ''}`,
       },
-      body: JSON.stringify(data),
-    });
+    };
 
+    if (method === 'POST') {
+      options.body = JSON.stringify(data);
+    }
+
+    const response = await fetch(endpoint, options);
     const result = await response.json();
 
     if (!response.ok) {
@@ -221,20 +251,28 @@ export default function AdminSupportPage() {
   };
 
   // ============================================================================
+  // FETCH STATS
+  // ============================================================================
+
+  const fetchStats = async () => {
+    setStatsLoading(true);
+    try {
+      const data = await apiCall('/api/admin/support/stats', {}, 'GET');
+      setStats(data);
+    } catch (err) {
+      console.error('Failed to fetch stats:', err);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
+  // ============================================================================
   // SYSTEM HEALTH CHECK
   // ============================================================================
 
   const checkSystemHealth = async () => {
     try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-
-      const response = await fetch('/api/admin/support/system-health', {
-        headers: {
-          'Authorization': `Bearer ${session?.access_token || ''}`,
-        },
-      });
-      const data = await response.json();
+      const data = await apiCall('/api/admin/support/system-health', {}, 'GET');
       setSystemHealth(data);
     } catch (err) {
       setSystemHealth({
@@ -321,6 +359,11 @@ export default function AdminSupportPage() {
         await handleSearch();
       }
 
+      // Refresh stats for actions that affect counts
+      if (['grant_course_access', 'generate_certificate', 'delete_user', 'reset_user'].includes(action)) {
+        fetchStats();
+      }
+
       showMessage('success', result.message || 'Action completed successfully');
     } catch (err) {
       showMessage('error', err instanceof Error ? err.message : 'Action failed');
@@ -372,6 +415,33 @@ export default function AdminSupportPage() {
       >
         {actionInProgress ? '...' : children}
       </button>
+    );
+  };
+
+  const StatCard = ({
+    value,
+    label,
+    subtext,
+    color = 'white',
+  }: {
+    value: string | number;
+    label: string;
+    subtext?: string;
+    color?: 'white' | 'green' | 'blue' | 'yellow' | 'red';
+  }) => {
+    const colors = {
+      white: 'text-white',
+      green: 'text-[#77DD77]',
+      blue: 'text-[#7EC8E3]',
+      yellow: 'text-[#FFE566]',
+      red: 'text-[#FF9999]',
+    };
+    return (
+      <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+        <div className={`text-3xl font-bold ${colors[color]}`}>{value}</div>
+        <div className="text-sm text-white/60 mt-1">{label}</div>
+        {subtext && <div className="text-xs text-white/40 mt-1">{subtext}</div>}
+      </div>
     );
   };
 
@@ -427,9 +497,141 @@ export default function AdminSupportPage() {
 
       {/* Header */}
       <header className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">🛠️ Support Admin Panel</h1>
+        <h1 className="text-3xl font-bold mb-2">Support Admin Panel</h1>
         <p className="text-white/60">Diagnose and resolve customer issues without touching the database directly.</p>
       </header>
+
+      {/* Dashboard Stats */}
+      <section className="mb-8">
+        {statsLoading ? (
+          <div className="p-8 rounded-xl bg-white/5 border border-white/10 text-center text-white/50">
+            Loading dashboard stats...
+          </div>
+        ) : stats ? (
+          <div className="space-y-6">
+            {/* Top Row - Key Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <StatCard value={stats.totalCustomers} label="Customers" subtext="with purchases" />
+              <StatCard value={stats.totalGraduates} label="Graduates" subtext="with certificates" color="green" />
+              <StatCard value={`${stats.completionRate}%`} label="Completion Rate" color="blue" />
+              <StatCard value={`${stats.attorneyPercentage}%`} label="Attorney Rate" color="yellow" />
+              <StatCard value={`${stats.avgDaysToComplete}`} label="Avg Days" subtext="to complete" />
+            </div>
+
+            {/* Second Row - Details */}
+            <div className="grid md:grid-cols-3 gap-4">
+              {/* Course Breakdown */}
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h3 className="font-semibold mb-3 text-white/80">Course Breakdown</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Co-Parenting</span>
+                    <span className="text-[#7EC8E3]">
+                      {stats.courseBreakdown.coparenting}{' '}
+                      <span className="text-white/40">
+                        ({stats.totalCustomers > 0 ? Math.round((stats.courseBreakdown.coparenting / stats.totalCustomers) * 100) : 0}%)
+                      </span>
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Parenting</span>
+                    <span className="text-[#7EC8E3]">
+                      {stats.courseBreakdown.parenting}{' '}
+                      <span className="text-white/40">
+                        ({stats.totalCustomers > 0 ? Math.round((stats.courseBreakdown.parenting / stats.totalCustomers) * 100) : 0}%)
+                      </span>
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Bundle</span>
+                    <span className="text-[#7EC8E3]">
+                      {stats.courseBreakdown.bundle}{' '}
+                      <span className="text-white/40">
+                        ({stats.totalCustomers > 0 ? Math.round((stats.courseBreakdown.bundle / stats.totalCustomers) * 100) : 0}%)
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* State Breakdown */}
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h3 className="font-semibold mb-3 text-white/80">Top States (Graduates)</h3>
+                <div className="space-y-2">
+                  {(showAllStates ? stats.stateBreakdown : stats.stateBreakdown.slice(0, 5)).map((item) => (
+                    <div key={item.state} className="flex justify-between text-sm">
+                      <span>{item.state}</span>
+                      <span className="text-[#77DD77]">{item.count}</span>
+                    </div>
+                  ))}
+                  {stats.stateBreakdown.length === 0 && (
+                    <p className="text-white/40 text-sm">No state data yet</p>
+                  )}
+                  {stats.stateBreakdown.length > 5 && (
+                    <button
+                      onClick={() => setShowAllStates(!showAllStates)}
+                      className="text-[#7EC8E3] text-sm hover:underline mt-2"
+                    >
+                      {showAllStates ? 'Show less' : `Show all ${stats.stateBreakdown.length} states`}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Activity & Alerts */}
+              <div className="space-y-4">
+                {/* Last 7 Days */}
+                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                  <h3 className="font-semibold mb-3 text-white/80">Last 7 Days</h3>
+                  <div className="flex gap-6">
+                    <div>
+                      <span className="text-2xl font-bold text-[#77DD77]">+{stats.last7Days.purchases}</span>
+                      <span className="text-white/50 text-sm ml-2">purchases</span>
+                    </div>
+                    <div>
+                      <span className="text-2xl font-bold text-[#7EC8E3]">+{stats.last7Days.graduates}</span>
+                      <span className="text-white/50 text-sm ml-2">graduates</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Alerts */}
+                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                  <h3 className="font-semibold mb-3 text-white/80">Alerts</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Exam Pass Rate (1st try)</span>
+                      <span className={stats.examPassRate >= 80 ? 'text-[#77DD77]' : 'text-[#FFE566]'}>
+                        {stats.examPassRate}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Stuck Students (30+ days)</span>
+                      <span className={stats.stuckStudents === 0 ? 'text-[#77DD77]' : 'text-[#FF9999]'}>
+                        {stats.stuckStudents}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Refresh Button */}
+            <div className="flex justify-end">
+              <button
+                onClick={fetchStats}
+                className="text-sm text-[#7EC8E3] hover:underline"
+              >
+                ↻ Refresh Stats
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="p-8 rounded-xl bg-white/5 border border-white/10 text-center text-white/50">
+            Failed to load stats
+          </div>
+        )}
+      </section>
 
       {/* System Health Bar */}
       {systemHealth && (

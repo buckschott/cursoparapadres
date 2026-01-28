@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase';
 import { useParams } from 'next/navigation';
 
 interface CertificateData {
@@ -23,55 +22,22 @@ export default function VerifyPage() {
   const [certificate, setCertificate] = useState<CertificateData | null>(null);
   const [error, setError] = useState(false);
 
-  const supabase = createClient();
-
   useEffect(() => {
     const verify = async () => {
-      const { data: cert, error: certError } = await supabase
-        .from('certificates')
-        .select('certificate_number, participant_name, course_type, issued_at, user_id')
-        .eq('verification_code', code)
-        .single();
+      try {
+        const response = await fetch(`/api/verify/${code}`);
+        const data = await response.json();
 
-      if (certError || !cert) {
+        if (!data.found) {
+          setError(true);
+        } else {
+          setCertificate(data.certificate);
+        }
+      } catch (err) {
         setError(true);
+      } finally {
         setLoading(false);
-        return;
       }
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('legal_name, court_state, court_county, case_number')
-        .eq('id', cert.user_id)
-        .single();
-
-      const { data: progress } = await supabase
-        .from('course_progress')
-        .select('started_at, completed_at')
-        .eq('user_id', cert.user_id)
-        .eq('course_type', cert.course_type)
-        .single();
-
-      const { data: purchases } = await supabase
-        .from('purchases')
-        .select('purchased_at')
-        .eq('user_id', cert.user_id)
-        .or(`course_type.eq.${cert.course_type},course_type.eq.bundle`)
-        .limit(1);
-
-      setCertificate({
-        certificate_number: cert.certificate_number,
-        participant_name: cert.participant_name || '',
-        legal_name: profile?.legal_name || cert.participant_name || 'Not provided',
-        course_type: cert.course_type,
-        court_state: profile?.court_state || '',
-        court_county: profile?.court_county || '',
-        case_number: profile?.case_number || '',
-        issued_at: cert.issued_at,
-        purchased_at: purchases?.[0]?.purchased_at || cert.issued_at,
-        completed_at: progress?.completed_at || cert.issued_at
-      });
-      setLoading(false);
     };
     verify();
   }, [code]);

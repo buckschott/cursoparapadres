@@ -168,6 +168,50 @@ export async function POST(request: NextRequest) {
       }
 
       // ========================================================================
+      // UPDATE PROFILE FIELDS
+      // ========================================================================
+      case 'update_profile': {
+        const { userId, legal_name, court_state, court_county, case_number, attorney_name, attorney_email } = body;
+        if (!userId) {
+          return NextResponse.json({ error: 'userId required' }, { status: 400 });
+        }
+
+        // Build update object with only provided fields
+        const updateData: Record<string, string> = {
+          updated_at: new Date().toISOString(),
+        };
+
+        if (legal_name !== undefined) updateData.legal_name = legal_name;
+        if (court_state !== undefined) updateData.court_state = court_state;
+        if (court_county !== undefined) updateData.court_county = court_county;
+        if (case_number !== undefined) updateData.case_number = case_number;
+        if (attorney_name !== undefined) updateData.attorney_name = attorney_name;
+        if (attorney_email !== undefined) updateData.attorney_email = attorney_email;
+
+        const { error } = await supabase
+          .from('profiles')
+          .update(updateData)
+          .eq('id', userId);
+
+        if (error) {
+          return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        // Also update certificate participant_name if legal_name changed and cert exists
+        if (legal_name) {
+          await supabase
+            .from('certificates')
+            .update({ participant_name: legal_name })
+            .eq('user_id', userId);
+        }
+
+        return NextResponse.json({
+          success: true,
+          message: 'Profile updated successfully',
+        });
+      }
+
+      // ========================================================================
       // RESEND WELCOME EMAIL
       // ========================================================================
       case 'resend_welcome_email': {

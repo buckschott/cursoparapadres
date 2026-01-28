@@ -202,6 +202,15 @@ export default function AdminSupportPage() {
     message: string;
     params: Record<string, unknown>;
   } | null>(null);
+  const [showProfileEditModal, setShowProfileEditModal] = useState(false);
+  const [profileEditData, setProfileEditData] = useState({
+    legal_name: '',
+    court_state: '',
+    court_county: '',
+    case_number: '',
+    attorney_name: '',
+    attorney_email: '',
+  });
 
   // Check authorization on mount
   useEffect(() => {
@@ -229,6 +238,20 @@ export default function AdminSupportPage() {
       checkSystemHealth();
     }
   }, [isAuthorized]);
+
+  // Populate profile edit form when customer changes
+  useEffect(() => {
+    if (customer?.profile) {
+      setProfileEditData({
+        legal_name: customer.profile.legal_name || '',
+        court_state: customer.profile.court_state || '',
+        court_county: customer.profile.court_county || '',
+        case_number: customer.profile.case_number || '',
+        attorney_name: customer.profile.attorney_name || '',
+        attorney_email: customer.profile.attorney_email || '',
+      });
+    }
+  }, [customer]);
 
   // ============================================================================
   // MESSAGE HELPER
@@ -438,6 +461,40 @@ export default function AdminSupportPage() {
     setCustomResponse('');
     setSpanishResponse('');
     setResponseSubject('');
+  };
+
+  const saveProfile = async () => {
+    if (!customer?.profile?.id) return;
+
+    setActionInProgress('save_profile');
+    try {
+      const result = await apiCall('/api/admin/support/quick-actions', {
+        action: 'update_profile',
+        userId: customer.profile.id,
+        ...profileEditData,
+      });
+
+      // Log the action
+      setActionLog((prev) => [
+        {
+          id: Date.now().toString(),
+          action: 'update_profile',
+          target_user: customer.profile?.email || 'Unknown',
+          details: 'Profile updated',
+          timestamp: new Date().toISOString(),
+        },
+        ...prev,
+      ]);
+
+      // Refresh customer data
+      await handleSearch();
+      setShowProfileEditModal(false);
+      showMessage('success', 'Profile updated successfully');
+    } catch (err) {
+      showMessage('error', err instanceof Error ? err.message : 'Failed to update profile');
+    } finally {
+      setActionInProgress(null);
+    }
   };
 
   // ============================================================================
@@ -1176,7 +1233,15 @@ export default function AdminSupportPage() {
                 {/* Profile Details */}
                 {customer.profile && (
                   <div className="mt-6 pt-6 border-t border-white/10">
-                    <h3 className="text-lg font-semibold mb-4">📋 Profile Details</h3>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold">📋 Profile Details</h3>
+                      <button
+                        onClick={() => setShowProfileEditModal(true)}
+                        className="px-3 py-1.5 rounded-lg text-sm bg-[#7EC8E3]/20 border border-[#7EC8E3]/30 text-[#7EC8E3] hover:bg-[#7EC8E3]/30 transition-all"
+                      >
+                        ✏️ Edit Profile
+                      </button>
+                    </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                       <div>
                         <span className="text-white/50">Legal Name</span>
@@ -1187,12 +1252,12 @@ export default function AdminSupportPage() {
                         <p className="mt-1">{customer.profile.case_number || '—'}</p>
                       </div>
                       <div>
-                        <span className="text-white/50">Court</span>
-                        <p className="mt-1">
-                          {customer.profile.court_county && customer.profile.court_state
-                            ? `${customer.profile.court_county}, ${customer.profile.court_state}`
-                            : '—'}
-                        </p>
+                        <span className="text-white/50">Court State</span>
+                        <p className="mt-1">{customer.profile.court_state || '—'}</p>
+                      </div>
+                      <div>
+                        <span className="text-white/50">Court County</span>
+                        <p className="mt-1">{customer.profile.court_county || '—'}</p>
                       </div>
                       <div>
                         <span className="text-white/50">Attorney</span>
@@ -1201,10 +1266,6 @@ export default function AdminSupportPage() {
                       <div>
                         <span className="text-white/50">Attorney Email</span>
                         <p className="mt-1">{customer.profile.attorney_email || '—'}</p>
-                      </div>
-                      <div>
-                        <span className="text-white/50">Mailing Address</span>
-                        <p className="mt-1">{customer.profile.mailing_address || '—'}</p>
                       </div>
                     </div>
                   </div>
@@ -1778,6 +1839,105 @@ export default function AdminSupportPage() {
                 className="px-4 py-2 rounded-lg bg-[#FF9999] text-[#1C1C1C] font-semibold hover:bg-[#FFB3B3] transition-all"
               >
                 Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Profile Edit Modal */}
+      {showProfileEditModal && customer?.profile && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#2C2C2C] rounded-xl p-6 max-w-lg w-full border border-white/20 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl font-bold mb-4">✏️ Edit Profile</h3>
+            <p className="text-white/60 text-sm mb-6">Update customer profile information. Changes will also update the certificate if one exists.</p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-white/60 mb-1">Legal Name (on certificate)</label>
+                <input
+                  type="text"
+                  value={profileEditData.legal_name}
+                  onChange={(e) => setProfileEditData({ ...profileEditData, legal_name: e.target.value })}
+                  className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:border-[#7EC8E3]"
+                  placeholder="Full legal name"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Court State</label>
+                  <input
+                    type="text"
+                    value={profileEditData.court_state}
+                    onChange={(e) => setProfileEditData({ ...profileEditData, court_state: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:border-[#7EC8E3]"
+                    placeholder="TX, CA, FL..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Court County</label>
+                  <input
+                    type="text"
+                    value={profileEditData.court_county}
+                    onChange={(e) => setProfileEditData({ ...profileEditData, court_county: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:border-[#7EC8E3]"
+                    placeholder="Harris County"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm text-white/60 mb-1">Case Number</label>
+                <input
+                  type="text"
+                  value={profileEditData.case_number}
+                  onChange={(e) => setProfileEditData({ ...profileEditData, case_number: e.target.value })}
+                  className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:border-[#7EC8E3]"
+                  placeholder="Case #12345"
+                />
+              </div>
+              
+              <div className="border-t border-white/10 pt-4 mt-4">
+                <p className="text-sm text-white/50 mb-3">Attorney Information (optional)</p>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm text-white/60 mb-1">Attorney Name</label>
+                    <input
+                      type="text"
+                      value={profileEditData.attorney_name}
+                      onChange={(e) => setProfileEditData({ ...profileEditData, attorney_name: e.target.value })}
+                      className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:border-[#7EC8E3]"
+                      placeholder="John Smith"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-white/60 mb-1">Attorney Email</label>
+                    <input
+                      type="email"
+                      value={profileEditData.attorney_email}
+                      onChange={(e) => setProfileEditData({ ...profileEditData, attorney_email: e.target.value })}
+                      className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:border-[#7EC8E3]"
+                      placeholder="attorney@lawfirm.com"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 justify-end mt-6">
+              <button
+                onClick={() => setShowProfileEditModal(false)}
+                className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveProfile}
+                disabled={actionInProgress === 'save_profile'}
+                className="px-4 py-2 rounded-lg bg-[#77DD77] text-[#1C1C1C] font-semibold hover:bg-[#88EE88] disabled:opacity-50 transition-all"
+              >
+                {actionInProgress === 'save_profile' ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           </div>

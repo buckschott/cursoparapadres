@@ -630,6 +630,60 @@ export default function AdminSupportPage() {
     );
   };
 
+  const ConfirmButton = ({
+    onClick,
+    disabled,
+    children,
+    confirmText = 'Click again to confirm',
+    timeout = 3000,
+  }: {
+    onClick: () => void;
+    disabled?: boolean;
+    children: React.ReactNode;
+    confirmText?: string;
+    timeout?: number;
+  }) => {
+    const [isConfirming, setIsConfirming] = useState(false);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const handleClick = () => {
+      if (isConfirming) {
+        // Second click - execute
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        setIsConfirming(false);
+        onClick();
+      } else {
+        // First click - enter confirm mode
+        setIsConfirming(true);
+        timeoutRef.current = setTimeout(() => {
+          setIsConfirming(false);
+        }, timeout);
+      }
+    };
+
+    // Cleanup on unmount
+    useEffect(() => {
+      return () => {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      };
+    }, []);
+
+    return (
+      <button
+        onClick={handleClick}
+        disabled={disabled || actionInProgress !== null}
+        className={`px-3 py-2 rounded-lg text-sm font-medium border transition-all duration-200 
+          disabled:opacity-50 disabled:cursor-not-allowed
+          ${isConfirming 
+            ? 'bg-[#FF9999] text-[#1C1C1C] border-[#FF9999] animate-pulse' 
+            : 'bg-[#FF9999]/20 hover:bg-[#FF9999]/30 text-[#FF9999] border-[#FF9999]/30'
+          }`}
+      >
+        {actionInProgress ? '...' : isConfirming ? confirmText : children}
+      </button>
+    );
+  };
+
   const StatCard = ({
     value,
     label,
@@ -1801,32 +1855,28 @@ export default function AdminSupportPage() {
                 <h2 className="text-xl font-semibold mb-4 text-[#FF9999]">⚠️ Danger Zone</h2>
                 <p className="text-white/60 text-sm mb-4">These actions are destructive and cannot be easily undone.</p>
                 <div className="flex flex-wrap gap-3">
-                  <ActionButton
-                    variant="danger"
+                  <ConfirmButton
                     onClick={() =>
-                      executeAction(
-                        'reset_user',
-                        { userId: customer.profile?.id, email: customer.profile?.email },
-                        'Reset All User Data?',
-                        'This will delete all progress, exams, and certificates. Auth account stays.'
-                      )
+                      performAction('reset_user', {
+                        userId: customer.profile?.id,
+                        email: customer.profile?.email,
+                      })
                     }
+                    confirmText="⚠️ Click again to RESET"
                   >
                     🔄 Reset All Progress
-                  </ActionButton>
-                  <ActionButton
-                    variant="danger"
+                  </ConfirmButton>
+                  <ConfirmButton
                     onClick={() =>
-                      executeAction(
-                        'delete_user',
-                        { userId: customer.profile?.id, email: customer.profile?.email },
-                        'Permanently Delete User?',
-                        'This will delete EVERYTHING including the auth account. Cannot be undone.'
-                      )
+                      performAction('delete_user', {
+                        userId: customer.profile?.id,
+                        email: customer.profile?.email,
+                      })
                     }
+                    confirmText="💀 Click again to DELETE"
                   >
                     💀 Delete User Account
-                  </ActionButton>
+                  </ConfirmButton>
                 </div>
               </section>
             </>

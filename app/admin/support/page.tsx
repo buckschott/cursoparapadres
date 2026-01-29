@@ -8,6 +8,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
+import { isAdmin } from '@/lib/admin';
 import { useAdminSupport } from './hooks';
 import {
   SystemHealth,
@@ -25,14 +26,6 @@ import {
 } from './components';
 import { StuckStudentsModal, ProfileEditModal } from './components/modals';
 import type { ProfileEditData, TemplateName, SearchType } from './types';
-
-// =============================================================================
-// ADMIN EMAILS
-// =============================================================================
-
-const ADMIN_EMAILS = [
-  'jonescraig@me.com',
-];
 
 // =============================================================================
 // MAIN COMPONENT
@@ -127,7 +120,7 @@ export default function AdminSupportPage() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       
-      if (user && ADMIN_EMAILS.includes(user.email || '')) {
+      if (user && isAdmin(user.email)) {
         setIsAuthorized(true);
         // Load initial data
         loadDashboardStats();

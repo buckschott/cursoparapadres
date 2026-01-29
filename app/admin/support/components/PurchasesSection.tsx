@@ -6,7 +6,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import type { Purchase, CourseProgress, ExamAttempt, Certificate } from '../types';
 import { 
   formatDate, 
@@ -38,6 +38,7 @@ interface PurchasesSectionProps {
 
 /**
  * PurchasesSection - Displays customer's purchases with swap and management options.
+ * Always expanded - no accordions.
  */
 export default function PurchasesSection({
   purchases,
@@ -48,8 +49,6 @@ export default function PurchasesSection({
   onResendWelcome,
   isExecutingAction,
 }: PurchasesSectionProps) {
-  const [expandedPurchase, setExpandedPurchase] = useState<string | null>(null);
-
   if (purchases.length === 0) {
     return (
       <div className="bg-white/5 border border-white/10 rounded-xl p-6">
@@ -87,8 +86,6 @@ export default function PurchasesSection({
             ownsTargetClass
           );
 
-          const isExpanded = expandedPurchase === purchase.id;
-
           return (
             <div key={purchase.id} className="p-6">
               {/* Main Row */}
@@ -121,83 +118,67 @@ export default function PurchasesSection({
                   {swapEligibility.eligible && (
                     <StatusBadge status="info">🔄 Swap Available</StatusBadge>
                   )}
-
-                  <button
-                    onClick={() => setExpandedPurchase(isExpanded ? null : purchase.id)}
-                    className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-                  >
-                    <svg 
-                      className={`w-5 h-5 text-white/60 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
                 </div>
               </div>
 
-              {/* Expanded Details */}
-              {isExpanded && (
-                <div className="mt-4 pt-4 border-t border-white/10">
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm mb-4">
-                    <div>
-                      <span className="text-white/40 block">Purchase ID</span>
-                      <span className="text-white/70 font-mono text-xs">{purchase.id.slice(0, 8)}...</span>
-                    </div>
-                    <div>
-                      <span className="text-white/40 block">Stripe Payment</span>
-                      {purchase.stripe_payment_id ? (
-                        <a
-                          href={getStripePaymentUrl(purchase.stripe_payment_id)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[#7EC8E3] hover:underline text-xs"
-                        >
-                          View in Stripe →
-                        </a>
-                      ) : (
-                        <span className="text-white/40">—</span>
-                      )}
-                    </div>
-                    <div>
-                      <span className="text-white/40 block">Exam Version</span>
-                      <span className="text-white/70">{purchase.exam_version || 'Not assigned'}</span>
-                    </div>
-                    <div>
-                      <span className="text-white/40 block">Swap Used</span>
-                      <span className="text-white/70">{purchase.has_swapped ? 'Yes' : 'No'}</span>
-                    </div>
+              {/* Details - Always Visible */}
+              <div className="mt-4 pt-4 border-t border-white/10">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm mb-4">
+                  <div>
+                    <span className="text-white/40 block">Purchase ID</span>
+                    <span className="text-white/70 font-mono text-xs">{purchase.id.slice(0, 8)}...</span>
                   </div>
-
-                  {/* Actions */}
-                  <div className="flex flex-wrap gap-3">
-                    <ActionButton
-                      onClick={() => onResendWelcome(purchase.course_type)}
-                      disabled={isExecutingAction || purchase.status !== 'active'}
-                    >
-                      📧 Resend Welcome Email
-                    </ActionButton>
-
-                    {swapEligibility.eligible && targetCourse && (
-                      <ConfirmButton
-                        onClick={() => onSwapClass(purchase.id, targetCourse)}
-                        disabled={isExecutingAction}
-                        confirmText={`⚠️ Swap to ${getCourseDisplayName(targetCourse)}?`}
+                  <div>
+                    <span className="text-white/40 block">Stripe Payment</span>
+                    {purchase.stripe_payment_id ? (
+                      <a
+                        href={getStripePaymentUrl(purchase.stripe_payment_id)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#7EC8E3] hover:underline text-xs"
                       >
-                        🔄 Swap to {getCourseDisplayName(targetCourse)}
-                      </ConfirmButton>
+                        View in Stripe →
+                      </a>
+                    ) : (
+                      <span className="text-white/40">—</span>
                     )}
-
-                    {!swapEligibility.eligible && purchase.course_type !== 'bundle' && (
-                      <div className="text-xs text-white/40 self-center">
-                        Swap unavailable: {swapEligibility.reason}
-                      </div>
-                    )}
+                  </div>
+                  <div>
+                    <span className="text-white/40 block">Exam Version</span>
+                    <span className="text-white/70">{purchase.exam_version || 'Not assigned'}</span>
+                  </div>
+                  <div>
+                    <span className="text-white/40 block">Swap Used</span>
+                    <span className="text-white/70">{purchase.has_swapped ? 'Yes' : 'No'}</span>
                   </div>
                 </div>
-              )}
+
+                {/* Actions */}
+                <div className="flex flex-wrap gap-3">
+                  <ActionButton
+                    onClick={() => onResendWelcome(purchase.course_type)}
+                    disabled={isExecutingAction || purchase.status !== 'active'}
+                  >
+                    📧 Resend Welcome Email
+                  </ActionButton>
+
+                  {swapEligibility.eligible && targetCourse && (
+                    <ConfirmButton
+                      onClick={() => onSwapClass(purchase.id, targetCourse)}
+                      disabled={isExecutingAction}
+                      confirmText={`⚠️ Swap to ${getCourseDisplayName(targetCourse)}?`}
+                    >
+                      🔄 Swap to {getCourseDisplayName(targetCourse)}
+                    </ConfirmButton>
+                  )}
+
+                  {!swapEligibility.eligible && purchase.course_type !== 'bundle' && (
+                    <div className="text-xs text-white/40 self-center">
+                      Swap unavailable: {swapEligibility.reason}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           );
         })}

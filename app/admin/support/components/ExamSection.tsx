@@ -6,7 +6,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import type { ExamAttempt } from '../types';
 import { formatDate, getCourseDisplayName } from '../utils';
 import { StatusBadge, ConfirmButton } from './ui';
@@ -26,15 +26,14 @@ interface ExamSectionProps {
 // ============================================================================
 
 /**
- * ExamSection - Displays exam attempts with expandable details.
+ * ExamSection - Displays exam attempts with full details visible.
+ * Always expanded - no accordions.
  */
 export default function ExamSection({
   examAttempts,
   onDeleteAttempts,
   isExecutingAction,
 }: ExamSectionProps) {
-  const [expandedAttempt, setExpandedAttempt] = useState<string | null>(null);
-
   if (examAttempts.length === 0) {
     return (
       <div className="bg-white/5 border border-white/10 rounded-xl p-6">
@@ -43,17 +42,6 @@ export default function ExamSection({
       </div>
     );
   }
-
-  // Group attempts by course type
-  const attemptsByCourse = examAttempts.reduce((acc, attempt) => {
-    // Determine course type from attempt (would need to be added to the type)
-    const courseType = 'coparenting'; // Default for now - in real implementation, get from attempt
-    if (!acc[courseType]) {
-      acc[courseType] = [];
-    }
-    acc[courseType].push(attempt);
-    return acc;
-  }, {} as Record<string, ExamAttempt[]>);
 
   // Calculate stats
   const totalAttempts = examAttempts.length;
@@ -89,7 +77,6 @@ export default function ExamSection({
 
       <div className="divide-y divide-white/10">
         {examAttempts.map((attempt, index) => {
-          const isExpanded = expandedAttempt === attempt.id;
           const attemptNumber = examAttempts.length - index;
 
           return (
@@ -132,77 +119,60 @@ export default function ExamSection({
                   )}
                   
                   <ExamResultBadge attempt={attempt} />
-
-                  <button
-                    onClick={() => setExpandedAttempt(isExpanded ? null : attempt.id)}
-                    className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-                    title="View details"
-                  >
-                    <svg 
-                      className={`w-5 h-5 text-white/60 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
                 </div>
               </div>
 
-              {/* Expanded Details */}
-              {isExpanded && (
-                <div className="mt-4 pt-4 border-t border-white/10">
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm mb-4">
-                    <div>
-                      <span className="text-white/40 block">Attempt ID</span>
-                      <span className="text-white/70 font-mono text-xs">{attempt.id.slice(0, 8)}...</span>
-                    </div>
-                    <div>
-                      <span className="text-white/40 block">Version</span>
-                      <span className="text-white/70">{attempt.version}</span>
-                    </div>
-                    <div>
-                      <span className="text-white/40 block">Questions Shown</span>
-                      <span className="text-white/70">{attempt.questions_shown?.length || 0}</span>
-                    </div>
-                    <div>
-                      <span className="text-white/40 block">Duration</span>
-                      <span className="text-white/70">
-                        {attempt.started_at && attempt.completed_at
-                          ? calculateDuration(attempt.started_at, attempt.completed_at)
-                          : 'In progress'}
-                      </span>
+              {/* Details - Always Visible */}
+              <div className="mt-4 pt-4 border-t border-white/10">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm mb-4">
+                  <div>
+                    <span className="text-white/40 block">Attempt ID</span>
+                    <span className="text-white/70 font-mono text-xs">{attempt.id.slice(0, 8)}...</span>
+                  </div>
+                  <div>
+                    <span className="text-white/40 block">Version</span>
+                    <span className="text-white/70">{attempt.version}</span>
+                  </div>
+                  <div>
+                    <span className="text-white/40 block">Questions Shown</span>
+                    <span className="text-white/70">{attempt.questions_shown?.length || 0}</span>
+                  </div>
+                  <div>
+                    <span className="text-white/40 block">Duration</span>
+                    <span className="text-white/70">
+                      {attempt.started_at && attempt.completed_at
+                        ? calculateDuration(attempt.started_at, attempt.completed_at)
+                        : 'In progress'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Questions Detail (if available) */}
+                {attempt.questions_shown && attempt.questions_shown.length > 0 && (
+                  <div className="mt-4">
+                    <span className="text-xs text-white/40 block mb-2">Questions in this exam:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {attempt.questions_shown.map((qId, idx) => (
+                        <span 
+                          key={idx}
+                          className="px-2 py-1 bg-white/10 rounded text-xs text-white/60 font-mono"
+                        >
+                          {qId}
+                        </span>
+                      ))}
                     </div>
                   </div>
+                )}
 
-                  {/* Questions Detail (if available) */}
-                  {attempt.questions_shown && attempt.questions_shown.length > 0 && (
-                    <div className="mt-4">
-                      <span className="text-xs text-white/40 block mb-2">Questions in this exam:</span>
-                      <div className="flex flex-wrap gap-1">
-                        {attempt.questions_shown.map((qId, idx) => (
-                          <span 
-                            key={idx}
-                            className="px-2 py-1 bg-white/10 rounded text-xs text-white/60 font-mono"
-                          >
-                            {qId}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Answers Detail (if available and failed) */}
-                  {!attempt.passed && attempt.answers_given && (
-                    <div className="mt-4 p-3 bg-[#FF9999]/10 border border-[#FF9999]/20 rounded-lg">
-                      <span className="text-xs text-[#FF9999] block mb-2">
-                        ❌ Review needed - user may benefit from support outreach
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
+                {/* Answers Detail (if available and failed) */}
+                {!attempt.passed && attempt.answers_given && (
+                  <div className="mt-4 p-3 bg-[#FF9999]/10 border border-[#FF9999]/20 rounded-lg">
+                    <span className="text-xs text-[#FF9999] block mb-2">
+                      ❌ Review needed - user may benefit from support outreach
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           );
         })}

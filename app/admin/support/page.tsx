@@ -41,7 +41,8 @@ export default function AdminSupportPage() {
   // ---------------------------------------------------------------------------
   // UI STATE
   // ---------------------------------------------------------------------------
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'customer-service'>('dashboard');
+  // Customer Service is the DEFAULT tab
+  const [activeTab, setActiveTab] = useState<'customer-service' | 'dashboard'>('customer-service');
   const [showStuckModal, setShowStuckModal] = useState(false);
   const [showProfileEditModal, setShowProfileEditModal] = useState(false);
 
@@ -300,24 +301,29 @@ export default function AdminSupportPage() {
       )}
 
       {/* Header */}
-      <div className="max-w-7xl mx-auto mb-8">
+      <div className="max-w-7xl mx-auto mb-6">
         <h1 className="text-3xl font-bold mb-2">Admin Support Panel</h1>
         <p className="text-white/60">Customer lookup, translation, and quick actions</p>
       </div>
 
-      {/* Tab Navigation */}
+      {/* ================================================================== */}
+      {/* CUSTOMER SEARCH - ALWAYS AT TOP */}
+      {/* ================================================================== */}
+      <div className="max-w-7xl mx-auto mb-6">
+        <CustomerSearch
+          searchQuery={searchQuery}
+          searchType={searchType}
+          isLoading={isLoadingCustomer}
+          onQueryChange={setSearchQuery}
+          onTypeChange={setSearchType}
+          onSearch={handleSearch}
+          onSmartSearch={handleSmartSearch}
+        />
+      </div>
+
+      {/* Tab Navigation - Customer Service FIRST */}
       <div className="max-w-7xl mx-auto mb-6">
         <div className="flex gap-2">
-          <button
-            onClick={() => setActiveTab('dashboard')}
-            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-              activeTab === 'dashboard'
-                ? 'bg-[#77DD77] text-[#1C1C1C]'
-                : 'bg-white/10 text-white hover:bg-white/20'
-            }`}
-          >
-            📊 Dashboard & Lookup
-          </button>
           <button
             onClick={() => setActiveTab('customer-service')}
             className={`px-6 py-3 rounded-lg font-medium transition-colors ${
@@ -328,12 +334,41 @@ export default function AdminSupportPage() {
           >
             💬 Customer Service
           </button>
+          <button
+            onClick={() => setActiveTab('dashboard')}
+            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+              activeTab === 'dashboard'
+                ? 'bg-[#77DD77] text-[#1C1C1C]'
+                : 'bg-white/10 text-white hover:bg-white/20'
+            }`}
+          >
+            📊 Dashboard & Lookup
+          </button>
         </div>
       </div>
 
       {/* Tab Content */}
       <div className="max-w-7xl mx-auto">
-        {activeTab === 'dashboard' ? (
+        {activeTab === 'customer-service' ? (
+          /* Customer Service Tab - NOW FIRST/DEFAULT */
+          <CustomerServicePanel
+            incomingEmail={incomingEmail}
+            translatedIncoming={translatedIncoming}
+            outgoingResponse={outgoingResponse}
+            translatedOutgoing={translatedOutgoing}
+            detectedEmail={detectedEmail}
+            detectedTopic={detectedTopic}
+            isTranslating={isTranslating}
+            onIncomingChange={setIncomingEmail}
+            onOutgoingChange={setOutgoingResponse}
+            onTranslateIncoming={handleTranslateIncoming}
+            onTranslateOutgoing={handleTranslateOutgoing}
+            onSelectTemplate={handleSelectTemplate}
+            onSendEmail={handleSendEmail}
+            onLookupCustomer={handleLookupCustomer}
+          />
+        ) : (
+          /* Dashboard Tab */
           <div className="space-y-6">
             {/* System Health */}
             <SystemHealth
@@ -349,18 +384,7 @@ export default function AdminSupportPage() {
               onStuckStudentsClick={handleStuckStudentsClick}
             />
 
-            {/* Customer Search */}
-            <CustomerSearch
-              searchQuery={searchQuery}
-              searchType={searchType}
-              isLoading={isLoadingCustomer}
-              onQueryChange={setSearchQuery}
-              onTypeChange={setSearchType}
-              onSearch={handleSearch}
-              onSmartSearch={handleSmartSearch}
-            />
-
-            {/* Customer Details */}
+            {/* Customer Details (when searched) */}
             {customer && (
               <div className="space-y-6">
                 <CustomerOverview
@@ -421,24 +445,6 @@ export default function AdminSupportPage() {
               onClear={clearActionLog}
             />
           </div>
-        ) : (
-          /* Customer Service Tab */
-          <CustomerServicePanel
-            incomingEmail={incomingEmail}
-            translatedIncoming={translatedIncoming}
-            outgoingResponse={outgoingResponse}
-            translatedOutgoing={translatedOutgoing}
-            detectedEmail={detectedEmail}
-            detectedTopic={detectedTopic}
-            isTranslating={isTranslating}
-            onIncomingChange={setIncomingEmail}
-            onOutgoingChange={setOutgoingResponse}
-            onTranslateIncoming={handleTranslateIncoming}
-            onTranslateOutgoing={handleTranslateOutgoing}
-            onSelectTemplate={handleSelectTemplate}
-            onSendEmail={handleSendEmail}
-            onLookupCustomer={handleLookupCustomer}
-          />
         )}
       </div>
 

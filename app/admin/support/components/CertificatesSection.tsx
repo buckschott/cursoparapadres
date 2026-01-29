@@ -23,7 +23,8 @@ import { StatusBadge, ActionButton, ConfirmButton } from './ui';
 
 interface CertificatesSectionProps {
   certificates: Certificate[];
-  onRegenerateCertificate: (courseType: string) => void;
+  userId: string;
+  onRegenerateCertificate: (certificateId: string) => void;
   onResendToAttorney: (certificateId: string) => void;
   isExecutingAction: boolean;
 }
@@ -37,6 +38,7 @@ interface CertificatesSectionProps {
  */
 export default function CertificatesSection({
   certificates,
+  userId,
   onRegenerateCertificate,
   onResendToAttorney,
   isExecutingAction,
@@ -61,7 +63,7 @@ export default function CertificatesSection({
           <CertificateCard
             key={cert.id}
             certificate={cert}
-            onRegenerate={() => onRegenerateCertificate(cert.course_type)}
+            onRegenerate={() => onRegenerateCertificate(cert.id)}
             onResendToAttorney={() => onResendToAttorney(cert.id)}
             isExecutingAction={isExecutingAction}
           />

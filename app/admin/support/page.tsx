@@ -216,9 +216,9 @@ export default function AdminSupportPage() {
     await deleteExamAttempts(customer.profile.id, courseType);
   };
 
-  const handleRegenerateCertificate = async (courseType: string) => {
+  const handleRegenerateCertificate = async (certificateId: string) => {
     if (!customer?.profile?.id) return;
-    await regenerateCertificate(customer.profile.id, courseType);
+    await regenerateCertificate(certificateId, customer.profile.id);
   };
 
   const handleResendToAttorney = async (certificateId: string) => {
@@ -422,6 +422,7 @@ export default function AdminSupportPage() {
 
                 <CertificatesSection
                   certificates={customer.certificates}
+                  userId={customer.profile?.id || ''}
                   onRegenerateCertificate={handleRegenerateCertificate}
                   onResendToAttorney={handleResendToAttorney}
                   isExecutingAction={isExecutingAction}

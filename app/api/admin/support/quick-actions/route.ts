@@ -590,6 +590,47 @@ export async function POST(request: NextRequest) {
       }
 
       // ========================================================================
+      // REGENERATE CERTIFICATE (Update with fresh profile data)
+      // ========================================================================
+      case 'regenerate_certificate': {
+        const { certificateId, userId } = body;
+        if (!certificateId || !userId) {
+          return NextResponse.json({ error: 'certificateId and userId required' }, { status: 400 });
+        }
+
+        // Fetch fresh profile data
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('legal_name, court_state, court_county, case_number')
+          .eq('id', userId)
+          .single();
+
+        if (profileError || !profile) {
+          return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
+        }
+
+        // Update certificate with fresh profile data
+        const { error: updateError } = await supabase
+          .from('certificates')
+          .update({
+            participant_name: profile.legal_name || 'Participant',
+            court_state: profile.court_state,
+            court_county: profile.court_county,
+            case_number: profile.case_number,
+          })
+          .eq('id', certificateId);
+
+        if (updateError) {
+          return NextResponse.json({ error: updateError.message }, { status: 500 });
+        }
+
+        return NextResponse.json({
+          success: true,
+          message: `Certificate regenerated with: ${profile.legal_name || 'Participant'}, ${profile.court_county || '—'}, ${profile.court_state || '—'}`,
+        });
+      }
+
+      // ========================================================================
       // RESEND CERTIFICATE EMAIL
       // ========================================================================
       case 'resend_certificate_email': {

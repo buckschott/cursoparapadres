@@ -380,8 +380,8 @@ export function useAdminSupport() {
     return executeAction('delete_exam_attempts', { userId, courseType });
   }, [executeAction]);
 
-  const regenerateCertificate = useCallback((userId: string, courseType: string) => {
-    return executeAction('generate_certificate', { userId, courseType });
+  const regenerateCertificate = useCallback((certificateId: string, userId: string) => {
+    return executeAction('regenerate_certificate', { certificateId, userId });
   }, [executeAction]);
 
   const swapClass = useCallback((userId: string, purchaseId: string, targetCourse: string) => {

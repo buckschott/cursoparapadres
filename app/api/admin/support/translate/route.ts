@@ -75,7 +75,7 @@ Return your response in this exact JSON format:
 {
   "translation": "the English translation",
   "detectedEmail": "email@example.com or null if none found",
-  "detectedTopic": "one of: password, access, certificate, refund, exam, general",
+  "detectedTopic": "one of: password, access, certificate, refund, exam, tech_support, deadline, duplicate_account, class_swap, general",
   "summary": "one sentence summary of what they need"
 }
 
@@ -139,6 +139,9 @@ ${text}`;
       const greeting = name ? `Hola ${name},` : 'Hola,';
 
       const templates: Record<string, { subject: string; body: string }> = {
+        // ====================================================================
+        // PASSWORD RESET
+        // ====================================================================
         password: {
           subject: 'Restablecer su contraseña - Clase para Padres',
           body: `${greeting}
@@ -156,6 +159,9 @@ El enlace es válido por 1 hora. Si tiene algún problema, responda a este corre
 — El equipo de Clase para Padres`,
         },
 
+        // ====================================================================
+        // COURSE ACCESS
+        // ====================================================================
         access: {
           subject: 'Acceso a su clase - Clase para Padres',
           body: `${greeting}
@@ -175,6 +181,9 @@ https://claseparapadres.com/recuperar-contrasena
 — El equipo de Clase para Padres`,
         },
 
+        // ====================================================================
+        // CERTIFICATE HELP
+        // ====================================================================
         certificate: {
           subject: 'Su certificado - Clase para Padres',
           body: `${greeting}
@@ -192,6 +201,9 @@ Si necesita que reenviemos el certificado a su abogado, responda con el nombre y
 — El equipo de Clase para Padres`,
         },
 
+        // ====================================================================
+        // CERTIFICATE RESEND
+        // ====================================================================
         certificate_resend: {
           subject: 'Su certificado (reenviado) - Clase para Padres',
           body: `${greeting}
@@ -206,6 +218,9 @@ Si su abogado necesita una copia, con gusto se la enviamos. Solo responda con el
 — El equipo de Clase para Padres`,
         },
 
+        // ====================================================================
+        // REFUND CONFIRMATION
+        // ====================================================================
         refund: {
           subject: 'Reembolso procesado - Clase para Padres',
           body: `${greeting}
@@ -221,6 +236,9 @@ Si tiene alguna pregunta, no dude en responder a este correo.
 — El equipo de Clase para Padres`,
         },
 
+        // ====================================================================
+        // EXAM HELP
+        // ====================================================================
         exam: {
           subject: 'Ayuda con el examen - Clase para Padres',
           body: `${greeting}
@@ -243,6 +261,9 @@ Consejos:
 — El equipo de Clase para Padres`,
         },
 
+        // ====================================================================
+        // GENERAL RESPONSE
+        // ====================================================================
         general: {
           subject: 'Re: Su consulta - Clase para Padres',
           body: `${greeting}
@@ -256,6 +277,9 @@ Si tiene alguna otra pregunta, no dude en responder a este correo.
 — El equipo de Clase para Padres`,
         },
 
+        // ====================================================================
+        // PAYMENT ISSUE
+        // ====================================================================
         payment_issue: {
           subject: 'Problema con su pago - Clase para Padres',
           body: `${greeting}
@@ -274,6 +298,9 @@ Disculpe las molestias. ¿Hay algo más en que pueda ayudarle?
 — El equipo de Clase para Padres`,
         },
 
+        // ====================================================================
+        // ATTORNEY COPY REQUEST
+        // ====================================================================
         attorney_copy: {
           subject: 'Copia para su abogado - Clase para Padres',
           body: `${greeting}
@@ -285,6 +312,105 @@ Por favor responda con:
 2. Correo electrónico del abogado
 
 Una vez que tengamos esta información, enviaremos el certificado directamente.
+
+— El equipo de Clase para Padres`,
+        },
+
+        // ====================================================================
+        // TECHNICAL SUPPORT (NEW)
+        // ====================================================================
+        tech_support: {
+          subject: 'Soporte técnico - Clase para Padres',
+          body: `${greeting}
+
+Gracias por contactarnos. Entiendo que está teniendo problemas técnicos.
+
+Por favor intente estos pasos:
+
+1. Cierre completamente su navegador y vuelva a abrirlo
+2. Borre la caché de su navegador (Ctrl+Shift+Delete en Windows, Cmd+Shift+Delete en Mac)
+3. Intente usar otro navegador (Chrome, Firefox, Safari, o Edge)
+4. Si está en su teléfono, intente desde una computadora
+
+Si el problema continúa después de estos pasos, por favor responda con:
+- ¿Qué dispositivo usa? (teléfono, tableta, computadora)
+- ¿Qué navegador usa? (Chrome, Safari, etc.)
+- ¿Qué mensaje de error ve? (si hay alguno)
+
+Estamos aquí para ayudarle a resolver esto.
+
+— El equipo de Clase para Padres`,
+        },
+
+        // ====================================================================
+        // DEADLINE QUESTION (NEW)
+        // ====================================================================
+        deadline: {
+          subject: 'Su fecha límite - Clase para Padres',
+          body: `${greeting}
+
+Gracias por contactarnos sobre su fecha límite.
+
+Buenas noticias:
+- Nuestra clase es 100% en línea
+- Puede completarla a su propio ritmo
+- La mayoría de las personas la terminan en 4-6 horas
+- Puede pausar y continuar cuando quiera
+
+Para terminar antes de su fecha límite:
+1. Inicie sesión: https://claseparapadres.com/iniciar-sesion
+2. Complete las 15 lecciones
+3. Apruebe el examen final (70% para aprobar)
+4. Descargue su certificado inmediatamente
+
+El certificado está disponible al instante después de aprobar el examen.
+
+¿Necesita ayuda adicional? Estamos aquí para apoyarle.
+
+— El equipo de Clase para Padres`,
+        },
+
+        // ====================================================================
+        // DUPLICATE ACCOUNT (NEW)
+        // ====================================================================
+        duplicate_account: {
+          subject: 'Su cuenta - Clase para Padres',
+          body: `${greeting}
+
+Gracias por contactarnos. Veo que tiene más de una cuenta en nuestro sistema.
+
+Ya combiné sus cuentas. Ahora puede usar:
+- Correo electrónico: [INSERTAR CORREO]
+- Para ingresar: https://claseparapadres.com/iniciar-sesion
+
+Si no recuerda su contraseña, puede restablecerla aquí:
+https://claseparapadres.com/recuperar-contrasena
+
+Todo su progreso ha sido preservado. ¿Tiene alguna otra pregunta?
+
+— El equipo de Clase para Padres`,
+        },
+
+        // ====================================================================
+        // CLASS SWAP (NEW)
+        // ====================================================================
+        class_swap: {
+          subject: 'Cambio de clase - Clase para Padres',
+          body: `${greeting}
+
+Gracias por contactarnos sobre cambiar su clase.
+
+Ofrecemos dos clases:
+1. **Clase de Coparentalidad** — Para padres que comparten la crianza después de una separación o divorcio
+2. **Clase de Crianza** — Para mejorar habilidades generales de crianza
+
+He cambiado su inscripción a la clase que necesita. Su progreso anterior ha sido reiniciado para que pueda comenzar la nueva clase.
+
+Para comenzar:
+1. Inicie sesión: https://claseparapadres.com/iniciar-sesion
+2. Verá su nueva clase en "Mi Panel"
+
+Si tiene alguna pregunta sobre cuál clase es la correcta para su situación, no dude en preguntarnos.
 
 — El equipo de Clase para Padres`,
         },

@@ -7,6 +7,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { createClient } from '@/lib/supabase';
 import type {
   CustomerData,
   DashboardStats,
@@ -87,6 +88,43 @@ export function useAdminSupport() {
   const [isTranslating, setIsTranslating] = useState(false);
 
   // -------------------------------------------------------------------------
+  // AUTH HELPER
+  // -------------------------------------------------------------------------
+
+  /**
+   * Get the current user's access token for API authorization.
+   * Returns null if not authenticated.
+   */
+  const getAuthToken = useCallback(async (): Promise<string | null> => {
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      return session?.access_token || null;
+    } catch (error) {
+      console.error('Failed to get auth token:', error);
+      return null;
+    }
+  }, []);
+
+  /**
+   * Build headers object with Authorization if token is available.
+   */
+  const buildHeaders = useCallback(async (includeContentType = true): Promise<HeadersInit> => {
+    const token = await getAuthToken();
+    const headers: HeadersInit = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    if (includeContentType) {
+      headers['Content-Type'] = 'application/json';
+    }
+    
+    return headers;
+  }, [getAuthToken]);
+
+  // -------------------------------------------------------------------------
   // HELPERS
   // -------------------------------------------------------------------------
 
@@ -117,7 +155,11 @@ export function useAdminSupport() {
   const loadDashboardStats = useCallback(async () => {
     setIsLoadingStats(true);
     try {
-      const response = await fetch('/api/admin/support/dashboard-stats');
+      const headers = await buildHeaders(false);
+      const response = await fetch('/api/admin/support/dashboard-stats', {
+        method: 'GET',
+        headers,
+      });
       if (!response.ok) throw new Error('Failed to load stats');
       const data = await response.json();
       setStats(data);
@@ -127,12 +169,16 @@ export function useAdminSupport() {
     } finally {
       setIsLoadingStats(false);
     }
-  }, [showMessage]);
+  }, [buildHeaders, showMessage]);
 
   const loadSystemHealth = useCallback(async () => {
     setIsLoadingHealth(true);
     try {
-      const response = await fetch('/api/admin/support/system-health');
+      const headers = await buildHeaders(false);
+      const response = await fetch('/api/admin/support/system-health', {
+        method: 'GET',
+        headers,
+      });
       if (!response.ok) throw new Error('Failed to load health');
       const data = await response.json();
       setSystemHealth(data);
@@ -142,7 +188,7 @@ export function useAdminSupport() {
     } finally {
       setIsLoadingHealth(false);
     }
-  }, [showMessage]);
+  }, [buildHeaders, showMessage]);
 
   // -------------------------------------------------------------------------
   // CUSTOMER SEARCH API
@@ -161,13 +207,22 @@ export function useAdminSupport() {
     setCustomer(null);
 
     try {
-      const params = new URLSearchParams({
-        query: searchValue.trim(),
-        type: searchTypeValue,
+      const headers = await buildHeaders(true);
+      
+      // POST with JSON body (matching the API expectation)
+      const response = await fetch('/api/admin/support/customer-lookup', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          query: searchValue.trim(),
+          type: searchTypeValue,
+        }),
       });
       
-      const response = await fetch(`/api/admin/support/customer-lookup?${params}`);
-      if (!response.ok) throw new Error('Search failed');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Search failed');
+      }
       
       const data = await response.json();
       
@@ -186,11 +241,11 @@ export function useAdminSupport() {
       addToActionLog('Search', data.profile?.email || searchValue, `Found via ${searchTypeValue}`);
     } catch (error) {
       console.error('Search error:', error);
-      showMessage('error', 'Search failed. Please try again.');
+      showMessage('error', error instanceof Error ? error.message : 'Search failed. Please try again.');
     } finally {
       setIsLoadingCustomer(false);
     }
-  }, [searchQuery, searchType, showMessage, addToActionLog]);
+  }, [searchQuery, searchType, buildHeaders, showMessage, addToActionLog]);
 
   const smartSearch = useCallback(async (query: string) => {
     const detectedType = detectSearchType(query);
@@ -211,7 +266,11 @@ export function useAdminSupport() {
   const loadStuckStudents = useCallback(async () => {
     setIsLoadingStuckStudents(true);
     try {
-      const response = await fetch('/api/admin/support/stuck-students');
+      const headers = await buildHeaders(false);
+      const response = await fetch('/api/admin/support/stuck-students', {
+        method: 'GET',
+        headers,
+      });
       if (!response.ok) throw new Error('Failed to load stuck students');
       const data = await response.json();
       setStuckStudents(data.students || []);
@@ -223,7 +282,7 @@ export function useAdminSupport() {
     } finally {
       setIsLoadingStuckStudents(false);
     }
-  }, [showMessage]);
+  }, [buildHeaders, showMessage]);
 
   // -------------------------------------------------------------------------
   // QUICK ACTIONS API
@@ -236,9 +295,10 @@ export function useAdminSupport() {
     setIsExecutingAction(true);
     
     try {
+      const headers = await buildHeaders(true);
       const response = await fetch('/api/admin/support/quick-actions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ action, ...params }),
       });
 
@@ -271,7 +331,7 @@ export function useAdminSupport() {
     } finally {
       setIsExecutingAction(false);
     }
-  }, [customer, searchCustomer, showMessage, addToActionLog]);
+  }, [customer, buildHeaders, searchCustomer, showMessage, addToActionLog]);
 
   // Convenience methods for common actions
   const resetPassword = useCallback((userId: string, email: string) => {
@@ -279,7 +339,7 @@ export function useAdminSupport() {
   }, [executeAction]);
 
   const resendWelcomeEmail = useCallback((userId: string, email: string, courseType: string) => {
-    return executeAction('resend_welcome', { userId, email, courseType });
+    return executeAction('resend_welcome_email', { userId, email, courseType });
   }, [executeAction]);
 
   const resendAttorneyEmail = useCallback((userId: string, certificateId: string) => {
@@ -291,14 +351,14 @@ export function useAdminSupport() {
   }, [executeAction]);
 
   const grantCourseAccess = useCallback((userId: string, courseType: string) => {
-    return executeAction('grant_access', { userId, courseType });
+    return executeAction('grant_course_access', { userId, courseType });
   }, [executeAction]);
 
   const resetCourseProgress = useCallback((userId: string, courseType: string) => {
     return executeAction('reset_progress', { userId, courseType });
   }, [executeAction]);
 
-  // NEW: Reset progress for ALL courses (both coparenting and parenting)
+  // Reset progress for ALL courses (both coparenting and parenting)
   const resetAllProgress = useCallback(async (userId: string) => {
     setIsExecutingAction(true);
     try {
@@ -321,7 +381,7 @@ export function useAdminSupport() {
   }, [executeAction]);
 
   const regenerateCertificate = useCallback((userId: string, courseType: string) => {
-    return executeAction('regenerate_certificate', { userId, courseType });
+    return executeAction('generate_certificate', { userId, courseType });
   }, [executeAction]);
 
   const swapClass = useCallback((userId: string, purchaseId: string, targetCourse: string) => {
@@ -333,7 +393,7 @@ export function useAdminSupport() {
   }, [executeAction]);
 
   const deleteAllCourseData = useCallback((userId: string) => {
-    return executeAction('delete_all_course_data', { userId });
+    return executeAction('reset_user', { userId });
   }, [executeAction]);
 
   // -------------------------------------------------------------------------
@@ -345,9 +405,10 @@ export function useAdminSupport() {
     
     setIsTranslating(true);
     try {
+      const headers = await buildHeaders(true);
       const response = await fetch('/api/admin/support/translate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ action: 'translate_incoming', text }),
       });
 
@@ -372,16 +433,17 @@ export function useAdminSupport() {
     } finally {
       setIsTranslating(false);
     }
-  }, [showMessage]);
+  }, [buildHeaders, showMessage]);
 
   const translateOutgoing = useCallback(async (text: string): Promise<string | null> => {
     if (!text.trim()) return null;
     
     setIsTranslating(true);
     try {
+      const headers = await buildHeaders(true);
       const response = await fetch('/api/admin/support/translate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ action: 'translate_outgoing', text }),
       });
 
@@ -398,13 +460,14 @@ export function useAdminSupport() {
     } finally {
       setIsTranslating(false);
     }
-  }, [showMessage]);
+  }, [buildHeaders, showMessage]);
 
   const getTemplate = useCallback(async (templateName: TemplateName): Promise<TemplateResult | null> => {
     try {
+      const headers = await buildHeaders(true);
       const response = await fetch('/api/admin/support/translate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ action: 'get_template', template: templateName }),
       });
 
@@ -427,7 +490,7 @@ export function useAdminSupport() {
       showMessage('error', 'Failed to load template');
       return null;
     }
-  }, [showMessage]);
+  }, [buildHeaders, showMessage]);
 
   // -------------------------------------------------------------------------
   // EMAIL API
@@ -439,9 +502,10 @@ export function useAdminSupport() {
     body: string
   ): Promise<boolean> => {
     try {
+      const headers = await buildHeaders(true);
       const response = await fetch('/api/admin/support/send-email', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ to, subject, body }),
       });
 
@@ -464,7 +528,7 @@ export function useAdminSupport() {
       showMessage('error', 'Failed to send email');
       return false;
     }
-  }, [showMessage, addToActionLog]);
+  }, [buildHeaders, showMessage, addToActionLog]);
 
   // -------------------------------------------------------------------------
   // RETURN
@@ -504,7 +568,7 @@ export function useAdminSupport() {
     updateProfile,
     grantCourseAccess,
     resetCourseProgress,
-    resetAllProgress,  // NEW: Added
+    resetAllProgress,
     deleteExamAttempts,
     regenerateCertificate,
     swapClass,

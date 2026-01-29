@@ -60,6 +60,13 @@ const TEMPLATES: { value: TemplateName; label: string; icon: string }[] = [
 
 /**
  * CustomerServicePanel - Translation workflow for customer support emails.
+ * 
+ * Features:
+ * - Translate incoming Spanish emails to English
+ * - Auto-detect customer email and topic
+ * - Pre-written Spanish templates
+ * - Translate English responses to Spanish
+ * - Three send options: Copy, Mac Mail, Resend
  */
 export default function CustomerServicePanel({
   incomingEmail,
@@ -79,6 +86,11 @@ export default function CustomerServicePanel({
 }: CustomerServicePanelProps) {
   const [emailSubject, setEmailSubject] = useState('Respuesta de Clase para Padres');
   const [showTemplates, setShowTemplates] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  // --------------------------------------------------------------------------
+  // HANDLERS
+  // --------------------------------------------------------------------------
 
   const handleTranslateIncoming = () => {
     if (incomingEmail.trim()) {
@@ -92,11 +104,48 @@ export default function CustomerServicePanel({
     }
   };
 
-  const handleSend = () => {
+  const handleSendViaResend = () => {
     if (detectedEmail && translatedOutgoing) {
       onSendEmail(detectedEmail, emailSubject, translatedOutgoing);
     }
   };
+
+  const handleCopyToClipboard = async () => {
+    if (!translatedOutgoing) return;
+    
+    try {
+      await navigator.clipboard.writeText(translatedOutgoing);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      // Fallback for older browsers
+      const textarea = document.createElement('textarea');
+      textarea.value = translatedOutgoing;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    }
+  };
+
+  const handleOpenInMacMail = () => {
+    if (!detectedEmail || !translatedOutgoing) return;
+    
+    // Build mailto URL with subject and body
+    const subject = encodeURIComponent(emailSubject);
+    const body = encodeURIComponent(translatedOutgoing);
+    const mailtoUrl = `mailto:${detectedEmail}?subject=${subject}&body=${body}`;
+    
+    // Open in default mail client
+    window.location.href = mailtoUrl;
+  };
+
+  // --------------------------------------------------------------------------
+  // RENDER
+  // --------------------------------------------------------------------------
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
@@ -108,7 +157,9 @@ export default function CustomerServicePanel({
       </div>
 
       <div className="p-6 space-y-6">
-        {/* Incoming Email Section */}
+        {/* ================================================================ */}
+        {/* INCOMING EMAIL SECTION */}
+        {/* ================================================================ */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Original (Spanish) */}
           <div>
@@ -169,7 +220,9 @@ export default function CustomerServicePanel({
         {/* Divider */}
         <div className="border-t border-white/10" />
 
-        {/* Response Section */}
+        {/* ================================================================ */}
+        {/* RESPONSE SECTION */}
+        {/* ================================================================ */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Response (English) */}
           <div>
@@ -212,7 +265,7 @@ export default function CustomerServicePanel({
             <textarea
               value={outgoingResponse}
               onChange={(e) => onOutgoingChange(e.target.value)}
-              placeholder="Type your response in English..."
+              placeholder="Type your response in English or select a template..."
               rows={6}
               className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#7EC8E3]/50 resize-none"
             />
@@ -241,14 +294,22 @@ export default function CustomerServicePanel({
           </div>
         </div>
 
-        {/* Send Section */}
-        {translatedOutgoing && detectedEmail && (
+        {/* ================================================================ */}
+        {/* SEND SECTION */}
+        {/* ================================================================ */}
+        {translatedOutgoing && (
           <div className="bg-[#77DD77]/10 border border-[#77DD77]/20 rounded-lg p-4">
             <h4 className="text-sm font-medium text-[#77DD77] mb-3">Ready to Send</h4>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            
+            {/* Email Details */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
               <div>
                 <label className="text-xs text-white/40 block mb-1">To:</label>
-                <span className="text-sm text-white">{detectedEmail}</span>
+                {detectedEmail ? (
+                  <span className="text-sm text-white">{detectedEmail}</span>
+                ) : (
+                  <span className="text-sm text-white/40 italic">No email detected</span>
+                )}
               </div>
               <div className="lg:col-span-2">
                 <label className="text-xs text-white/40 block mb-1">Subject:</label>
@@ -260,14 +321,55 @@ export default function CustomerServicePanel({
                 />
               </div>
             </div>
-            <div className="mt-4">
-              <ActionButton
-                onClick={handleSend}
-                variant="success"
+
+            {/* Send Buttons */}
+            <div className="flex flex-wrap gap-3">
+              {/* Copy to Clipboard */}
+              <button
+                onClick={handleCopyToClipboard}
+                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                  copySuccess
+                    ? 'bg-[#77DD77] text-[#1C1C1C]'
+                    : 'bg-white/10 text-white hover:bg-white/20'
+                }`}
               >
-                📧 Send Email
-              </ActionButton>
+                {copySuccess ? '✅ Copied!' : '📋 Copy to Clipboard'}
+              </button>
+
+              {/* Open in Mac Mail */}
+              <button
+                onClick={handleOpenInMacMail}
+                disabled={!detectedEmail}
+                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                  detectedEmail
+                    ? 'bg-[#7EC8E3]/20 text-[#7EC8E3] hover:bg-[#7EC8E3]/30'
+                    : 'bg-white/5 text-white/30 cursor-not-allowed'
+                }`}
+              >
+                📧 Open in Mac Mail
+              </button>
+
+              {/* Send via Resend */}
+              <button
+                onClick={handleSendViaResend}
+                disabled={!detectedEmail}
+                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                  detectedEmail
+                    ? 'bg-[#77DD77] text-[#1C1C1C] hover:bg-[#88EE88]'
+                    : 'bg-white/5 text-white/30 cursor-not-allowed'
+                }`}
+              >
+                📤 Send via Resend
+              </button>
             </div>
+
+            {/* No email warning */}
+            {!detectedEmail && (
+              <p className="mt-3 text-xs text-white/40">
+                💡 Tip: Paste an email in the incoming field to auto-detect the recipient, 
+                or use Copy to Clipboard.
+              </p>
+            )}
           </div>
         )}
       </div>

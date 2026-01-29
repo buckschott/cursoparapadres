@@ -123,6 +123,24 @@ export async function POST(request: NextRequest) {
         }
         break;
 
+      case 'certificate':
+        const certQuery = query.trim().toUpperCase();
+
+        // Search by certificate_number (PKF-XXXXXX) or verification_code
+        const { data: certMatch } = await supabase
+          .from('certificates')
+          .select('*')
+          .or(`certificate_number.ilike.%${certQuery}%,verification_code.ilike.%${certQuery}%`)
+          .limit(1)
+          .single();
+
+        if (certMatch) {
+          userId = certMatch.user_id;
+          // Pre-populate the certificate in results
+          customerData.certificates = [certMatch];
+        }
+        break;
+
       case 'stripe':
         // Search Stripe by payment intent or customer ID
         try {
@@ -223,13 +241,23 @@ export async function POST(request: NextRequest) {
         .order('started_at', { ascending: false });
       customerData.examAttempts = exams || [];
 
-      // Fetch certificates
-      const { data: certs } = await supabase
-        .from('certificates')
-        .select('*')
-        .eq('user_id', userId)
-        .order('issued_at', { ascending: false });
-      customerData.certificates = certs || [];
+      // Fetch certificates (only if not already pre-populated from certificate search)
+      if (customerData.certificates.length === 0) {
+        const { data: certs } = await supabase
+          .from('certificates')
+          .select('*')
+          .eq('user_id', userId)
+          .order('issued_at', { ascending: false });
+        customerData.certificates = certs || [];
+      } else {
+        // Certificate search found one - fetch any additional certificates for this user
+        const { data: allCerts } = await supabase
+          .from('certificates')
+          .select('*')
+          .eq('user_id', userId)
+          .order('issued_at', { ascending: false });
+        customerData.certificates = allCerts || customerData.certificates;
+      }
     }
 
     return NextResponse.json(customerData);

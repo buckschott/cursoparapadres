@@ -31,9 +31,7 @@ import type { ProfileEditData, TemplateName, SearchType } from './types';
 // =============================================================================
 
 const ADMIN_EMAILS = [
-  'stephen@puttingkidsfirst.org',
-  'geri@puttingkidsfirst.org',
-  'admin@claseparapadres.com',
+  'jonescraig@me.com',
 ];
 
 // =============================================================================

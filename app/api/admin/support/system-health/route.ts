@@ -2,18 +2,34 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
 import Stripe from 'stripe';
 import { Resend } from 'resend';
+import { isAdmin } from '@/lib/admin';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Types
+type ServiceStatus = 'healthy' | 'degraded' | 'down';
 
-// Admin emails that can access this endpoint
-const ADMIN_EMAILS = ['jonescraig@me.com'];
+interface HealthCheckResult {
+  supabase: ServiceStatus;
+  stripe: ServiceStatus;
+  resend: ServiceStatus;
+  lastCheck: string;
+}
 
+// Constants
+const DEGRADED_THRESHOLD_MS = 2000;
+
+/**
+ * GET /api/admin/support/system-health
+ * 
+ * Checks health status of all external services.
+ * Admin-only endpoint.
+ */
 export async function GET(request: NextRequest) {
   const supabase = createServerClient();
 
   try {
-    // Get admin user from Authorization header
+    // ─────────────────────────────────────────────────────────────────────────
+    // 1. Authorization
+    // ─────────────────────────────────────────────────────────────────────────
     const authHeader = request.headers.get('authorization');
     const token = authHeader?.replace('Bearer ', '');
 
@@ -24,18 +40,23 @@ export async function GET(request: NextRequest) {
       adminEmail = user?.email || null;
     }
 
-    if (!adminEmail || !ADMIN_EMAILS.includes(adminEmail)) {
+    if (!isAdmin(adminEmail)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const health = {
-      supabase: 'down' as 'healthy' | 'degraded' | 'down',
-      stripe: 'down' as 'healthy' | 'degraded' | 'down',
-      resend: 'down' as 'healthy' | 'degraded' | 'down',
+    // ─────────────────────────────────────────────────────────────────────────
+    // 2. Initialize health check result
+    // ─────────────────────────────────────────────────────────────────────────
+    const health: HealthCheckResult = {
+      supabase: 'down',
+      stripe: 'down',
+      resend: 'down',
       lastCheck: new Date().toISOString(),
     };
 
-    // Check Supabase
+    // ─────────────────────────────────────────────────────────────────────────
+    // 3. Check Supabase
+    // ─────────────────────────────────────────────────────────────────────────
     try {
       const startTime = Date.now();
       const { error } = await supabase.from('profiles').select('id').limit(1);
@@ -43,46 +64,64 @@ export async function GET(request: NextRequest) {
 
       if (error) {
         health.supabase = 'down';
-      } else if (duration > 2000) {
+      } else if (duration > DEGRADED_THRESHOLD_MS) {
         health.supabase = 'degraded';
       } else {
         health.supabase = 'healthy';
       }
-    } catch (err) {
+    } catch {
       health.supabase = 'down';
     }
 
-    // Check Stripe
-    try {
-      const startTime = Date.now();
-      await stripe.balance.retrieve();
-      const duration = Date.now() - startTime;
-
-      if (duration > 2000) {
-        health.stripe = 'degraded';
-      } else {
-        health.stripe = 'healthy';
-      }
-    } catch (err) {
+    // ─────────────────────────────────────────────────────────────────────────
+    // 4. Check Stripe
+    // ─────────────────────────────────────────────────────────────────────────
+    if (!process.env.STRIPE_SECRET_KEY) {
       health.stripe = 'down';
-    }
+    } else {
+      try {
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+        const startTime = Date.now();
+        await stripe.balance.retrieve();
+        const duration = Date.now() - startTime;
 
-    // Check Resend
-    try {
-      const startTime = Date.now();
-      await resend.domains.list();
-      const duration = Date.now() - startTime;
-
-      if (duration > 2000) {
-        health.resend = 'degraded';
-      } else {
-        health.resend = 'healthy';
+        if (duration > DEGRADED_THRESHOLD_MS) {
+          health.stripe = 'degraded';
+        } else {
+          health.stripe = 'healthy';
+        }
+      } catch {
+        health.stripe = 'down';
       }
-    } catch (err) {
-      health.resend = 'down';
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // 5. Check Resend
+    // ─────────────────────────────────────────────────────────────────────────
+    if (!process.env.RESEND_API_KEY) {
+      health.resend = 'down';
+    } else {
+      try {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const startTime = Date.now();
+        await resend.domains.list();
+        const duration = Date.now() - startTime;
+
+        if (duration > DEGRADED_THRESHOLD_MS) {
+          health.resend = 'degraded';
+        } else {
+          health.resend = 'healthy';
+        }
+      } catch {
+        health.resend = 'down';
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 6. Return health status
+    // ─────────────────────────────────────────────────────────────────────────
     return NextResponse.json(health);
+
   } catch (error) {
     console.error('Health check error:', error);
     return NextResponse.json({ error: 'Health check failed' }, { status: 500 });

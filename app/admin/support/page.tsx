@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase';
+import { isAdmin } from '@/lib/admin';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -223,9 +224,7 @@ export default function AdminSupportPage() {
         return;
       }
 
-      // Check if admin
-      const adminEmails = ['jonescraig@me.com'];
-      setIsAuthorized(adminEmails.includes(user.email || ''));
+      setIsAuthorized(isAdmin(user.email));
     };
 
     checkAuth();
@@ -615,7 +614,7 @@ export default function AdminSupportPage() {
     children: React.ReactNode;
   }) => {
     const variants = {
-      default: 'bg-white/10 hover:bg-white/20 text-white border-white/20',
+      default: 'bg-white/10 hover:bg-white/20 text-white border-[#FFFFFF]/20',
       danger: 'bg-[#FF9999]/20 hover:bg-[#FF9999]/30 text-[#FF9999] border-[#FF9999]/30',
       success: 'bg-[#77DD77]/20 hover:bg-[#77DD77]/30 text-[#77DD77] border-[#77DD77]/30',
     };
@@ -650,7 +649,7 @@ export default function AdminSupportPage() {
       red: 'text-[#FF9999]',
     };
     return (
-      <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+      <div className="bg-white/5 border border-[#FFFFFF]/15 rounded-xl p-4 text-center">
         <div className={`text-3xl font-bold ${colors[color]}`}>{value}</div>
         <div className="text-sm text-white/60 mt-1">{label}</div>
         {subtext && <div className="text-xs text-white/40 mt-1">{subtext}</div>}
@@ -659,31 +658,62 @@ export default function AdminSupportPage() {
   };
 
   // ============================================================================
-  // LOADING / UNAUTHORIZED STATES
+  // LOADING STATE
   // ============================================================================
 
   if (isAuthorized === null) {
     return (
-      <div className="min-h-screen bg-[#1C1C1C] flex items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
+      <main className="min-h-screen bg-background flex items-center justify-center px-6 py-12">
+        <div className="max-w-md w-full">
+          <div className="bg-background rounded-2xl shadow-xl shadow-black/40 p-8 border border-[#FFFFFF]/15">
+            <div className="flex items-center justify-center gap-3">
+              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span className="text-white">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </main>
     );
   }
 
+  // ============================================================================
+  // UNAUTHORIZED STATE
+  // ============================================================================
+
   if (!isAuthorized) {
     return (
-      <div className="min-h-screen bg-[#1C1C1C] flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-500 mb-4">⛔ Unauthorized</h1>
-          <p className="text-white/70 mb-2">You need to log in as an admin to access this page.</p>
-          <a
-            href="/iniciar-sesion"
-            className="inline-block mt-4 px-6 py-3 bg-[#77DD77] text-[#1C1C1C] rounded-lg font-bold hover:bg-[#88EE88] transition-colors"
-          >
-            Log In →
-          </a>
+      <main className="min-h-screen bg-background flex items-center justify-center px-6 py-12">
+        <div className="max-w-md w-full">
+          <div className="bg-background rounded-2xl shadow-xl shadow-black/40 p-8 border border-[#FFFFFF]/15">
+            <div className="text-center">
+              <div className="text-4xl mb-4">⛔</div>
+              <h1 className="text-2xl font-bold text-[#FF9999] mb-4">Unauthorized</h1>
+              <p className="text-white/70 mb-6">
+                You need to log in as an admin to access this page.
+              </p>
+              <a
+                href="/iniciar-sesion"
+                className="inline-block px-6 py-3 bg-[#77DD77] text-[#1C1C1C] rounded-lg font-bold hover:bg-[#88EE88] transition-colors"
+              >
+                Log In →
+              </a>
+            </div>
+          </div>
+          
+          {/* Back to home */}
+          <div className="text-center mt-6">
+            <a
+              href="/"
+              className="text-white/70 hover:text-white text-sm transition-colors"
+            >
+              ← Back to home
+            </a>
+          </div>
         </div>
-      </div>
+      </main>
     );
   }
 
@@ -692,7 +722,7 @@ export default function AdminSupportPage() {
   // ============================================================================
 
   return (
-    <div className="min-h-screen bg-[#1C1C1C] text-white p-6">
+    <div className="min-h-screen bg-background text-white p-6">
       {/* Message Toast */}
       {message && (
         <div
@@ -751,7 +781,7 @@ export default function AdminSupportPage() {
               value={incomingEmail}
               onChange={(e) => setIncomingEmail(e.target.value)}
               placeholder="Hola, necesito ayuda con mi clase..."
-              className="w-full h-32 px-4 py-3 rounded-lg bg-white/10 border border-white/20 
+              className="w-full h-32 px-4 py-3 rounded-lg bg-white/10 border border-[#FFFFFF]/20 
                 text-white placeholder:text-white/40 focus:outline-none focus:border-[#7EC8E3] resize-none"
             />
             <button
@@ -767,7 +797,7 @@ export default function AdminSupportPage() {
             {englishTranslation && (
               <div className="mt-4">
                 <label className="block text-sm text-white/60 mb-2">🇺🇸 English Translation:</label>
-                <div className="p-4 rounded-lg bg-white/5 border border-white/10 text-white/90">
+                <div className="p-4 rounded-lg bg-white/5 border border-[#FFFFFF]/15 text-white/90">
                   {englishTranslation}
                 </div>
 
@@ -812,47 +842,47 @@ export default function AdminSupportPage() {
               <button
                 onClick={() => loadTemplate('password')}
                 className={`px-3 py-1.5 rounded-lg text-sm border transition-all
-                  ${detectedTopic === 'password' ? 'bg-[#FFE566]/20 border-[#FFE566]/50 text-[#FFE566]' : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}`}
+                  ${detectedTopic === 'password' ? 'bg-[#FFE566]/20 border-[#FFE566]/50 text-[#FFE566]' : 'bg-white/5 border-[#FFFFFF]/20 text-white/70 hover:bg-white/10'}`}
               >
                 🔑 Password
               </button>
               <button
                 onClick={() => loadTemplate('access')}
                 className={`px-3 py-1.5 rounded-lg text-sm border transition-all
-                  ${detectedTopic === 'access' ? 'bg-[#FFE566]/20 border-[#FFE566]/50 text-[#FFE566]' : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}`}
+                  ${detectedTopic === 'access' ? 'bg-[#FFE566]/20 border-[#FFE566]/50 text-[#FFE566]' : 'bg-white/5 border-[#FFFFFF]/20 text-white/70 hover:bg-white/10'}`}
               >
                 📚 Access
               </button>
               <button
                 onClick={() => loadTemplate('certificate')}
                 className={`px-3 py-1.5 rounded-lg text-sm border transition-all
-                  ${detectedTopic === 'certificate' ? 'bg-[#FFE566]/20 border-[#FFE566]/50 text-[#FFE566]' : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}`}
+                  ${detectedTopic === 'certificate' ? 'bg-[#FFE566]/20 border-[#FFE566]/50 text-[#FFE566]' : 'bg-white/5 border-[#FFFFFF]/20 text-white/70 hover:bg-white/10'}`}
               >
                 🏆 Certificate
               </button>
               <button
                 onClick={() => loadTemplate('refund')}
                 className={`px-3 py-1.5 rounded-lg text-sm border transition-all
-                  ${detectedTopic === 'refund' ? 'bg-[#FFE566]/20 border-[#FFE566]/50 text-[#FFE566]' : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}`}
+                  ${detectedTopic === 'refund' ? 'bg-[#FFE566]/20 border-[#FFE566]/50 text-[#FFE566]' : 'bg-white/5 border-[#FFFFFF]/20 text-white/70 hover:bg-white/10'}`}
               >
                 💸 Refund
               </button>
               <button
                 onClick={() => loadTemplate('exam')}
                 className={`px-3 py-1.5 rounded-lg text-sm border transition-all
-                  ${detectedTopic === 'exam' ? 'bg-[#FFE566]/20 border-[#FFE566]/50 text-[#FFE566]' : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}`}
+                  ${detectedTopic === 'exam' ? 'bg-[#FFE566]/20 border-[#FFE566]/50 text-[#FFE566]' : 'bg-white/5 border-[#FFFFFF]/20 text-white/70 hover:bg-white/10'}`}
               >
                 📝 Exam
               </button>
               <button
                 onClick={() => loadTemplate('payment_issue')}
-                className="px-3 py-1.5 rounded-lg text-sm bg-white/5 border border-white/20 text-white/70 hover:bg-white/10"
+                className="px-3 py-1.5 rounded-lg text-sm bg-white/5 border border-[#FFFFFF]/20 text-white/70 hover:bg-white/10"
               >
                 💳 Payment
               </button>
               <button
                 onClick={() => loadTemplate('attorney_copy')}
-                className="px-3 py-1.5 rounded-lg text-sm bg-white/5 border border-white/20 text-white/70 hover:bg-white/10"
+                className="px-3 py-1.5 rounded-lg text-sm bg-white/5 border border-[#FFFFFF]/20 text-white/70 hover:bg-white/10"
               >
                 👨‍⚖️ Attorney
               </button>
@@ -862,7 +892,7 @@ export default function AdminSupportPage() {
                   setSpanishResponse('');
                   responseTextareaRef.current?.focus();
                 }}
-                className="px-3 py-1.5 rounded-lg text-sm bg-white/5 border border-white/20 text-white/70 hover:bg-white/10"
+                className="px-3 py-1.5 rounded-lg text-sm bg-white/5 border border-[#FFFFFF]/20 text-white/70 hover:bg-white/10"
               >
                 ✏️ Custom
               </button>
@@ -876,7 +906,7 @@ export default function AdminSupportPage() {
                   value={customResponse}
                   onChange={(e) => setCustomResponse(e.target.value)}
                   placeholder="Type your response in English..."
-                  className="w-full h-24 px-4 py-3 rounded-lg bg-white/10 border border-white/20 
+                  className="w-full h-24 px-4 py-3 rounded-lg bg-white/10 border border-[#FFFFFF]/20 
                     text-white placeholder:text-white/40 focus:outline-none focus:border-[#7EC8E3] resize-none"
                 />
                 <button
@@ -907,7 +937,7 @@ export default function AdminSupportPage() {
                 <div className="mt-3 flex flex-wrap gap-3">
                   <button
                     onClick={() => copyToClipboard(spanishResponse)}
-                    className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all"
+                    className="px-4 py-2 rounded-lg bg-white/10 border border-[#FFFFFF]/20 text-white hover:bg-white/20 transition-all"
                   >
                     📋 Copy to Clipboard
                   </button>
@@ -934,7 +964,7 @@ export default function AdminSupportPage() {
       {/* Dashboard Stats */}
       <section className="mb-8">
         {statsLoading ? (
-          <div className="p-8 rounded-xl bg-white/5 border border-white/10 text-center text-white/50">
+          <div className="p-8 rounded-xl bg-white/5 border border-[#FFFFFF]/15 text-center text-white/50">
             Loading dashboard stats...
           </div>
         ) : stats ? (
@@ -951,7 +981,7 @@ export default function AdminSupportPage() {
             {/* Second Row - Details */}
             <div className="grid md:grid-cols-3 gap-4">
               {/* Course Breakdown */}
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+              <div className="bg-white/5 border border-[#FFFFFF]/15 rounded-xl p-4">
                 <h3 className="font-semibold mb-3 text-white/80">Course Breakdown</h3>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
@@ -985,7 +1015,7 @@ export default function AdminSupportPage() {
               </div>
 
               {/* State Breakdown */}
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+              <div className="bg-white/5 border border-[#FFFFFF]/15 rounded-xl p-4">
                 <h3 className="font-semibold mb-3 text-white/80">Top States (Graduates)</h3>
                 <div className="space-y-2">
                   {(showAllStates ? stats.topStates : stats.topStates.slice(0, 5)).map((item) => (
@@ -1011,7 +1041,7 @@ export default function AdminSupportPage() {
               {/* Activity & Alerts */}
               <div className="space-y-4">
                 {/* Last 7 Days */}
-                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <div className="bg-white/5 border border-[#FFFFFF]/15 rounded-xl p-4">
                   <h3 className="font-semibold mb-3 text-white/80">Last 7 Days</h3>
                   <div className="flex gap-6">
                     <div>
@@ -1026,7 +1056,7 @@ export default function AdminSupportPage() {
                 </div>
 
                 {/* Alerts */}
-                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <div className="bg-white/5 border border-[#FFFFFF]/15 rounded-xl p-4">
                   <h3 className="font-semibold mb-3 text-white/80">Alerts</h3>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
@@ -1057,7 +1087,7 @@ export default function AdminSupportPage() {
             </div>
           </div>
         ) : (
-          <div className="p-8 rounded-xl bg-white/5 border border-white/10 text-center text-white/50">
+          <div className="p-8 rounded-xl bg-white/5 border border-[#FFFFFF]/15 text-center text-white/50">
             Failed to load stats
           </div>
         )}
@@ -1065,7 +1095,7 @@ export default function AdminSupportPage() {
 
       {/* System Health Bar */}
       {systemHealth && (
-        <div className="mb-6 p-4 rounded-xl bg-white/5 border border-white/10">
+        <div className="mb-6 p-4 rounded-xl bg-white/5 border border-[#FFFFFF]/15">
           <div className="flex items-center gap-6 flex-wrap">
             <span className="text-sm text-white/60">System Status:</span>
             <div className="flex items-center gap-2">
@@ -1112,13 +1142,13 @@ export default function AdminSupportPage() {
       )}
 
       {/* Search Section */}
-      <section className="mb-8 p-6 rounded-xl bg-white/5 border border-white/10">
+      <section className="mb-8 p-6 rounded-xl bg-white/5 border border-[#FFFFFF]/15">
         <h2 className="text-xl font-semibold mb-4">🔍 Customer Lookup</h2>
         <div className="flex gap-4 flex-wrap">
           <select
             value={searchType}
             onChange={(e) => setSearchType(e.target.value as typeof searchType)}
-            className="px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white"
+            className="px-4 py-3 rounded-lg bg-white/10 border border-[#FFFFFF]/20 text-white"
           >
             <option value="email">Email</option>
             <option value="name">Name</option>
@@ -1131,7 +1161,7 @@ export default function AdminSupportPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             placeholder={`Search by ${searchType}...`}
-            className="flex-1 min-w-[200px] px-4 py-3 rounded-lg bg-white/10 border border-white/20 
+            className="flex-1 min-w-[200px] px-4 py-3 rounded-lg bg-white/10 border border-[#FFFFFF]/20 
               text-white placeholder:text-white/40 focus:outline-none focus:border-[#7EC8E3]"
           />
           <button
@@ -1162,7 +1192,7 @@ export default function AdminSupportPage() {
                 This user exists in Supabase Auth but has no profile record. This usually happens when the webhook
                 failed or the user closed the browser before account setup completed.
               </p>
-              <div className="bg-[#1C1C1C] rounded-lg p-4 mb-4">
+              <div className="bg-background rounded-lg p-4 mb-4">
                 <p className="text-sm">
                   <strong>Auth ID:</strong> <span className="font-mono">{customer.authUser?.id}</span>
                 </p>
@@ -1187,7 +1217,7 @@ export default function AdminSupportPage() {
           {/* Customer Overview */}
           {!customer.orphan && customer.profile && (
             <>
-              <section className="p-6 rounded-xl bg-white/5 border border-white/10">
+              <section className="p-6 rounded-xl bg-white/5 border border-[#FFFFFF]/15">
                 <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
                   <div>
                     <h2 className="text-2xl font-bold flex items-center gap-3">
@@ -1232,7 +1262,7 @@ export default function AdminSupportPage() {
 
                 {/* Profile Details */}
                 {customer.profile && (
-                  <div className="mt-6 pt-6 border-t border-white/10">
+                  <div className="mt-6 pt-6 border-t border-[#FFFFFF]/15">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-semibold">📋 Profile Details</h3>
                       <button
@@ -1272,7 +1302,7 @@ export default function AdminSupportPage() {
                 )}
 
                 {/* Account Quick Actions */}
-                <div className="mt-6 pt-6 border-t border-white/10">
+                <div className="mt-6 pt-6 border-t border-[#FFFFFF]/15">
                   <h3 className="text-lg font-semibold mb-4">⚡ Account Actions</h3>
                   <div className="flex flex-wrap gap-3">
                     <ActionButton
@@ -1330,7 +1360,7 @@ export default function AdminSupportPage() {
               </section>
 
               {/* Purchases Section */}
-              <section className="p-6 rounded-xl bg-white/5 border border-white/10">
+              <section className="p-6 rounded-xl bg-white/5 border border-[#FFFFFF]/15">
                 <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
                   <h2 className="text-xl font-semibold">💳 Purchases</h2>
                   <ActionButton
@@ -1352,7 +1382,7 @@ export default function AdminSupportPage() {
                 </div>
 
                 {customer.purchases.length === 0 ? (
-                  <div className="p-8 text-center text-white/50 border border-dashed border-white/20 rounded-lg">
+                  <div className="p-8 text-center text-white/50 border border-dashed border-[#FFFFFF]/20 rounded-lg">
                     <p className="text-lg mb-2">No purchases found</p>
                     <p className="text-sm">User may have paid but webhook failed. Check Stripe.</p>
                     <div className="mt-4">
@@ -1372,7 +1402,7 @@ export default function AdminSupportPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="text-left text-white/50 border-b border-white/10">
+                        <tr className="text-left text-white/50 border-b border-[#FFFFFF]/15">
                           <th className="pb-3">Course</th>
                           <th className="pb-3">Amount</th>
                           <th className="pb-3">Status</th>
@@ -1433,11 +1463,11 @@ export default function AdminSupportPage() {
               </section>
 
               {/* Course Progress Section */}
-              <section className="p-6 rounded-xl bg-white/5 border border-white/10">
+              <section className="p-6 rounded-xl bg-white/5 border border-[#FFFFFF]/15">
                 <h2 className="text-xl font-semibold mb-4">📚 Course Progress</h2>
 
                 {customer.courseProgress.length === 0 ? (
-                  <div className="p-8 text-center text-white/50 border border-dashed border-white/20 rounded-lg">
+                  <div className="p-8 text-center text-white/50 border border-dashed border-[#FFFFFF]/20 rounded-lg">
                     <p className="text-lg mb-2">No progress records found</p>
                     {customer.purchases.length > 0 && (
                       <div className="mt-4">
@@ -1460,7 +1490,7 @@ export default function AdminSupportPage() {
                 ) : (
                   <div className="space-y-4">
                     {customer.courseProgress.map((progress) => (
-                      <div key={progress.id} className="p-4 rounded-lg bg-white/5 border border-white/10">
+                      <div key={progress.id} className="p-4 rounded-lg bg-white/5 border border-[#FFFFFF]/15">
                         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                           <h3 className="font-semibold">{getCourseDisplayName(progress.course_type)}</h3>
                           <div className="flex gap-2">
@@ -1521,7 +1551,7 @@ export default function AdminSupportPage() {
                         </div>
 
                         {/* Progress Quick Actions */}
-                        <div className="flex flex-wrap gap-3 pt-4 border-t border-white/10">
+                        <div className="flex flex-wrap gap-3 pt-4 border-t border-[#FFFFFF]/15">
                           {(progress.lessons_completed?.length || 0) < 15 && (
                             <ActionButton
                               variant="success"
@@ -1558,18 +1588,18 @@ export default function AdminSupportPage() {
               </section>
 
               {/* Exam Attempts Section */}
-              <section className="p-6 rounded-xl bg-white/5 border border-white/10">
+              <section className="p-6 rounded-xl bg-white/5 border border-[#FFFFFF]/15">
                 <h2 className="text-xl font-semibold mb-4">📝 Exam Attempts</h2>
 
                 {customer.examAttempts.length === 0 ? (
-                  <div className="p-8 text-center text-white/50 border border-dashed border-white/20 rounded-lg">
+                  <div className="p-8 text-center text-white/50 border border-dashed border-[#FFFFFF]/20 rounded-lg">
                     <p>No exam attempts yet</p>
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="text-left text-white/50 border-b border-white/10">
+                        <tr className="text-left text-white/50 border-b border-[#FFFFFF]/15">
                           <th className="pb-3">Version</th>
                           <th className="pb-3">Score</th>
                           <th className="pb-3">Result</th>
@@ -1621,7 +1651,7 @@ export default function AdminSupportPage() {
                 {/* Create Passing Attempt */}
                 {customer.courseProgress.some((p) => p.lessons_completed?.length === 15) &&
                   !customer.examAttempts.some((a) => a.passed) && (
-                    <div className="mt-4 pt-4 border-t border-white/10">
+                    <div className="mt-4 pt-4 border-t border-[#FFFFFF]/15">
                       <ActionButton
                         variant="success"
                         onClick={() => {
@@ -1641,11 +1671,11 @@ export default function AdminSupportPage() {
               </section>
 
               {/* Certificates Section */}
-              <section className="p-6 rounded-xl bg-white/5 border border-white/10">
+              <section className="p-6 rounded-xl bg-white/5 border border-[#FFFFFF]/15">
                 <h2 className="text-xl font-semibold mb-4">🏆 Certificates</h2>
 
                 {customer.certificates.length === 0 ? (
-                  <div className="p-8 text-center text-white/50 border border-dashed border-white/20 rounded-lg">
+                  <div className="p-8 text-center text-white/50 border border-dashed border-[#FFFFFF]/20 rounded-lg">
                     <p className="text-lg mb-2">No certificates generated</p>
                     {customer.examAttempts.some((a) => a.passed) && (
                       <>
@@ -1668,7 +1698,7 @@ export default function AdminSupportPage() {
                 ) : (
                   <div className="space-y-4">
                     {customer.certificates.map((cert) => (
-                      <div key={cert.id} className="p-4 rounded-lg bg-white/5 border border-white/10">
+                      <div key={cert.id} className="p-4 rounded-lg bg-white/5 border border-[#FFFFFF]/15">
                         <div className="flex items-start justify-between mb-4 flex-wrap gap-2">
                           <div>
                             <h3 className="font-semibold text-lg">{getCourseDisplayName(cert.course_type)}</h3>
@@ -1706,7 +1736,7 @@ export default function AdminSupportPage() {
                         </div>
 
                         {/* Certificate Quick Actions */}
-                        <div className="flex flex-wrap gap-3 pt-4 border-t border-white/10">
+                        <div className="flex flex-wrap gap-3 pt-4 border-t border-[#FFFFFF]/15">
                           <ActionButton
                             onClick={() =>
                               window.open(`https://claseparapadres.com/api/certificate/${cert.id}`, '_blank')
@@ -1806,7 +1836,7 @@ export default function AdminSupportPage() {
 
       {/* Action Log */}
       {actionLog.length > 0 && (
-        <section className="mt-8 p-6 rounded-xl bg-white/5 border border-white/10">
+        <section className="mt-8 p-6 rounded-xl bg-white/5 border border-[#FFFFFF]/15">
           <h2 className="text-xl font-semibold mb-4">📜 Action Log (This Session)</h2>
           <div className="space-y-2">
             {actionLog.map((log) => (
@@ -1824,7 +1854,7 @@ export default function AdminSupportPage() {
       {/* Confirmation Modal */}
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#2C2C2C] rounded-xl p-6 max-w-md w-full border border-white/20">
+          <div className="bg-[#2C2C2C] rounded-xl p-6 max-w-md w-full border border-[#FFFFFF]/20">
             <h3 className="text-xl font-bold mb-2">{showConfirmModal.title}</h3>
             <p className="text-white/70 mb-6">{showConfirmModal.message}</p>
             <div className="flex gap-3 justify-end">
@@ -1848,7 +1878,7 @@ export default function AdminSupportPage() {
       {/* Profile Edit Modal */}
       {showProfileEditModal && customer?.profile && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#2C2C2C] rounded-xl p-6 max-w-lg w-full border border-white/20 max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#2C2C2C] rounded-xl p-6 max-w-lg w-full border border-[#FFFFFF]/20 max-h-[90vh] overflow-y-auto">
             <h3 className="text-xl font-bold mb-4">✏️ Edit Profile</h3>
             <p className="text-white/60 text-sm mb-6">Update customer profile information. Changes will also update the certificate if one exists.</p>
             
@@ -1859,7 +1889,7 @@ export default function AdminSupportPage() {
                   type="text"
                   value={profileEditData.legal_name}
                   onChange={(e) => setProfileEditData({ ...profileEditData, legal_name: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:border-[#7EC8E3]"
+                  className="w-full px-4 py-2 rounded-lg bg-white/10 border border-[#FFFFFF]/20 text-white focus:outline-none focus:border-[#7EC8E3]"
                   placeholder="Full legal name"
                 />
               </div>
@@ -1871,7 +1901,7 @@ export default function AdminSupportPage() {
                     type="text"
                     value={profileEditData.court_state}
                     onChange={(e) => setProfileEditData({ ...profileEditData, court_state: e.target.value })}
-                    className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:border-[#7EC8E3]"
+                    className="w-full px-4 py-2 rounded-lg bg-white/10 border border-[#FFFFFF]/20 text-white focus:outline-none focus:border-[#7EC8E3]"
                     placeholder="TX, CA, FL..."
                   />
                 </div>
@@ -1881,7 +1911,7 @@ export default function AdminSupportPage() {
                     type="text"
                     value={profileEditData.court_county}
                     onChange={(e) => setProfileEditData({ ...profileEditData, court_county: e.target.value })}
-                    className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:border-[#7EC8E3]"
+                    className="w-full px-4 py-2 rounded-lg bg-white/10 border border-[#FFFFFF]/20 text-white focus:outline-none focus:border-[#7EC8E3]"
                     placeholder="Harris County"
                   />
                 </div>
@@ -1893,12 +1923,12 @@ export default function AdminSupportPage() {
                   type="text"
                   value={profileEditData.case_number}
                   onChange={(e) => setProfileEditData({ ...profileEditData, case_number: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:border-[#7EC8E3]"
+                  className="w-full px-4 py-2 rounded-lg bg-white/10 border border-[#FFFFFF]/20 text-white focus:outline-none focus:border-[#7EC8E3]"
                   placeholder="Case #12345"
                 />
               </div>
               
-              <div className="border-t border-white/10 pt-4 mt-4">
+              <div className="border-t border-[#FFFFFF]/15 pt-4 mt-4">
                 <p className="text-sm text-white/50 mb-3">Attorney Information (optional)</p>
                 <div className="space-y-4">
                   <div>
@@ -1907,7 +1937,7 @@ export default function AdminSupportPage() {
                       type="text"
                       value={profileEditData.attorney_name}
                       onChange={(e) => setProfileEditData({ ...profileEditData, attorney_name: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:border-[#7EC8E3]"
+                      className="w-full px-4 py-2 rounded-lg bg-white/10 border border-[#FFFFFF]/20 text-white focus:outline-none focus:border-[#7EC8E3]"
                       placeholder="John Smith"
                     />
                   </div>
@@ -1917,7 +1947,7 @@ export default function AdminSupportPage() {
                       type="email"
                       value={profileEditData.attorney_email}
                       onChange={(e) => setProfileEditData({ ...profileEditData, attorney_email: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:border-[#7EC8E3]"
+                      className="w-full px-4 py-2 rounded-lg bg-white/10 border border-[#FFFFFF]/20 text-white focus:outline-none focus:border-[#7EC8E3]"
                       placeholder="attorney@lawfirm.com"
                     />
                   </div>

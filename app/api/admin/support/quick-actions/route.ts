@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
+import { isAdmin } from '@/lib/admin';
 import Stripe from 'stripe';
 import { Resend } from 'resend';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const resend = new Resend(process.env.RESEND_API_KEY);
-
-// Admin emails that can access this endpoint
-const ADMIN_EMAILS = ['jonescraig@me.com'];
 
 // Helper to generate random strings
 function generateRandomString(length: number): string {
@@ -44,7 +42,7 @@ export async function POST(request: NextRequest) {
       adminEmail = user?.email || null;
     }
 
-    if (!adminEmail || !ADMIN_EMAILS.includes(adminEmail)) {
+    if (!adminEmail || !isAdmin(adminEmail)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

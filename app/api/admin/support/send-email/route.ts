@@ -1,17 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
 import { Resend } from 'resend';
+import { isAdmin } from '@/lib/admin';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Constants
+const MAX_SUBJECT_LENGTH = 200;
+const MAX_BODY_LENGTH = 10000;
 
-// Admin emails that can access this endpoint
-const ADMIN_EMAILS = ['jonescraig@me.com'];
+// Types
+interface SendEmailPayload {
+  to: string;
+  subject: string;
+  body: string;
+}
 
+/**
+ * POST /api/admin/support/send-email
+ * 
+ * Sends a support email to a customer.
+ * Admin-only endpoint.
+ */
 export async function POST(request: NextRequest) {
+  // Initialize Resend inside handler to avoid module-level crashes
+  if (!process.env.RESEND_API_KEY) {
+    console.error('RESEND_API_KEY is not configured');
+    return NextResponse.json({ error: 'Email service not configured' }, { status: 503 });
+  }
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
   const supabase = createServerClient();
 
   try {
-    // Get admin user from Authorization header
+    // ─────────────────────────────────────────────────────────────────────────
+    // 1. Authorization
+    // ─────────────────────────────────────────────────────────────────────────
     const authHeader = request.headers.get('authorization');
     const token = authHeader?.replace('Bearer ', '');
 
@@ -22,31 +44,61 @@ export async function POST(request: NextRequest) {
       adminEmail = user?.email || null;
     }
 
-    if (!adminEmail || !ADMIN_EMAILS.includes(adminEmail)) {
+    if (!isAdmin(adminEmail)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { to, subject, body } = await request.json();
-
-    if (!to || !subject || !body) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    // ─────────────────────────────────────────────────────────────────────────
+    // 2. Parse and validate request body
+    // ─────────────────────────────────────────────────────────────────────────
+    let payload: SendEmailPayload;
+    try {
+      payload = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
     }
 
-    // Validate email format
+    const { to, subject, body } = payload;
+
+    // Required fields
+    if (!to || typeof to !== 'string') {
+      return NextResponse.json({ error: 'Missing or invalid "to" field' }, { status: 400 });
+    }
+    if (!subject || typeof subject !== 'string') {
+      return NextResponse.json({ error: 'Missing or invalid "subject" field' }, { status: 400 });
+    }
+    if (!body || typeof body !== 'string') {
+      return NextResponse.json({ error: 'Missing or invalid "body" field' }, { status: 400 });
+    }
+
+    // Length limits
+    if (subject.length > MAX_SUBJECT_LENGTH) {
+      return NextResponse.json({ 
+        error: `Subject exceeds ${MAX_SUBJECT_LENGTH} characters` 
+      }, { status: 400 });
+    }
+    if (body.length > MAX_BODY_LENGTH) {
+      return NextResponse.json({ 
+        error: `Body exceeds ${MAX_BODY_LENGTH} characters` 
+      }, { status: 400 });
+    }
+
+    // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(to)) {
-      return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
+    if (!emailRegex.test(to.trim())) {
+      return NextResponse.json({ error: 'Invalid email address format' }, { status: 400 });
     }
 
-    // Generate HTML email
+    // ─────────────────────────────────────────────────────────────────────────
+    // 3. Generate and send email
+    // ─────────────────────────────────────────────────────────────────────────
     const htmlBody = generateSupportEmailHTML(body);
 
-    // Send via Resend
     const { data, error } = await resend.emails.send({
       from: 'Clase para Padres <hola@claseparapadres.com>',
       replyTo: 'info@claseparapadres.com',
-      to: to,
-      subject: subject,
+      to: to.trim(),
+      subject: subject.trim(),
       html: htmlBody,
     });
 
@@ -55,10 +107,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // 4. Audit log and success response
+    // ─────────────────────────────────────────────────────────────────────────
+    console.log(`[SUPPORT EMAIL] Admin: ${adminEmail} → Recipient: ${to.trim()} | Subject: "${subject.trim().substring(0, 50)}..."`);
+
     return NextResponse.json({ 
       success: true, 
       messageId: data?.id,
-      message: `Email sent to ${to}` 
+      message: `Email sent to ${to.trim()}` 
     });
 
   } catch (error) {
@@ -67,9 +124,27 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Helper Functions
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Escape HTML special characters to prevent rendering issues.
+ */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
+ * Generate branded HTML email template for support responses.
+ */
 function generateSupportEmailHTML(body: string): string {
-  // Convert line breaks to HTML
-  const formattedBody = body
+  const formattedBody = escapeHtml(body)
     .split('\n')
     .map(line => line.trim() === '' ? '<br>' : `<p style="margin: 0 0 10px 0;">${line}</p>`)
     .join('');

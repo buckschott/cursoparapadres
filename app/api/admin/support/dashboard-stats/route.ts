@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
-
-// Admin emails that can access this endpoint
-const ADMIN_EMAILS = ['jonescraig@me.com'];
+import { isAdmin } from '@/lib/admin';
 
 export async function GET(request: NextRequest) {
   const supabase = createServerClient();
@@ -19,7 +17,7 @@ export async function GET(request: NextRequest) {
       adminEmail = user?.email || null;
     }
 
-    if (!adminEmail || !ADMIN_EMAILS.includes(adminEmail)) {
+    if (!adminEmail || !isAdmin(adminEmail)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

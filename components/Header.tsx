@@ -93,8 +93,8 @@ export default function Header() {
             )}
           </div>
 
-          {/* Mobile CTAs - Always visible, no hamburger */}
-          <div className="flex xl:hidden items-center gap-2">
+          {/* Mobile CTA - Always visible, no hamburger */}
+          <div className="flex xl:hidden items-center">
             {!isLoading && (
               isLoggedIn ? (
                 <a 
@@ -104,20 +104,12 @@ export default function Header() {
                   Mi Panel
                 </a>
               ) : (
-                <>
-                  <a 
-                    href="#precios" 
-                    className="bg-[#77DD77] text-[#1C1C1C] px-3 py-2 rounded-lg font-semibold text-sm hover:bg-[#88EE88] transition-colors"
-                  >
-                    Inscríbase
-                  </a>
-                  <a 
-                    href="/iniciar-sesion" 
-                    className="text-white/70 hover:text-white transition-colors text-sm font-medium px-2 py-2"
-                  >
-                    Iniciar Sesión
-                  </a>
-                </>
+                <a 
+                  href="#precios" 
+                  className="bg-[#77DD77] text-[#1C1C1C] px-4 py-2 rounded-lg font-semibold text-sm hover:bg-[#88EE88] transition-colors"
+                >
+                  Inscríbase
+                </a>
               )
             )}
           </div>

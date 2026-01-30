@@ -58,12 +58,6 @@ export default function Header() {
             >
               Preguntas Frecuentes
             </a>
-            <a 
-              href="mailto:info@claseparapadres.com" 
-              className="text-white/70 hover:text-white transition-colors"
-            >
-              Contáctenos
-            </a>
             
             {/* Auth-aware CTA - Desktop */}
             {!isLoading && (

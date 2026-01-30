@@ -17,7 +17,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
  * 2. Preguntas Frecuentes
  * 3. [Inscríbase Ahora] - Primary CTA
  * 4. [Iniciar Sesión] - Secondary CTA
- * 5. Contáctenos - De-emphasized below CTAs
  */
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -205,7 +204,7 @@ export default function Header() {
             </a>
           </nav>
 
-          {/* CTAs - Moved above Contáctenos for conversion optimization */}
+          {/* CTAs */}
           <div className="mt-auto pt-12 space-y-4">
             <a 
               href="#precios" 
@@ -215,21 +214,12 @@ export default function Header() {
               Inscríbase Ahora
             </a>
             <a 
+              ref={lastFocusableRef}
               href="/iniciar-sesion" 
               onClick={closeMenu} 
               className={`block w-full bg-transparent text-white text-center px-6 py-4 rounded-xl font-semibold border-2 border-white hover:bg-white/10 transition-colors text-lg ${menuLinkFocusClasses}`}
             >
               Iniciar Sesión
-            </a>
-            
-            {/* Contáctenos - De-emphasized tertiary link below CTAs */}
-            <a 
-              ref={lastFocusableRef}
-              href="mailto:info@claseparapadres.com" 
-              onClick={closeMenu} 
-              className={`block w-full text-white/60 text-center py-3 text-sm hover:text-white transition-colors ${menuLinkFocusClasses}`}
-            >
-              Contáctenos
             </a>
           </div>
         </div>

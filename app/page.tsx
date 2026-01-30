@@ -255,8 +255,8 @@ export default function Home() {
               {/* Coparenting Course */}
               <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/20 p-8 shadow-xl shadow-black/40 transition-all md:hover:shadow-2xl md:hover:border-[#FFFFFF]/50">
                 <div className="mb-6">
-                  <h3 className="text-2xl font-bold text-white mb-1">Clase de Coparentalidad</h3>
-                  <p className="text-sm text-white/70">Para Divorcio, Separación y Custodia</p>
+                  <h3 className="text-2xl font-bold text-white mb-2">Clase de Coparentalidad</h3>
+                  <p className="text-base text-[#7EC8E3] font-medium">¿El juez ordenó una clase de coparentalidad?</p>
                 </div>
                 <div className="mb-6">
                   <span className="text-5xl font-bold text-white">$60</span>
@@ -303,7 +303,19 @@ export default function Home() {
                 <div className="mb-6 pt-4 border-t border-[#FFFFFF]/15">
                   <h4 className="text-xs font-semibold text-white mb-2">Incluye:</h4>
                   <ul className="space-y-2">
-                    {["Aceptado por Tribunales en Todo el País", "Cumple Requisitos de 4-6 Horas", "Acceso 24/7. A Su Ritmo.", "Certificado Verificable con Código de Seguridad", "Notificamos a Su Abogado al Completar"].map((item, i) => (
+                    <li className="flex items-start gap-2">
+                      <CheckIcon className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#77DD77]" />
+                      <span className="text-white/70 text-xs">
+                        Aceptado por Tribunales en Todo el País{' '}
+                        <a 
+                          href="/aceptacion-de-la-corte" 
+                          className="text-[#7EC8E3] hover:underline"
+                        >
+                          Ver detalles →
+                        </a>
+                      </span>
+                    </li>
+                    {["Cumple Requisitos de 4-6 Horas", "Acceso 24/7. A Su Ritmo.", "Certificado Verificable con Código de Seguridad", "Notificamos a Su Abogado al Completar"].map((item, i) => (
                       <li key={i} className="flex items-start gap-2">
                         <CheckIcon className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#77DD77]" />
                         <span className="text-white/70 text-xs">{item}</span>
@@ -322,8 +334,8 @@ export default function Home() {
               {/* Parenting Course */}
               <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/20 p-8 shadow-xl shadow-black/40 transition-all md:hover:shadow-2xl md:hover:border-[#FFFFFF]/50">
                 <div className="mb-6">
-                  <h3 className="text-2xl font-bold text-white mb-1">Clase de Crianza</h3>
-                  <p className="text-sm text-white/70">Para Casos de Reunificación, Adopción y CPS</p>
+                  <h3 className="text-2xl font-bold text-white mb-2">Clase de Crianza</h3>
+                  <p className="text-base text-[#7EC8E3] font-medium">¿CPS o la corte requiere una clase de crianza?</p>
                 </div>
                 <div className="mb-6">
                   <span className="text-5xl font-bold text-white">$60</span>
@@ -370,7 +382,19 @@ export default function Home() {
                 <div className="mb-6 pt-4 border-t border-[#FFFFFF]/15">
                   <h4 className="text-xs font-semibold text-white mb-2">Incluye:</h4>
                   <ul className="space-y-2">
-                    {["Aceptado por Tribunales en Todo el País", "Cumple Requisitos de 4-6 Horas", "Acceso 24/7. A Su Ritmo.", "Certificado Verificable con Código de Seguridad", "Notificamos a Su Abogado al Completar"].map((item, i) => (
+                    <li className="flex items-start gap-2">
+                      <CheckIcon className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#77DD77]" />
+                      <span className="text-white/70 text-xs">
+                        Aceptado por Tribunales en Todo el País{' '}
+                        <a 
+                          href="/aceptacion-de-la-corte" 
+                          className="text-[#7EC8E3] hover:underline"
+                        >
+                          Ver detalles →
+                        </a>
+                      </span>
+                    </li>
+                    {["Cumple Requisitos de 4-6 Horas", "Acceso 24/7. A Su Ritmo.", "Certificado Verificable con Código de Seguridad", "Notificamos a Su Abogado al Completar"].map((item, i) => (
                       <li key={i} className="flex items-start gap-2">
                         <CheckIcon className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#77DD77]" />
                         <span className="text-white/70 text-xs">{item}</span>
@@ -387,9 +411,9 @@ export default function Home() {
               </article>
             </div>
 
-            {/* Bundle */}
+            {/* Bundle - Enhanced with glow and strikethrough pricing */}
             <div className="max-w-4xl mx-auto mt-16 mb-14">
-              <article className="relative bg-background rounded-2xl border-2 border-[#FFFFFF]/20 p-8 shadow-xl shadow-black/40 transition-all md:hover:shadow-2xl md:hover:border-[#FFFFFF]/50">
+              <article className="relative bg-background rounded-2xl border-2 border-[#77DD77]/50 p-8 shadow-xl shadow-[#77DD77]/20 transition-all md:hover:shadow-2xl md:hover:shadow-[#77DD77]/30 md:hover:border-[#77DD77]/70">
                 {/* Best Value Badge */}
                 <div className="absolute -top-3 right-6 bg-[#77DD77] text-[#1C1C1C] px-3 py-1 rounded-full text-xs font-bold tracking-wide">
                   ⭐ Mejor Valor
@@ -400,15 +424,18 @@ export default function Home() {
                   <p className="text-sm text-white/70">Ambas Clases. Un Precio.</p>
                 </div>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-white">$80</span>
-                  <p className="text-sm text-white/60 mt-2">Pago único • Ahorre $40</p>
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-5xl font-bold text-white">$80</span>
+                    <span className="text-2xl text-white/40 line-through">$120</span>
+                  </div>
+                  <p className="text-sm text-[#77DD77] font-semibold mt-2">Ahorre $40</p>
                 </div>
                 <div className="mb-6">
                   <h4 className="text-sm font-semibold text-white mb-3">Incluye ambas clases:</h4>
                   <ul className="space-y-2">
                     {["Clase de Coparentalidad + Clase de Crianza", "Dos Certificados Verificables", "Notificamos a Su Abogado al Completar Cada Clase", "Cumple Requisitos Combinados o de Nivel Superior"].map((item, i) => (
                       <li key={i} className="flex items-start gap-3">
-                        <CheckIcon className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#7EC8E3]" />
+                        <CheckIcon className="w-5 h-5 mt-0.5 flex-shrink-0 text-[#77DD77]" />
                         <span className="text-white text-sm">{item}</span>
                       </li>
                     ))}
@@ -418,7 +445,7 @@ export default function Home() {
                 <button 
                   onClick={handleBundleCheckout}
                   disabled={loading === 'bundle'}
-                  className="group w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold transition-all duration-200 hover:bg-[#9DD8F3] hover:shadow-lg hover:shadow-[#7EC8E3]/30 active:scale-[0.98] active:bg-[#9DD8F3] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="group w-full bg-[#77DD77] text-[#1C1C1C] py-4 rounded-xl font-bold transition-all duration-200 hover:bg-[#88EE88] hover:shadow-lg hover:shadow-[#77DD77]/30 active:scale-[0.98] active:bg-[#88EE88] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {loading === 'bundle' ? (
                     <>
@@ -499,6 +526,32 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ATTORNEY ENDORSEMENT SECTION */}
+        <section 
+          id="respaldo-profesional" 
+          className="section-divider py-16 bg-background relative z-20" 
+          aria-labelledby="respaldo-profesional-heading"
+        >
+          <div className="max-w-4xl mx-auto px-4">
+            <div className="scroll-reveal text-center">
+              <div className="inline-block mb-6">
+                <span className="text-[#7EC8E3] text-sm font-semibold tracking-wide uppercase">
+                  Respaldo Profesional
+                </span>
+              </div>
+              <blockquote className="text-xl md:text-2xl lg:text-3xl text-white font-medium leading-relaxed mb-8">
+                "Completé esta clase yo mismo. Debería ser requisito para todo abogado de familia, no solo para clientes. No elogio clases — esta se lo ganó."
+              </blockquote>
+              <footer className="text-white/70">
+                <cite className="not-italic">
+                  <span className="font-semibold text-white">G. Smith</span>
+                  <span className="block text-sm mt-1">Abogado de Familia</span>
+                </cite>
+              </footer>
+            </div>
+          </div>
+        </section>
+
         {/* TESTIMONIALS SECTION */}
         <section 
           id="testimonios" 
@@ -517,9 +570,21 @@ export default function Home() {
             
             <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
               {[
-                { name: "Roberto Méndez", location: "Houston, Texas", text: "Mi abogado me recomendó esta clase específicamente. Enviaron el certificado a mi abogado por correo electrónico. No tuve que preocuparme más." },
-                { name: "Lucía Fernández", location: "Atlanta, Georgia", text: "Como madre soltera con dos trabajos, necesitaba algo flexible. Hice toda la clase en mi teléfono cuando tenía tiempo. El certificado llegó a mi correo al terminar." },
-                { name: "Miguel Torres", location: "Jacksonville, Florida", text: "Tenía un requisito del tribunal y necesitaba resolverlo. Fue más fácil de lo que pensé. Requisito cumplido." }
+                { 
+                  name: "Roberto M.", 
+                  location: "Condado de Harris, Texas", 
+                  text: "Mi abogado me recomendó esta clase para mi caso de custodia. El certificado llegó a su oficina el mismo día que terminé." 
+                },
+                { 
+                  name: "Lucía F.", 
+                  location: "Condado de Fulton, Georgia", 
+                  text: "Tenía 30 días para completar el requisito del juez. Lo hice en mi teléfono entre turnos. Requisito cumplido en una semana." 
+                },
+                { 
+                  name: "Miguel T.", 
+                  location: "Condado de Duval, Florida", 
+                  text: "El juez ordenó una clase de coparentalidad. Esta fue aceptada sin problema. Mi abogada recibió copia del certificado automáticamente." 
+                }
               ].map((review, i) => (
                 <article key={i} className="bg-background border-2 border-[#FFFFFF]/15 rounded-2xl p-8 shadow-xl shadow-black/40 md:hover:border-[#7EC8E3]/30 md:hover:shadow-2xl transition-all">
                   <div className="flex mb-4">
@@ -556,8 +621,10 @@ export default function Home() {
             
             <div className="space-y-4">
               {[
-                { question: "¿Cuándo recibo mi certificado?", answer: "Inmediatamente al completar la clase. Su certificado llega a su correo electrónico y notificamos a su abogado automáticamente." },
+                { question: "¿Puedo empezar hoy?", answer: "Sí. El acceso es inmediato después de inscribirse. Sin esperas, sin citas." },
                 { question: "¿Cuánto tiempo toma la clase?", answer: "La clase está diseñada para cumplir requisitos de 4-6 horas. Es 100% a su ritmo—puede empezar, pausar y continuar cuando quiera." },
+                { question: "¿Qué pasa si no apruebo el examen?", answer: "Puede retomarlo sin costo adicional. Sin límite de intentos." },
+                { question: "¿Cuándo recibo mi certificado?", answer: "Inmediatamente al completar la clase. Su certificado llega a su correo electrónico y notificamos a su abogado automáticamente." },
                 { question: "¿Dónde es aceptado mi certificado?", answer: "En todo el país. Somos el original—el nombre más reconocido y el certificado más aceptado." }
               ].map((faq, i) => (
                 <details key={i} className="bg-background border-2 border-[#FFFFFF]/15 rounded-xl overflow-hidden group shadow-xl shadow-black/40 md:hover:border-[#7EC8E3]/30 transition-colors">

@@ -16,6 +16,7 @@ const CURRENT_YEAR = new Date().getFullYear();
  * - Scroll-reveal animation on CTA section
  * - Staggered tagline animation
  * - Next.js Link prefetching for internal routes
+ * - SEO authority bridge link to English site
  */
 export default function Footer() {
   const footerRef = useScrollReveal();
@@ -91,6 +92,16 @@ export default function Footer() {
                   className="hover:text-white transition-colors"
                 >
                   {SUPPORT_EMAIL}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://puttingkidsfirst.org" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
+                  English Site
                 </a>
               </li>
             </ul>

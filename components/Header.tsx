@@ -65,7 +65,7 @@ export default function Header() {
               Contáctenos
             </a>
             
-            {/* Auth-aware CTAs - Desktop */}
+            {/* Auth-aware CTA - Desktop */}
             {!isLoading && (
               isLoggedIn ? (
                 <a 
@@ -75,20 +75,12 @@ export default function Header() {
                   Mi Panel
                 </a>
               ) : (
-                <>
-                  <a 
-                    href="#precios" 
-                    className="bg-[#77DD77] text-[#1C1C1C] px-6 py-2 rounded-lg font-semibold hover:bg-[#88EE88] transition-colors"
-                  >
-                    Inscríbase Ahora
-                  </a>
-                  <a 
-                    href="/iniciar-sesion" 
-                    className="text-white/70 hover:text-white transition-colors"
-                  >
-                    Iniciar Sesión
-                  </a>
-                </>
+                <a 
+                  href="#precios" 
+                  className="bg-[#77DD77] text-[#1C1C1C] px-6 py-2 rounded-lg font-semibold hover:bg-[#88EE88] transition-colors"
+                >
+                  Inscríbase Ahora
+                </a>
               )
             )}
           </div>

@@ -234,43 +234,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-        
-        {/* DEVICES SECTION */}
-        <section 
-          id="dispositivos"
-          className="section-divider relative bg-background overflow-hidden z-20 py-24 pt-32" 
-          aria-labelledby="dispositivos-heading"
-        >
-          <div className="relative max-w-6xl mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 id="dispositivos-heading" className="scroll-reveal text-[22px] md:text-4xl font-bold text-white mb-4">
-                Tome Su Clase Donde Esté
-              </h2>
-              <p className="scroll-reveal text-base md:text-lg text-white/70 max-w-2xl mx-auto">
-                Teléfono. Tableta. Computadora. Su progreso siempre guardado.
-              </p>
-            </div>
-
-            <div className="flex justify-center gap-4 md:gap-12 max-w-4xl mx-auto">
-              {[
-                { name: 'phone', label: 'Teléfono', size: 'w-12 h-12 md:w-[54px] md:h-[54px]', container: 'w-12 md:w-[54px]', src: '/phone.svg' },
-                { name: 'tablet', label: 'Tableta', size: 'w-16 h-16 md:w-[84px] md:h-[84px]', container: 'w-16 md:w-[84px]', src: '/tablet-es.svg' },
-                { name: 'laptop', label: 'Portátil', size: 'w-20 h-20 md:w-32 md:h-32', container: 'w-20 md:w-32', src: '/laptop-es.svg' },
-                { name: 'desktop', label: 'Escritorio', size: 'w-24 h-24 md:w-36 md:h-36', container: 'w-24 md:w-36', src: '/desktop-es.svg' }
-              ].map((device) => (
-                <div key={device.name} className={`device-animate device-${device.name} flex flex-col items-center gap-3`}>
-                  <div className={`relative h-28 md:h-40 ${device.container}`}>
-                    <img 
-                      src={device.src} 
-                      alt={device.label} 
-                      className={`device-img ${device.size} absolute bottom-0 left-0`} 
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* PRICING SECTION */}
         <section 
@@ -498,6 +461,41 @@ export default function Home() {
                 info@claseparapadres.com
               </a>
             </p>
+          </div>
+        </section>
+
+        {/* DEVICES SECTION - Moved below Pricing for better funnel flow */}
+        <section 
+          id="dispositivos"
+          className="section-divider relative bg-background overflow-hidden z-20 py-24" 
+          aria-labelledby="dispositivos-heading"
+        >
+          <div className="relative max-w-6xl mx-auto px-4">
+            {/* Condensed content: benefit-first, no redundant headline */}
+            <div className="text-center mb-16">
+              <p id="dispositivos-heading" className="scroll-reveal text-base md:text-lg text-white/70 max-w-2xl mx-auto">
+                Su progreso siempre guardado. Teléfono. Tableta. Computadora.
+              </p>
+            </div>
+
+            <div className="flex justify-center gap-4 md:gap-12 max-w-4xl mx-auto">
+              {[
+                { name: 'phone', label: 'Teléfono', size: 'w-12 h-12 md:w-[54px] md:h-[54px]', container: 'w-12 md:w-[54px]', src: '/phone.svg' },
+                { name: 'tablet', label: 'Tableta', size: 'w-16 h-16 md:w-[84px] md:h-[84px]', container: 'w-16 md:w-[84px]', src: '/tablet-es.svg' },
+                { name: 'laptop', label: 'Portátil', size: 'w-20 h-20 md:w-32 md:h-32', container: 'w-20 md:w-32', src: '/laptop-es.svg' },
+                { name: 'desktop', label: 'Escritorio', size: 'w-24 h-24 md:w-36 md:h-36', container: 'w-24 md:w-36', src: '/desktop-es.svg' }
+              ].map((device) => (
+                <div key={device.name} className={`device-animate device-${device.name} flex flex-col items-center gap-3`}>
+                  <div className={`relative h-28 md:h-40 ${device.container}`}>
+                    <img 
+                      src={device.src} 
+                      alt={device.label} 
+                      className={`device-img ${device.size} absolute bottom-0 left-0`} 
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 

@@ -101,6 +101,9 @@ export function Access247Icon({ className = '' }: IconProps) {
 /**
  * Feature data with icon components instead of path strings.
  * Much cleaner to use in the page component.
+ * 
+ * Feature #3 updated: Added "4-6 horas" duration to answer
+ * top parent question "How long does it take?"
  */
 export const FEATURES = [
   {
@@ -115,7 +118,7 @@ export const FEATURES = [
   },
   {
     title: "Su Horario. A Su Tiempo.",
-    description: "Inscríbase ahora. Pare cuando necesite. Sin perder su progreso.",
+    description: "4-6 horas. A su ritmo. Pare cuando necesite. Sin perder su progreso.",
     Icon: Access247Icon,
   },
   {

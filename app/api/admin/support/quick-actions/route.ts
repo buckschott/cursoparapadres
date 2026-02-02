@@ -230,8 +230,8 @@ export async function POST(request: NextRequest) {
           purchases?.[0]?.course_type === 'parenting'
             ? 'Clase de Crianza'
             : purchases?.[0]?.course_type === 'bundle'
-            ? 'El Paquete Completo'
-            : 'Clase de Coparentalidad';
+              ? 'El Paquete Completo'
+              : 'Clase de Coparentalidad';
 
         const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.claseparapadres.com';
 
@@ -796,6 +796,111 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: true,
           message: 'User data reset (auth account preserved)',
+        });
+      }
+
+      // ========================================================================
+      // DELETE EXAM ATTEMPTS (by user + course type)
+      // ========================================================================
+      case 'delete_exam_attempts': {
+        const { userId, courseType } = body;
+        if (!userId) {
+          return NextResponse.json({ error: 'userId required' }, { status: 400 });
+        }
+
+        // Get user's purchases to determine which exam attempts belong to which course
+        const { data: purchases } = await supabase
+          .from('purchases')
+          .select('id, course_type')
+          .eq('user_id', userId);
+
+        // Find purchase IDs for the specified course type (or bundle which covers both)
+        const relevantPurchaseIds: string[] = [];
+        purchases?.forEach(p => {
+          if (p.course_type === courseType || p.course_type === 'bundle') {
+            relevantPurchaseIds.push(p.id);
+          }
+        });
+
+        let deleteCount = 0;
+
+        if (relevantPurchaseIds.length > 0) {
+          // Delete exam attempts linked to these purchases
+          const { data: deleted } = await supabase
+            .from('exam_attempts')
+            .delete()
+            .eq('user_id', userId)
+            .in('purchase_id', relevantPurchaseIds)
+            .select('id');
+
+          deleteCount = deleted?.length || 0;
+        }
+
+        // Also delete any orphaned exam attempts (no purchase_id) for this user
+        // These might exist from older data or edge cases
+        if (deleteCount === 0) {
+          const { data: allDeleted } = await supabase
+            .from('exam_attempts')
+            .delete()
+            .eq('user_id', userId)
+            .select('id');
+
+          deleteCount = allDeleted?.length || 0;
+        }
+
+        // Also reset the quiz_score in course_progress for this course
+        await supabase
+          .from('course_progress')
+          .update({
+            quiz_score: null,
+            completed_at: null,
+            last_accessed: new Date().toISOString(),
+          })
+          .eq('user_id', userId)
+          .eq('course_type', courseType);
+
+        return NextResponse.json({
+          success: true,
+          message: `Deleted ${deleteCount} exam attempt(s) for ${courseType}`,
+        });
+      }
+
+      // ========================================================================
+      // RESET PROGRESS (by user + course type) - Alternative to progressId
+      // ========================================================================
+      case 'reset_course_progress': {
+        const { userId, courseType } = body;
+        if (!userId || !courseType) {
+          return NextResponse.json({ error: 'userId and courseType required' }, { status: 400 });
+        }
+
+        const { error, data } = await supabase
+          .from('course_progress')
+          .update({
+            lessons_completed: [],
+            current_lesson: null,
+            quiz_score: null,
+            completed_at: null,
+            last_accessed: new Date().toISOString(),
+          })
+          .eq('user_id', userId)
+          .eq('course_type', courseType)
+          .select('id');
+
+        if (error) {
+          return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        if (!data || data.length === 0) {
+          return NextResponse.json({
+            success: true,
+            message: 'No progress record found to reset',
+          });
+        }
+
+        return NextResponse.json({
+          success: true,
+          message: `Progress reset for ${courseType}`,
         });
       }
 

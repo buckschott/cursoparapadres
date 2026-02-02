@@ -56,28 +56,28 @@ export function useAdminSupport() {
   // -------------------------------------------------------------------------
   // STATE
   // -------------------------------------------------------------------------
-  
+
   // Dashboard data
   const [stats, setStats] = useState<DashboardStats>(defaultStats);
   const [systemHealth, setSystemHealth] = useState<SystemHealth>(defaultHealth);
-  
+
   // Customer data
   const [customer, setCustomer] = useState<CustomerData | null>(null);
   const [stuckStudents, setStuckStudents] = useState<StuckStudent[]>([]);
-  
+
   // UI state
   const [searchQuery, setSearchQuery] = useState('');
   const [searchType, setSearchType] = useState<SearchType>('email');
   const [message, setMessage] = useState<Message | null>(null);
   const [actionLog, setActionLog] = useState<ActionLog[]>([]);
-  
+
   // Loading states
   const [isLoadingStats, setIsLoadingStats] = useState(false);
   const [isLoadingCustomer, setIsLoadingCustomer] = useState(false);
   const [isLoadingHealth, setIsLoadingHealth] = useState(false);
   const [isLoadingStuckStudents, setIsLoadingStuckStudents] = useState(false);
   const [isExecutingAction, setIsExecutingAction] = useState(false);
-  
+
   // Translation state (for customer service panel)
   const [incomingEmail, setIncomingEmail] = useState('');
   const [translatedIncoming, setTranslatedIncoming] = useState('');
@@ -112,15 +112,15 @@ export function useAdminSupport() {
   const buildHeaders = useCallback(async (includeContentType = true): Promise<HeadersInit> => {
     const token = await getAuthToken();
     const headers: HeadersInit = {};
-    
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    
+
     if (includeContentType) {
       headers['Content-Type'] = 'application/json';
     }
-    
+
     return headers;
   }, [getAuthToken]);
 
@@ -197,7 +197,7 @@ export function useAdminSupport() {
   const searchCustomer = useCallback(async (query?: string, type?: SearchType) => {
     const searchValue = query ?? searchQuery;
     const searchTypeValue = type ?? searchType;
-    
+
     if (!searchValue.trim()) {
       showMessage('warning', 'Please enter a search query');
       return;
@@ -208,7 +208,7 @@ export function useAdminSupport() {
 
     try {
       const headers = await buildHeaders(true);
-      
+
       // POST with JSON body (matching the API expectation)
       const response = await fetch('/api/admin/support/customer-lookup', {
         method: 'POST',
@@ -218,24 +218,24 @@ export function useAdminSupport() {
           type: searchTypeValue,
         }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || 'Search failed');
       }
-      
+
       const data = await response.json();
-      
+
       if (data.error) {
         showMessage('error', data.error);
         return;
       }
-      
+
       if (!data.profile && !data.authUser) {
         showMessage('warning', 'No customer found');
         return;
       }
-      
+
       setCustomer(data);
       showMessage('success', 'Customer found');
       addToActionLog('Search', data.profile?.email || searchValue, `Found via ${searchTypeValue}`);
@@ -293,7 +293,7 @@ export function useAdminSupport() {
     params: Record<string, unknown>
   ): Promise<ActionResult> => {
     setIsExecutingAction(true);
-    
+
     try {
       const headers = await buildHeaders(true);
       const response = await fetch('/api/admin/support/quick-actions', {
@@ -355,7 +355,7 @@ export function useAdminSupport() {
   }, [executeAction]);
 
   const resetCourseProgress = useCallback((userId: string, courseType: string) => {
-    return executeAction('reset_progress', { userId, courseType });
+    return executeAction('reset_course_progress', { userId, courseType });
   }, [executeAction]);
 
   // Reset progress for ALL courses (both coparenting and parenting)
@@ -363,8 +363,8 @@ export function useAdminSupport() {
     setIsExecutingAction(true);
     try {
       // Reset both courses
-      await executeAction('reset_progress', { userId, courseType: 'coparenting' });
-      await executeAction('reset_progress', { userId, courseType: 'parenting' });
+      await executeAction('reset_course_progress', { userId, courseType: 'coparenting' });
+      await executeAction('reset_course_progress', { userId, courseType: 'parenting' });
       showMessage('success', 'All course progress reset');
       return { success: true, message: 'All course progress reset' };
     } catch (error) {
@@ -402,7 +402,7 @@ export function useAdminSupport() {
 
   const translateIncoming = useCallback(async (text: string): Promise<TranslationResult | null> => {
     if (!text.trim()) return null;
-    
+
     setIsTranslating(true);
     try {
       const headers = await buildHeaders(true);
@@ -413,13 +413,13 @@ export function useAdminSupport() {
       });
 
       if (!response.ok) throw new Error('Translation failed');
-      
+
       const result = await response.json();
-      
+
       setTranslatedIncoming(result.translation || '');
       if (result.detectedEmail) setDetectedEmail(result.detectedEmail);
       if (result.detectedTopic) setDetectedTopic(result.detectedTopic);
-      
+
       return {
         translation: result.translation || '',
         detectedEmail: result.detectedEmail || null,
@@ -437,7 +437,7 @@ export function useAdminSupport() {
 
   const translateOutgoing = useCallback(async (text: string): Promise<string | null> => {
     if (!text.trim()) return null;
-    
+
     setIsTranslating(true);
     try {
       const headers = await buildHeaders(true);
@@ -448,10 +448,10 @@ export function useAdminSupport() {
       });
 
       if (!response.ok) throw new Error('Translation failed');
-      
+
       const result = await response.json();
       setTranslatedOutgoing(result.translation || '');
-      
+
       return result.translation;
     } catch (error) {
       console.error('Translation error:', error);
@@ -472,15 +472,15 @@ export function useAdminSupport() {
       });
 
       if (!response.ok) throw new Error('Failed to get template');
-      
+
       const result = await response.json();
-      
+
       // Set the template in the outgoing field
       if (result.body) {
         setOutgoingResponse(result.body);
         setTranslatedOutgoing(result.body); // Template is already in Spanish
       }
-      
+
       return {
         subject: result.subject || '',
         body: result.body || '',
@@ -510,10 +510,10 @@ export function useAdminSupport() {
       });
 
       if (!response.ok) throw new Error('Failed to send email');
-      
+
       showMessage('success', `Email sent to ${to}`);
       addToActionLog('Send Email', to, subject);
-      
+
       // Clear the email fields
       setIncomingEmail('');
       setTranslatedIncoming('');
@@ -521,7 +521,7 @@ export function useAdminSupport() {
       setTranslatedOutgoing('');
       setDetectedEmail('');
       setDetectedTopic('');
-      
+
       return true;
     } catch (error) {
       console.error('Email error:', error);

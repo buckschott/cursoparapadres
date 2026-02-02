@@ -19,7 +19,6 @@ export default function AuthRedirectHandler({ children }: { children: React.Reac
 
     // Also listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth event:', event);
       if (event === 'PASSWORD_RECOVERY') {
         router.push('/actualizar-contrasena');
       }

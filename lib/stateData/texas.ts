@@ -13,23 +13,31 @@ export const texasStates: Record<string, StateData> = {
     countyCount: 254,
     additionalContent: 'Texas tiene la segunda población hispana más grande del país. Los tribunales de familia en los 254 condados reconocen nuestro nombre y aceptan nuestros certificados. El Original.',
     faqs: [
-      {
-        question: '¿Es aceptada en los tribunales de Texas?',
-        answer: 'Sí. En los 254 condados. El Original. El Certificado Más Aceptado.',
-      },
-      {
-        question: '¿Cuándo recibo mi certificado?',
-        answer: 'Inmediatamente. Notificamos a su abogado automáticamente.',
-      },
-      {
-        question: '¿Cuánto tiempo toma?',
-        answer: '4 horas. A su ritmo.',
-      },
-      {
-        question: '¿Puedo tomarla en mi teléfono?',
-        answer: 'Sí. Teléfono, tableta o computadora.',
-      },
-    ],
+  {
+    question: '¿Es aceptada en los tribunales de Texas?',
+    answer: 'Sí. Nuestro certificado es aceptado en tribunales de los 254 condados de Texas.'
+  },
+  {
+    question: '¿Cuándo recibo mi certificado?',
+    answer: 'Inmediatamente. En cuanto complete la clase, puede descargar su certificado. También se lo enviamos por correo electrónico y notificamos a su abogado automáticamente si proporciona su información.'
+  },
+  {
+    question: '¿Tengo que terminar en una sola sesión?',
+    answer: 'No. Puede comenzar, pausar y continuar cuando quiera. Su progreso se guarda automáticamente. La mayoría de los padres completan la clase en varios días, ajustándola a sus horarios de trabajo y familia.'
+  },
+  {
+    question: '¿Cuánto tiempo toma la clase?',
+    answer: 'La mayoría completa la clase en 4 horas, pero depende de usted. Puede calificar como una clase de 4-6 horas. Usted controla el ritmo — pause, rebobine, tome descansos cuando lo necesite.'
+  },
+  {
+    question: '¿Qué pasa después de pagar?',
+    answer: 'Comienza la clase inmediatamente. Avance a su propio ritmo, y su certificado estará listo al instante.'
+  },
+  {
+    question: '¿Cómo le entrego el certificado al tribunal?',
+    answer: 'Descargue el PDF e imprímalo, o su abogado puede enviarlo electrónicamente. El certificado incluye un código de verificación seguro y un código QR para que el tribunal pueda confirmar su autenticidad en línea.'
+  }
+],
     counties: [
       { name: 'Anderson', city: 'Palestine' },
       { name: 'Andrews', city: 'Andrews' },

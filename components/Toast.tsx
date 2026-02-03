@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, createContext, useContext, useCallback } from 'react';
+import { ANIMATION } from '@/constants/animation';
 
 // ============================================
 // TOAST TYPES & CONTEXT
@@ -45,11 +46,13 @@ export function useToast() {
 // ============================================
 // TOAST TIMING CONSTANTS
 // ============================================
+// SUCCESS and INFO use the central ANIMATION.TOAST_DURATION (5000ms).
+// ERROR and EXIT_ANIMATION are Toast-specific overrides.
 
 const TOAST_TIMING = {
   ERROR: 8000,    // Errors need more reading time
-  SUCCESS: 5000,  // Success can dismiss faster
-  INFO: 5000,     // Info same as success
+  SUCCESS: ANIMATION.TOAST_DURATION,
+  INFO: ANIMATION.TOAST_DURATION,
   EXIT_ANIMATION: 300,
 } as const;
 

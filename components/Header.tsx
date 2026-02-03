@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase';
+import { Z_INDEX, LAYOUT } from '@/constants/animation';
 
 /**
  * Site Header - No Hamburger Menu
@@ -30,8 +31,14 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 bg-background z-[200] border-b border-[#FFFFFF]/20">
-        <nav className="max-w-7xl mx-auto px-4 md:px-6 h-[73px] flex items-center justify-between">
+      <header 
+        className="fixed top-0 left-0 right-0 bg-background border-b border-[#FFFFFF]/20"
+        style={{ zIndex: Z_INDEX.HEADER }}
+      >
+        <nav 
+          className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-between"
+          style={{ height: `${LAYOUT.HEADER_HEIGHT}px` }}
+        >
           {/* Logo */}
           <a href="/" className="flex items-center gap-2">
             <img 
@@ -103,7 +110,7 @@ export default function Header() {
       </header>
 
       {/* Header spacer */}
-      <div className="h-[73px]" aria-hidden="true" />
+      <div style={{ height: `${LAYOUT.HEADER_HEIGHT}px` }} aria-hidden="true" />
     </>
   );
 }

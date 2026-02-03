@@ -1,10 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
-
-// Email whitelist for admin access
-const ADMIN_EMAILS = [
-  'jonescraig@me.com',
-]
+import { ADMIN_EMAILS } from '@/lib/admin'
 
 export async function middleware(request: NextRequest) {
   const { searchParams } = request.nextUrl
@@ -56,7 +52,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Logged in but not on whitelist → redirect to homepage
-    if (!ADMIN_EMAILS.includes(user.email?.toLowerCase() || '')) {
+    if (!ADMIN_EMAILS.includes(user.email?.toLowerCase() || '' as any)) {
       const url = request.nextUrl.clone()
       url.pathname = '/'
       return NextResponse.redirect(url)

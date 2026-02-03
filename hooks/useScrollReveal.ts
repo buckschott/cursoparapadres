@@ -1,35 +1,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { ANIMATION } from '@/constants/animation';
-
-// ============================================
-// IMAGE PRELOADING
-// ============================================
-
-/**
- * Device images to preload for smooth animation.
- * Called once when the hook mounts.
- */
-const DEVICE_IMAGES_COLOR = [
-  '/phone-2.svg',
-  '/tablet-2-es.svg',
-  '/laptop-2-es.svg',
-  '/desktop-2-es.svg',
-];
-
-let imagesPreloaded = false;
-
-function preloadDeviceImages() {
-  if (imagesPreloaded || typeof window === 'undefined') return;
-  
-  DEVICE_IMAGES_COLOR.forEach(src => {
-    const img = new Image();
-    img.src = src;
-  });
-  
-  imagesPreloaded = true;
-}
 
 // ============================================
 // SCROLL REVEAL HOOK
@@ -52,6 +23,10 @@ function preloadDeviceImages() {
  */
 export function useScrollReveal(options?: IntersectionObserverInit) {
   const containerRef = useRef<HTMLElement>(null);
+  
+  // Serialize options for stable dependency comparison.
+  // Prevents re-running the effect when callers pass inline objects.
+  const optionsKey = JSON.stringify(options);
 
   useEffect(() => {
     // Respect reduced motion preference
@@ -86,128 +61,8 @@ export function useScrollReveal(options?: IntersectionObserverInit) {
     return () => {
       observer.disconnect();
     };
-  }, [options]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [optionsKey]);
 
   return containerRef;
-}
-
-// ============================================
-// DEVICE ANIMATION HOOK
-// ============================================
-
-/**
- * Hook for device section animation.
- * Sequentially activates devices when section enters viewport.
- * Preloads color images on mount to prevent flicker.
- */
-export function useDeviceAnimation() {
-  const containerRef = useRef<HTMLElement>(null);
-  const hasAnimated = useRef(false);
-
-  // Preload images on mount (before animation triggers)
-  useEffect(() => {
-    preloadDeviceImages();
-  }, []);
-
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (prefersReducedMotion) {
-      // Show all devices immediately with color images
-      const devices = containerRef.current?.querySelectorAll('.device-animate');
-      devices?.forEach(device => {
-        device.classList.add('device-active');
-        const img = device.querySelector('.device-img') as HTMLImageElement;
-        if (img) {
-          const deviceType = device.classList.contains('device-phone') ? 'phone' :
-                            device.classList.contains('device-tablet') ? 'tablet' :
-                            device.classList.contains('device-laptop') ? 'laptop' : 'desktop';
-          img.src = `/${deviceType}-2${deviceType !== 'phone' ? '-es' : ''}.svg`;
-        }
-      });
-      return;
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true;
-          
-          const devices = [
-            { selector: '.device-phone', newSrc: '/phone-2.svg' },
-            { selector: '.device-tablet', newSrc: '/tablet-2-es.svg' },
-            { selector: '.device-laptop', newSrc: '/laptop-2-es.svg' },
-            { selector: '.device-desktop', newSrc: '/desktop-2-es.svg' }
-          ];
-
-          devices.forEach((device, index) => {
-            setTimeout(() => {
-              const deviceEl = containerRef.current?.querySelector(device.selector);
-              if (deviceEl) {
-                const img = deviceEl.querySelector('.device-img') as HTMLImageElement;
-                if (img) {
-                  img.src = device.newSrc;
-                }
-                deviceEl.classList.add('device-active');
-              }
-            }, index * ANIMATION.DEVICE_STAGGER);
-          });
-          
-          observer.disconnect();
-        }
-      });
-    }, { threshold: 0.3 });
-
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  return containerRef;
-}
-
-// ============================================
-// FOOTER REVEAL HOOK
-// ============================================
-
-/**
- * Hook for footer entrance animation.
- * Adds 'footer-visible' class when footer enters viewport.
- */
-export function useFooterReveal() {
-  const footerRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (prefersReducedMotion) {
-      const cta = footerRef.current?.querySelector('.footer-cta');
-      cta?.classList.add('footer-visible');
-      return;
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const cta = footerRef.current?.querySelector('.footer-cta');
-          cta?.classList.add('footer-visible');
-          observer.disconnect();
-        }
-      });
-    }, { threshold: 0.2 });
-
-    if (footerRef.current) {
-      observer.observe(footerRef.current);
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  return footerRef;
 }

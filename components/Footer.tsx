@@ -2,10 +2,7 @@
 
 import Link from 'next/link';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
-
-const SUPPORT_EMAIL = 'info@claseparapadres.com';
-const COMPANY_NAME = 'Putting Kids First®';
-const CURRENT_YEAR = new Date().getFullYear();
+import { SUPPORT_EMAIL, COMPANY_NAME, CURRENT_YEAR } from '@/constants/site';
 
 /**
  * Site Footer

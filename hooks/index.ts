@@ -1,1 +1,1 @@
-export { useScrollReveal, useDeviceAnimation, useFooterReveal } from './useScrollReveal';
+export { useScrollReveal } from './useScrollReveal';

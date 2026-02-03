@@ -59,7 +59,7 @@ export default function BundleInterstitial({
   if (!isOpen) return null;
 
   const courseName = originalCourse === 'coparenting' 
-    ? 'Clase de Co-Parenting' 
+    ? 'Clase de Coparentalidad' 
     : 'Clase de Crianza';
 
   return (

@@ -2,33 +2,43 @@
 // SEO METADATA CONFIGURATION - claseparapadres.com
 // ============================================
 // Ready for Next.js App Router implementation
-// Last updated: January 2026
+// Last updated: February 2026
 // ============================================
 
 import type { Metadata } from 'next'
+import {
+  COMPANY_NAME,
+  SUPPORT_EMAIL,
+  SUPPORT_PHONE,
+  SITE_URL,
+  FOUNDED_YEAR,
+  COURSE,
+} from '@/constants/site'
 
 // ============================================
 // SITE-WIDE CONSTANTS
 // ============================================
+// Derives from @/constants/site (single source of truth)
+// Only SEO-specific values are defined here.
 
 export const SITE_CONFIG = {
   name: 'Clases para Padres',
-  legalName: 'Putting Kids First®',
-  url: 'https://claseparapadres.com',
-  englishUrl: 'https://puttingkidsfirst.org',
+  legalName: COMPANY_NAME,
+  url: SITE_URL.ES,
+  englishUrl: SITE_URL.EN,
   locale: 'es_US',
   language: 'es',
   themeColor: '#2563eb',
-  foundedYear: '1993', // Structured data only — never in visible copy
-  phone: '888-777-2298',
-  phoneFormatted: '+1-888-777-2298',
-  email: 'info@claseparapadres.com',
+  foundedYear: String(FOUNDED_YEAR), // Structured data only — never in visible copy
+  phone: SUPPORT_PHONE,
+  phoneFormatted: `+1-${SUPPORT_PHONE}`,
+  email: SUPPORT_EMAIL,
   prices: {
-    coparenting: 60,
-    parenting: 60,
-    bundle: 80,
+    coparenting: COURSE.COPARENTING.price,
+    parenting: COURSE.PARENTING.price,
+    bundle: COURSE.BUNDLE.price,
   },
-  duration: '4 horas',
+  duration: COURSE.COPARENTING.duration,
   durationISO: 'PT4H',
 } as const
 
@@ -293,7 +303,7 @@ export function generateStateMetadata(state: StateInfo): Metadata {
 export const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'Putting Kids First®',
+  name: COMPANY_NAME,
   alternateName: 'Clases para Padres',
   url: SITE_CONFIG.url,
   logo: `${SITE_CONFIG.url}/logo.png`,
@@ -317,7 +327,7 @@ export const courseSchema = {
   description: 'Clase de coparentalidad en línea aceptada por tribunales en todo el país. Diseñada para padres en proceso de divorcio o separación. 100% en español.',
   provider: {
     '@type': 'Organization',
-    name: 'Putting Kids First®',
+    name: COMPANY_NAME,
     url: SITE_CONFIG.url,
   },
   inLanguage: 'es',
@@ -378,7 +388,7 @@ export const faqSchema = {
       name: '¿Hay ayuda disponible en español?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Sí. Todo nuestro sitio web, clase, y soporte al cliente están disponibles en español. Puede contactarnos en info@claseparapadres.com o llamar al 888-777-2298.',
+        text: `Sí. Todo nuestro sitio web, clase, y soporte al cliente están disponibles en español. Puede contactarnos en ${SUPPORT_EMAIL} o llamar al ${SUPPORT_PHONE}.`,
       },
     },
     {

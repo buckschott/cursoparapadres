@@ -1,15 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 
 export default function AuthRedirectHandler({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const supabase = createClient();
-  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
+    const supabase = createClient();
+
     // Check URL hash for recovery token (Supabase puts tokens in hash)
     const hash = window.location.hash;
     if (hash && hash.includes('type=recovery')) {
@@ -24,13 +24,8 @@ export default function AuthRedirectHandler({ children }: { children: React.Reac
       }
     });
 
-    // Check current session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setChecking(false);
-    });
-
     return () => subscription.unsubscribe();
-  }, [router, supabase.auth]);
+  }, [router]);
 
   return <>{children}</>;
 }

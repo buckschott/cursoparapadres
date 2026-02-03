@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Courier_Prime, Short_Stack } from "next/font/google";
 import "./globals.css";
 import AuthRedirectHandler from "./page-wrapper";
 import { Providers } from '@/components/Providers';
+import Script from 'next/script';
 
 const courierPrime = Courier_Prime({
   weight: ["400", "700"],
@@ -15,6 +16,12 @@ const shortStack = Short_Stack({
   variable: "--font-short-stack",
   subsets: ["latin"],
 });
+
+export const viewport: Viewport = {
+  themeColor: '#1C1C1C',
+  width: 'device-width',
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   title: "Clases para Padres | El Certificado Más Aceptado",
@@ -34,10 +41,18 @@ export const metadata: Metadata = {
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
     ],
     apple: [
+      { url: '/icons/icon-120x120.png', sizes: '120x120', type: 'image/png' },
+      { url: '/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' },
+      { url: '/icons/icon-167x167.png', sizes: '167x167', type: 'image/png' },
       { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
   },
   manifest: '/site.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Clase Padres',
+  },
 };
 
 export default function RootLayout({
@@ -53,6 +68,15 @@ export default function RootLayout({
             {children}
           </AuthRedirectHandler>
         </Providers>
+        
+        {/* Service Worker Registration */}
+        <Script id="sw-register" strategy="afterInteractive">
+          {`
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.register('/sw.js').catch(() => {});
+            }
+          `}
+        </Script>
       </body>
     </html>
   );

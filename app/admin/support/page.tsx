@@ -24,6 +24,7 @@ import {
   DangerZone,
   ActionLog,
   CustomerServicePanel,
+  AttorneyPanel,
 } from './components';
 import { StuckStudentsModal, ProfileEditModal } from './components/modals';
 import type { ProfileEditData, TemplateName, SearchType } from './types';
@@ -43,7 +44,7 @@ export default function AdminSupportPage() {
   // UI STATE
   // ---------------------------------------------------------------------------
   // Customer Service is the DEFAULT tab
-  const [activeTab, setActiveTab] = useState<'customer-service' | 'dashboard'>('customer-service');
+  const [activeTab, setActiveTab] = useState<'customer-service' | 'dashboard' | 'attorneys'>('customer-service');
   const [showStuckModal, setShowStuckModal] = useState(false);
   const [showProfileEditModal, setShowProfileEditModal] = useState(false);
 
@@ -308,21 +309,23 @@ export default function AdminSupportPage() {
       </div>
 
       {/* ================================================================== */}
-      {/* CUSTOMER SEARCH - ALWAYS AT TOP */}
+      {/* CUSTOMER SEARCH - ALWAYS AT TOP (hidden on Attorneys tab) */}
       {/* ================================================================== */}
-      <div className="max-w-7xl mx-auto mb-6">
-        <CustomerSearch
-          searchQuery={searchQuery}
-          searchType={searchType}
-          isLoading={isLoadingCustomer}
-          onQueryChange={setSearchQuery}
-          onTypeChange={setSearchType}
-          onSearch={handleSearch}
-          onSmartSearch={handleSmartSearch}
-        />
-      </div>
+      {activeTab !== 'attorneys' && (
+        <div className="max-w-7xl mx-auto mb-6">
+          <CustomerSearch
+            searchQuery={searchQuery}
+            searchType={searchType}
+            isLoading={isLoadingCustomer}
+            onQueryChange={setSearchQuery}
+            onTypeChange={setSearchType}
+            onSearch={handleSearch}
+            onSmartSearch={handleSmartSearch}
+          />
+        </div>
+      )}
 
-      {/* Tab Navigation - Customer Service FIRST */}
+      {/* Tab Navigation */}
       <div className="max-w-7xl mx-auto mb-6">
         <div className="flex gap-2">
           <button
@@ -345,13 +348,23 @@ export default function AdminSupportPage() {
           >
             📊 Dashboard & Lookup
           </button>
+          <button
+            onClick={() => setActiveTab('attorneys')}
+            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+              activeTab === 'attorneys'
+                ? 'bg-[#77DD77] text-[#1C1C1C]'
+                : 'bg-white/10 text-white hover:bg-white/20'
+            }`}
+          >
+            ⚖️ Attorneys
+          </button>
         </div>
       </div>
 
       {/* Tab Content */}
       <div className="max-w-7xl mx-auto">
         {activeTab === 'customer-service' ? (
-          /* Customer Service Tab - NOW FIRST/DEFAULT */
+          /* Customer Service Tab - DEFAULT */
           <CustomerServicePanel
             incomingEmail={incomingEmail}
             translatedIncoming={translatedIncoming}
@@ -368,6 +381,9 @@ export default function AdminSupportPage() {
             onSendEmail={handleSendEmail}
             onLookupCustomer={handleLookupCustomer}
           />
+        ) : activeTab === 'attorneys' ? (
+          /* Attorneys Tab */
+          <AttorneyPanel />
         ) : (
           /* Dashboard Tab */
           <div className="space-y-6">

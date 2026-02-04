@@ -303,7 +303,7 @@ body { font-family: Arial, sans-serif; }
 .label {
   width: 8.5in;
   height: 5.5in;
-  padding: 0.5in 0.6in;
+  padding: 0.75in 0.6in 0.5in 0.6in;
   position: relative;
   border-bottom: 1px dashed #ccc;
 }

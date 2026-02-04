@@ -52,11 +52,45 @@ export async function GET(request: NextRequest) {
     // Profiles with attorney info and court state
     const { data: profiles, error: profilesError } = await supabase
       .from('profiles')
-      .select('id, attorney_name, attorney_email, court_state');
+      .select('id, full_name, email, attorney_name, attorney_email, court_state');
 
     if (profilesError) {
       console.error('Profiles fetch error:', profilesError);
     }
+
+    // ========================================================================
+    // RECENT SIGNUPS (last 20 purchases with profile info)
+    // ========================================================================
+
+    const { data: recentPurchasesRaw, error: recentError } = await supabase
+      .from('purchases')
+      .select('id, user_id, course_type, purchased_at, amount_paid, status')
+      .eq('status', 'active')
+      .order('purchased_at', { ascending: false })
+      .limit(20);
+
+    if (recentError) {
+      console.error('Recent purchases fetch error:', recentError);
+    }
+
+    // Build recent signups with profile data
+    const recentSignups = (recentPurchasesRaw || []).map(purchase => {
+      const profile = profiles?.find(p => p.id === purchase.user_id);
+      const hasCertificate = certificates?.some(
+        c => c.user_id === purchase.user_id && c.course_type === purchase.course_type
+      );
+
+      return {
+        id: purchase.id,
+        userId: purchase.user_id,
+        email: profile?.email || 'Unknown',
+        name: profile?.full_name || null,
+        courseType: purchase.course_type,
+        amountPaid: purchase.amount_paid,
+        purchasedAt: purchase.purchased_at,
+        status: hasCertificate ? 'completed' as const : 'in_progress' as const,
+      };
+    });
 
     // ========================================================================
     // CALCULATE METRICS
@@ -136,7 +170,7 @@ export async function GET(request: NextRequest) {
       .map(([state, count]) => ({ state, count }));
 
     // Last 7 days activity
-    const recentPurchases = purchases?.filter(
+    const recentPurchaseCount = purchases?.filter(
       p => p.purchased_at && new Date(p.purchased_at) >= sevenDaysAgo
     ).length || 0;
     
@@ -192,7 +226,7 @@ export async function GET(request: NextRequest) {
       courseBreakdown,
       topStates,
       recentActivity: {
-        purchases: recentPurchases,
+        purchases: recentPurchaseCount,
         graduates: recentGraduates,
       },
       examStats: {
@@ -201,6 +235,7 @@ export async function GET(request: NextRequest) {
         totalAttempts,
       },
       stuckStudents,
+      recentSignups,
       lastUpdated: new Date().toISOString(),
     });
   } catch (error) {

@@ -13,6 +13,7 @@ import { useAdminSupport } from './hooks';
 import {
   SystemHealth,
   DashboardStats,
+  RecentSignups,
   CustomerSearch,
   CustomerOverview,
   PurchasesSection,
@@ -375,6 +376,13 @@ export default function AdminSupportPage() {
               health={systemHealth}
               isLoading={isLoadingHealth}
               onRefresh={loadSystemHealth}
+            />
+
+            {/* Recent Signups — FIRST thing you see */}
+            <RecentSignups
+              signups={stats.recentSignups}
+              isLoading={isLoadingStats}
+              onLookupCustomer={handleLookupCustomer}
             />
 
             {/* Dashboard Stats */}

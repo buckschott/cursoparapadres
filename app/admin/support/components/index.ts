@@ -13,6 +13,7 @@ export * from './modals';
 // Section Components
 export { default as SystemHealth } from './SystemHealth';
 export { default as DashboardStats } from './DashboardStats';
+export { default as RecentSignups } from './RecentSignups';
 export { default as CustomerSearch } from './CustomerSearch';
 export { default as CustomerOverview } from './CustomerOverview';
 export { default as PurchasesSection } from './PurchasesSection';

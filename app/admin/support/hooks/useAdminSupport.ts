@@ -39,6 +39,7 @@ const defaultStats: DashboardStats = {
   recentActivity: { purchases: 0, graduates: 0 },
   examStats: { passRate: 0, firstAttemptPassRate: 0, totalAttempts: 0 },
   stuckStudents: 0,
+  recentSignups: [],
 };
 
 const defaultHealth: SystemHealth = {

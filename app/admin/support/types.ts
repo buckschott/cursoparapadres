@@ -102,6 +102,21 @@ export interface CustomerData {
 }
 
 // ============================================================================
+// RECENT SIGNUP TYPE
+// ============================================================================
+
+export interface RecentSignup {
+  id: string;
+  userId: string;
+  email: string;
+  name: string | null;
+  courseType: 'coparenting' | 'parenting' | 'bundle';
+  amountPaid: number;
+  purchasedAt: string;
+  status: 'completed' | 'in_progress';
+}
+
+// ============================================================================
 // DASHBOARD TYPES
 // ============================================================================
 
@@ -127,6 +142,7 @@ export interface DashboardStats {
     totalAttempts: number;
   };
   stuckStudents: number;
+  recentSignups: RecentSignup[];
 }
 
 export interface SystemHealth {

@@ -65,33 +65,12 @@ export default function SystemHealth({ health, isLoading, onRefresh }: SystemHea
         ? 'bg-white/5 border-white/10' 
         : 'bg-[#FFE566]/10 border-[#FFE566]/30'}
     `}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <span className="text-sm text-white/60">System Status:</span>
-          
-          {services.map((service) => (
-            <div key={service.name} className="flex items-center gap-2">
-              <span className="text-sm">{service.icon}</span>
-              <span className="text-sm text-white/80">{service.name}</span>
-              <div className="flex items-center gap-1.5">
-                <div className={`w-2 h-2 rounded-full ${getStatusColor(service.status)}`} />
-                <span className={`text-xs ${
-                  service.status === 'healthy' 
-                    ? 'text-white/40' 
-                    : service.status === 'degraded'
-                    ? 'text-[#FFE566]'
-                    : 'text-[#FF9999]'
-                }`}>
-                  {getStatusLabel(service.status)}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-4">
+      {/* Top row: label + refresh */}
+      <div className="flex items-center justify-between mb-3 sm:mb-0">
+        <span className="text-sm text-white/60">System Status:</span>
+        <div className="flex items-center gap-3">
           <span className="text-xs text-white/40">
-            Last check: {formatRelativeTime(health.lastCheck)}
+            {formatRelativeTime(health.lastCheck)}
           </span>
           <button
             onClick={onRefresh}
@@ -114,6 +93,28 @@ export default function SystemHealth({ health, isLoading, onRefresh }: SystemHea
             </svg>
           </button>
         </div>
+      </div>
+
+      {/* Services row: wraps on mobile */}
+      <div className="flex flex-wrap gap-x-6 gap-y-2">
+        {services.map((service) => (
+          <div key={service.name} className="flex items-center gap-2">
+            <span className="text-sm">{service.icon}</span>
+            <span className="text-sm text-white/80">{service.name}</span>
+            <div className="flex items-center gap-1.5">
+              <div className={`w-2 h-2 rounded-full ${getStatusColor(service.status)}`} />
+              <span className={`text-xs ${
+                service.status === 'healthy' 
+                  ? 'text-white/40' 
+                  : service.status === 'degraded'
+                  ? 'text-[#FFE566]'
+                  : 'text-[#FF9999]'
+              }`}>
+                {getStatusLabel(service.status)}
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

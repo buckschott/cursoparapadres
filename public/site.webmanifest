@@ -2,7 +2,7 @@
   "name": "Clase para Padres",
   "short_name": "Clase Padres",
   "description": "Clases para padres aceptadas por cortes a nivel nacional",
-  "start_url": "/",
+  "start_url": "/admin/support",
   "scope": "/",
   "display": "standalone",
   "background_color": "#1C1C1C",

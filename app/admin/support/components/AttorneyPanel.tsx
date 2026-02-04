@@ -126,20 +126,18 @@ function generateLetterHTML(attorneys: Attorney[], template: LetterTemplate): st
     : `<div style="font-size: 11pt; color: #475569;">info@puttingkidsfirst.org</div>
 <div style="font-size: 11pt;"><a href="https://puttingkidsfirst.org" style="color: #2563eb; text-decoration: none;">https://puttingkidsfirst.org</a></div>`;
 
-  const contactInfo = isSpanishIntro
-    ? `<div style="text-align: center; font-size: 10pt; color: #475569; line-height: 1.5;">
-        Toll Free: 888 777 2298<br/>
-        <a href="https://puttingkidsfirst.org" style="color: #2563eb; text-decoration: none;">puttingkidsfirst.org</a> | <a href="https://claseparapadres.com" style="color: #2563eb; text-decoration: none;">claseparapadres.com</a><br/>
-        info@puttingkidsfirst.org
-      </div>`
-    : `<div style="text-align: center; font-size: 10pt; color: #475569; line-height: 1.5;">
-        Toll Free: 888 777 2298<br/>
-        <a href="https://puttingkidsfirst.org" style="color: #2563eb; text-decoration: none;">https://puttingkidsfirst.org</a><br/>
-        info@puttingkidsfirst.org
-      </div>`;
+  const contactLines = isSpanishIntro
+    ? `Toll Free: 888 777 2298<br/>
+          <a href="https://puttingkidsfirst.org" style="color: #2563eb; text-decoration: none;">https://puttingkidsfirst.org</a><br/>
+          <a href="https://claseparapadres.com" style="color: #2563eb; text-decoration: none;">claseparapadres.com</a><br/>
+          info@puttingkidsfirst.org`
+    : `Toll Free: 888 777 2298<br/>
+          <a href="https://puttingkidsfirst.org" style="color: #2563eb; text-decoration: none;">https://puttingkidsfirst.org</a><br/>
+          info@puttingkidsfirst.org`;
 
   return `<!DOCTYPE html>
 <html><head><title>Attorney Letter${isSpanishIntro ? ' - Clase para Padres' : ''}</title>
+<link href="https://fonts.googleapis.com/css2?family=Short+Stack&display=swap" rel="stylesheet">
 <style>
 @page { size: letter; margin: 0; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -155,27 +153,39 @@ body { font-family: Georgia, 'Times New Roman', serif; }
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 0.6in;
   padding-bottom: 0.15in;
   border-bottom: 2px solid #2563eb;
 }
 .tagline {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 20pt;
-  font-weight: bold;
+  font-family: 'Short Stack', cursive;
+  font-size: 14pt;
   color: #2563eb;
-  line-height: 1.3;
+  line-height: 1.35;
+  flex-shrink: 0;
+}
+.logo-contact-group {
+  display: flex;
+  align-items: center;
+  gap: 0.2in;
+  flex-shrink: 0;
+}
+.contact-info {
+  text-align: right;
+  font-size: 9.5pt;
+  color: #475569;
+  line-height: 1.6;
+}
+.contact-info a {
+  color: #2563eb;
+  text-decoration: none;
 }
 .logo-section {
-  text-align: right;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
+  flex-shrink: 0;
 }
 .logo-section img {
-  width: 1.3in;
+  width: 1.2in;
   height: auto;
 }
 .body-text {
@@ -187,6 +197,10 @@ body { font-family: Georgia, 'Times New Roman', serif; }
 .body-text p {
   margin-bottom: 0.2in;
 }
+.body-text a {
+  color: #2563eb;
+  text-decoration: none;
+}
 .signature {
   margin-top: 0.4in;
 }
@@ -196,11 +210,15 @@ body { font-family: Georgia, 'Times New Roman', serif; }
   margin-bottom: 0.15in;
 }
 .signature .company {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 16pt;
+  font-family: 'Short Stack', cursive;
+  font-size: 13pt;
   color: #2563eb;
-  font-weight: bold;
   margin-bottom: 0.05in;
+}
+.signature .company .reg {
+  font-size: 9pt;
+  vertical-align: super;
+  line-height: 0;
 }
 .enclosure {
   margin-top: 0.5in;
@@ -214,9 +232,13 @@ body { font-family: Georgia, 'Times New Roman', serif; }
 ${attorneys.map(a => `<div class="page">
   <div class="header">
     <div class="tagline">Better Parenting<br/>for Happier Kids</div>
-    ${contactInfo}
-    <div class="logo-section">
-      <img src="/logo.png" alt="Putting Kids First" />
+    <div class="logo-contact-group">
+      <div class="contact-info">
+        ${contactLines}
+      </div>
+      <div class="logo-section">
+        <img src="/logo.png" alt="Putting Kids First" />
+      </div>
     </div>
   </div>
 
@@ -226,7 +248,7 @@ ${attorneys.map(a => `<div class="page">
 
   <div class="signature">
     <div class="regards">Best regards,</div>
-    <div class="company">Putting Kids First</div>
+    <div class="company">Putting Kids First <span class="reg">&reg;</span></div>
     ${signatureLinks}
   </div>
 
@@ -240,34 +262,94 @@ ${attorneys.map(a => `<div class="page">
 // =============================================================================
 
 function generateLabelsHTML(attorneys: Attorney[]): string {
+  // Pair attorneys 2 per page (letter size, half-page labels)
+  const pages: Attorney[][] = [];
+  for (let i = 0; i < attorneys.length; i += 2) {
+    pages.push(attorneys.slice(i, i + 2));
+  }
+
+  const renderLabel = (a: Attorney) => `<div class="label">
+  <div class="return-address">
+    <img src="/logo.png" alt="PKF" class="logo" />
+    <div class="return-info">
+      <div class="company-name">Putting Kids First<span class="reg">&reg;</span></div>
+      <div class="return-text">PO BOX 1265</div>
+      <div class="return-text">MOUNT PLEASANT TX 75456-1265</div>
+    </div>
+  </div>
+  <div class="recipient">
+    ${a.firm_name ? `<div class="firm-name">${a.firm_name.toUpperCase()}</div>` : ''}
+    <div class="attorney-name">${getDisplayName(a).toUpperCase()}</div>
+    <div class="address-line">${(a.address || '').toUpperCase()}</div>
+    <div class="address-line">${(a.city || '').toUpperCase()} ${(a.state || '').toUpperCase()} ${a.zip || ''}</div>
+  </div>
+</div>`;
+
   return `<!DOCTYPE html>
 <html><head><title>Attorney Mailing Labels</title>
+<link href="https://fonts.googleapis.com/css2?family=Short+Stack&display=swap" rel="stylesheet">
 <style>
-@page { size: 8.5in 5.5in; margin: 0; }
+@page { size: letter; margin: 0; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: Arial, sans-serif; }
-.label { width: 8.5in; height: 5.5in; padding: 0.5in; page-break-after: always; position: relative; }
-.label:last-child { page-break-after: avoid; }
-.return-address { position: absolute; top: 0.4in; left: 0.4in; display: flex; align-items: flex-start; gap: 0.25in; }
-.logo { width: 1.1in; height: auto; }
-.return-text { font-size: 10pt; line-height: 1.4; color: #1a365d; }
-.company-name { font-size: 11pt; font-weight: bold; color: #2563eb; margin-top: 0.08in; }
-.recipient { position: absolute; bottom: 1.2in; left: 3.2in; font-size: 13pt; line-height: 1.5; }
+.page {
+  width: 8.5in;
+  height: 11in;
+  page-break-after: always;
+  display: flex;
+  flex-direction: column;
+}
+.page:last-child { page-break-after: avoid; }
+.label {
+  width: 8.5in;
+  height: 5.5in;
+  padding: 0.5in 0.6in;
+  position: relative;
+  border-bottom: 1px dashed #ccc;
+}
+.page .label:last-child { border-bottom: none; }
+.return-address {
+  display: flex;
+  align-items: center;
+  gap: 0.2in;
+}
+.logo { width: 1in; height: auto; }
+.return-info {
+  display: flex;
+  flex-direction: column;
+}
+.company-name {
+  font-family: 'Short Stack', cursive;
+  font-size: 12pt;
+  color: #2563eb;
+  line-height: 1.2;
+  margin-bottom: 0.04in;
+}
+.company-name .reg {
+  font-size: 7pt;
+  vertical-align: super;
+  line-height: 0;
+}
+.return-text { font-size: 9pt; line-height: 1.4; color: #1a365d; }
+.recipient {
+  position: absolute;
+  bottom: 1.1in;
+  left: 3.2in;
+  font-size: 13pt;
+  line-height: 1.5;
+}
 .firm-name { font-weight: bold; font-size: 14pt; margin-bottom: 2px; }
 .attorney-name { font-size: 13pt; }
 .address-line { font-size: 13pt; }
+@media print {
+  .label { border-bottom: none; }
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
 </style></head><body>
-${attorneys.map(a => `<div class="label">
-<div class="return-address"><img src="/logo.png" alt="PKF" class="logo" /><div>
-<div class="return-text">PO BOX 1265</div>
-<div class="return-text">MOUNT PLEASANT TX 75456-1265</div>
-<div class="company-name">Putting Kids First \u00AE</div></div></div>
-<div class="recipient">
-${a.firm_name ? `<div class="firm-name">${a.firm_name.toUpperCase()}</div>` : ''}
-<div class="attorney-name">${getDisplayName(a).toUpperCase()}</div>
-<div class="address-line">${(a.address || '').toUpperCase()}</div>
-<div class="address-line">${(a.city || '').toUpperCase()} ${(a.state || '').toUpperCase()} ${a.zip || ''}</div>
-</div></div>`).join('\n')}
+${pages.map(page => `<div class="page">
+${page.map(a => renderLabel(a)).join('\n')}
+${page.length === 1 ? '<div class="label"></div>' : ''}
+</div>`).join('\n')}
 </body></html>`;
 }
 
@@ -325,6 +407,11 @@ export default function AttorneyPanel() {
     certificate_email: '',
   });
 
+  // Address verification
+  const [verifyingId, setVerifyingId] = useState<string | null>(null);
+  const [verifyingBatch, setVerifyingBatch] = useState(false);
+  const [verifyProgress, setVerifyProgress] = useState({ done: 0, total: 0, fixed: 0, failed: 0 });
+
   // ---------------------------------------------------------------------------
   // FETCH
   // ---------------------------------------------------------------------------
@@ -339,9 +426,16 @@ export default function AttorneyPanel() {
 
   const fetchAttorneys = useCallback(async () => {
     setLoading(true);
+
+    // Map sort fields to actual database columns
+    const dbSortField = sortField === 'name' ? 'last_name'
+      : sortField === 'cards_needed' ? 'referral_count' // sort by referrals as proxy, re-sort client-side
+      : sortField;
+
     let query = supabase
       .from('attorneys')
       .select('*')
+      .order(dbSortField, { ascending: sortDir === 'asc' })
       .limit(500);
 
     if (stateFilter) query = query.eq('state', stateFilter);
@@ -364,7 +458,7 @@ export default function AttorneyPanel() {
     }
     setAttorneys(filtered);
     setLoading(false);
-  }, [search, stateFilter, needsCardsOnly, subTab]);
+  }, [search, stateFilter, needsCardsOnly, subTab, sortField, sortDir]);
 
   useEffect(() => { fetchAttorneys(); }, [fetchAttorneys]);
 
@@ -527,6 +621,91 @@ export default function AttorneyPanel() {
     if (needCards.length === 0) { alert('No attorneys with complete addresses need cards'); return; }
     const w = window.open('', '_blank');
     if (w) { w.document.write(generateLabelsHTML(needCards)); w.document.close(); setTimeout(() => w.print(), 500); }
+  };
+
+  const printSingleLabel = (attorney: Attorney) => {
+    if (!attorney.address) { alert('No address on file for this attorney'); return; }
+    const w = window.open('', '_blank');
+    if (w) { w.document.write(generateLabelsHTML([attorney])); w.document.close(); setTimeout(() => w.print(), 500); }
+  };
+
+  // ---------------------------------------------------------------------------
+  // ADDRESS VERIFICATION (USPS Web Tools API)
+  // ---------------------------------------------------------------------------
+
+  const verifyAddress = async (attorney: Attorney): Promise<{ success: boolean; updated: boolean; message: string }> => {
+    if (!attorney.address || !attorney.city || !attorney.state) {
+      return { success: false, updated: false, message: 'Incomplete address' };
+    }
+    try {
+      const res = await fetch('/api/admin/verify-address', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          address: attorney.address,
+          city: attorney.city,
+          state: attorney.state,
+          zip: attorney.zip || '',
+        }),
+      });
+      const data = await res.json();
+      if (data.error) return { success: false, updated: false, message: data.error };
+
+      // Check if anything changed
+      const changed = (
+        data.address !== (attorney.address || '').toUpperCase() ||
+        data.city !== (attorney.city || '').toUpperCase() ||
+        data.state !== (attorney.state || '').toUpperCase() ||
+        data.zip5plus4 !== (attorney.zip || '')
+      );
+
+      if (changed) {
+        // Update the attorney record with USPS-standardized address
+        await supabase.from('attorneys').update({
+          address: data.address,
+          city: data.city,
+          state: data.state,
+          zip: data.zip5plus4,
+        }).eq('id', attorney.id);
+        return { success: true, updated: true, message: `Updated: ${data.address}, ${data.city} ${data.state} ${data.zip5plus4}` };
+      }
+      return { success: true, updated: false, message: 'Address verified — no changes needed' };
+    } catch {
+      return { success: false, updated: false, message: 'Network error' };
+    }
+  };
+
+  const verifySingleAddress = async (attorney: Attorney) => {
+    setVerifyingId(attorney.id);
+    const result = await verifyAddress(attorney);
+    if (result.updated) fetchAttorneys();
+    alert(result.message);
+    setVerifyingId(null);
+  };
+
+  const verifyBatchAddresses = async () => {
+    const toVerify = sortedAttorneys.filter(a => a.address && a.city && a.state);
+    if (toVerify.length === 0) { alert('No attorneys with addresses to verify'); return; }
+    if (!confirm(`Verify ${toVerify.length} addresses with USPS? This may take a few minutes.`)) return;
+
+    setVerifyingBatch(true);
+    setVerifyProgress({ done: 0, total: toVerify.length, fixed: 0, failed: 0 });
+
+    let fixed = 0;
+    let failed = 0;
+
+    for (let i = 0; i < toVerify.length; i++) {
+      const result = await verifyAddress(toVerify[i]);
+      if (result.updated) fixed++;
+      if (!result.success) failed++;
+      setVerifyProgress({ done: i + 1, total: toVerify.length, fixed, failed });
+      // Small delay to avoid hammering USPS API
+      await new Promise(r => setTimeout(r, 200));
+    }
+
+    setVerifyingBatch(false);
+    fetchAttorneys();
+    alert(`Done! Verified: ${toVerify.length}, Updated: ${fixed}, Failed: ${failed}`);
   };
 
   const printLetters = () => {
@@ -777,7 +956,34 @@ export default function AttorneyPanel() {
         <button onClick={exportCSV} className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm font-semibold hover:bg-white/20 transition-colors">
           📊 Export CSV
         </button>
+        <button
+          onClick={verifyBatchAddresses}
+          disabled={verifyingBatch}
+          className="px-3 py-2 bg-purple-600 text-white rounded-lg text-sm font-semibold hover:bg-purple-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {verifyingBatch ? `📫 Verifying ${verifyProgress.done}/${verifyProgress.total}...` : '📫 Verify Addresses'}
+        </button>
       </div>
+
+      {/* Batch verification progress bar */}
+      {verifyingBatch && (
+        <div className="bg-white/5 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-white/70">Verifying addresses with USPS...</span>
+            <span className="text-xs text-white/50">
+              {verifyProgress.done}/{verifyProgress.total} &nbsp;|&nbsp;
+              <span className="text-[#77DD77]">{verifyProgress.fixed} fixed</span> &nbsp;|&nbsp;
+              <span className="text-red-400">{verifyProgress.failed} failed</span>
+            </span>
+          </div>
+          <div className="w-full bg-white/10 rounded-full h-2">
+            <div
+              className="bg-purple-500 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${verifyProgress.total ? (verifyProgress.done / verifyProgress.total) * 100 : 0}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* ================================================================ */}
       {/* ALL ATTORNEYS TAB */}
@@ -826,12 +1032,13 @@ export default function AttorneyPanel() {
                       <th onClick={() => handleSort('cards_sent')} className={`${thClass} text-center w-24`}>Cards <SortIcon field="cards_sent" /></th>
                       <th onClick={() => handleSort('referral_count')} className={`${thClass} text-center w-24`}>Referrals <SortIcon field="referral_count" /></th>
                       <th onClick={() => handleSort('cards_needed')} className={`${thClass} text-center w-24`}>Needed <SortIcon field="cards_needed" /></th>
-                      <th className="px-3 py-3 text-xs font-bold text-white/60 uppercase text-center w-20">Actions</th>
+                      <th className="px-3 py-3 text-xs font-bold text-white/60 uppercase text-center w-32">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {sortedAttorneys.map((a, idx) => {
                       const needed = getCardsNeeded(a.referral_count, a.cards_sent);
+                      const hasAddress = !!(a.address && a.city && a.state);
                       return (
                         <tr key={a.id} className={`border-b border-white/5 hover:bg-white/5 transition-colors ${a.needs_review ? 'bg-yellow-500/10' : ''}`}>
                           <td className="px-4 py-3 text-sm text-white">{getDisplayName(a)}</td>
@@ -863,6 +1070,18 @@ export default function AttorneyPanel() {
                             <div className="flex gap-1 justify-center">
                               <button onClick={() => openEditModal(a)} className="px-2 py-1 bg-white/10 text-white/70 rounded text-xs hover:bg-white/20 transition-colors" title="Edit">✏️</button>
                               <button onClick={() => openLetterModal(a)} className="px-2 py-1 bg-white/10 text-white/70 rounded text-xs hover:bg-white/20 transition-colors" title="Print letter">✉️</button>
+                              <button
+                                onClick={() => printSingleLabel(a)}
+                                className={`px-2 py-1 rounded text-xs transition-colors ${hasAddress ? 'bg-white/10 text-white/70 hover:bg-white/20' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                                title={hasAddress ? 'Print label' : 'No address on file'}
+                                disabled={!hasAddress}
+                              >🏷️</button>
+                              <button
+                                onClick={() => verifySingleAddress(a)}
+                                className={`px-2 py-1 rounded text-xs transition-colors ${hasAddress ? 'bg-white/10 text-white/70 hover:bg-white/20' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                                title={hasAddress ? 'Verify address with USPS' : 'No address to verify'}
+                                disabled={!hasAddress || verifyingId === a.id}
+                              >{verifyingId === a.id ? '⏳' : '📫'}</button>
                             </div>
                           </td>
                         </tr>

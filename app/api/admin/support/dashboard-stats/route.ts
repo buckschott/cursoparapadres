@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
-import { isAdmin } from '@/lib/admin';
+import { isAdmin, ADMIN_EMAILS } from '@/lib/admin';
 
 export async function GET(request: NextRequest) {
   const supabase = createServerClient();
@@ -73,8 +73,12 @@ export async function GET(request: NextRequest) {
       console.error('Recent purchases fetch error:', recentError);
     }
 
-    // Build recent signups with profile data
-    const recentSignups = (recentPurchasesRaw || []).map(purchase => {
+    // Build recent signups with profile data (exclude admin accounts)
+    const adminEmailsLower = ADMIN_EMAILS.map(e => e.toLowerCase());
+    const recentSignups = (recentPurchasesRaw || []).filter(purchase => {
+      const profile = profiles?.find(p => p.id === purchase.user_id);
+      return !profile?.email || !adminEmailsLower.includes(profile.email.toLowerCase());
+    }).map(purchase => {
       const profile = profiles?.find(p => p.id === purchase.user_id);
       const hasCertificate = certificates?.some(
         c => c.user_id === purchase.user_id && c.course_type === purchase.course_type
@@ -105,8 +109,8 @@ export async function GET(request: NextRequest) {
     const totalGraduates = uniqueGraduateIds.size;
 
     // Completion rate
-    const completionRate = totalCustomers > 0 
-      ? Math.round((totalGraduates / totalCustomers) * 100) 
+    const completionRate = totalCustomers > 0
+      ? Math.round((totalGraduates / totalCustomers) * 100)
       : 0;
 
     // Attorney percentage (of graduates)
@@ -114,15 +118,15 @@ export async function GET(request: NextRequest) {
     const graduatesWithAttorney = graduateProfiles.filter(
       p => p.attorney_name || p.attorney_email
     ).length;
-    const attorneyRate = graduateProfiles.length > 0 
-      ? Math.round((graduatesWithAttorney / graduateProfiles.length) * 100) 
+    const attorneyRate = graduateProfiles.length > 0
+      ? Math.round((graduatesWithAttorney / graduateProfiles.length) * 100)
       : 0;
 
     // Average days to complete
     let avgDaysToComplete = 0;
     if (purchases && certificates && purchases.length > 0 && certificates.length > 0) {
       const completionTimes: number[] = [];
-      
+
       for (const cert of certificates) {
         // Find the matching purchase for this user
         const userPurchase = purchases.find(p => p.user_id === cert.user_id);
@@ -135,7 +139,7 @@ export async function GET(request: NextRequest) {
           }
         }
       }
-      
+
       if (completionTimes.length > 0) {
         avgDaysToComplete = Math.round(
           (completionTimes.reduce((a, b) => a + b, 0) / completionTimes.length) * 10
@@ -163,7 +167,7 @@ export async function GET(request: NextRequest) {
         stateCount[state] = (stateCount[state] || 0) + 1;
       }
     });
-    
+
     // Sort by count descending
     const topStates = Object.entries(stateCount)
       .sort((a, b) => b[1] - a[1])
@@ -173,7 +177,7 @@ export async function GET(request: NextRequest) {
     const recentPurchaseCount = purchases?.filter(
       p => p.purchased_at && new Date(p.purchased_at) >= sevenDaysAgo
     ).length || 0;
-    
+
     const recentGraduates = certificates?.filter(
       c => c.issued_at && new Date(c.issued_at) >= sevenDaysAgo
     ).length || 0;
@@ -182,11 +186,11 @@ export async function GET(request: NextRequest) {
     const { data: examAttempts } = await supabase
       .from('exam_attempts')
       .select('id, passed, user_id');
-    
+
     const totalAttempts = examAttempts?.length || 0;
     const passedAttempts = examAttempts?.filter(e => e.passed).length || 0;
-    const examPassRate = totalAttempts > 0 
-      ? Math.round((passedAttempts / totalAttempts) * 100) 
+    const examPassRate = totalAttempts > 0
+      ? Math.round((passedAttempts / totalAttempts) * 100)
       : 0;
 
     // First-attempt pass rate
@@ -204,7 +208,7 @@ export async function GET(request: NextRequest) {
     // Stuck students (purchased 30+ days ago, no certificate)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
+
     const stuckStudents = purchases?.filter(p => {
       if (!p.purchased_at) return false;
       const purchaseDate = new Date(p.purchased_at);

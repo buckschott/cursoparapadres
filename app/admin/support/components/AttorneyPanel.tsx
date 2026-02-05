@@ -39,7 +39,7 @@ interface Attorney {
 type SortField = 'name' | 'state' | 'cards_sent' | 'referral_count' | 'cards_needed' | 'email';
 type SortDir = 'asc' | 'desc';
 type SubTab = 'all' | 'review' | 'search' | 'import';
-type LetterTemplate = 'standard' | 'claseparapadres';
+type LetterTemplate = 'first-time' | 'repeat';
 
 interface ImportRow {
   email: string;
@@ -100,43 +100,36 @@ const STATE_LIST = [
 // =============================================================================
 
 function generateLetterHTML(attorneys: Attorney[], template: LetterTemplate): string {
-  const isSpanishIntro = template === 'claseparapadres';
+  const isFirstTime = template === 'first-time';
 
-  const letterBody = isSpanishIntro
-    ? `<p>We would like to express our sincere gratitude for referring your clients to Putting Kids First. Your support and trust in our organization have helped us achieve our mission of creating happy and safe childhood memories for all children.</p>
+  const letterBody = isFirstTime
+    ? `<p>Your client recently completed our co-parenting class and listed you as their attorney. A copy of their certificate of completion has been sent to your office.</p>
 
-<p>We are excited to share that we have launched <strong>Clase para Padres</strong> (<a href="https://claseparapadres.com" style="color: #2563eb;">claseparapadres.com</a>), our new Spanish-language parenting education platform. Your Spanish-speaking clients can now complete their court-ordered parenting class entirely in Spanish&mdash;same quality content, same instant certificate delivery, same court acceptance nationwide.</p>
+<p>Whenever a client provides your email on their registration form, we automatically send you a copy of their certificate upon completion. No follow-up needed on your end.</p>
 
-<p>As always, when your client provides your email address on their registration form, we will notify you immediately upon their completion of the class. This notification will include a copy of the certificate of completion, ensuring you receive timely documentation for your records.</p>
+<p>Putting Kids First has been providing court-accepted co-parenting and parenting education since 1993, the first program of its kind offered online. If you have clients who need to complete a court-ordered parenting class, we&rsquo;ve enclosed 20 referral cards for your office to make it easy.</p>
 
-<p>If you require more Client Referral Cards to provide to your clients, please let us know. We enclose 20 cards and will be happy to supply them as needed. Please contact us at <a href="mailto:info@puttingkidsfirst.org" style="color: #2563eb;">info@puttingkidsfirst.org</a> for additional cards.</p>
+<p><strong>Now available in Spanish:</strong> Your Spanish-speaking clients can complete the full course in Spanish at <a href="https://claseparapadres.com" style="color: #2563eb;">claseparapadres.com</a>, with the same court-accepted certificate.</p>
 
-<p>Thank you again for your continued support, and we look forward to working with you again in the future.</p>`
-    : `<p>We would like to express our sincere gratitude for referring your clients to Putting Kids First. Your support and trust in our organization have helped us achieve our mission of creating happy and safe childhood memories for all children.</p>
+<p>Need more cards or have questions? Reach out anytime at <a href="mailto:info@puttingkidsfirst.org" style="color: #2563eb;">info@puttingkidsfirst.org</a>.</p>`
+    : `<p>Thank you for continuing to recommend Putting Kids First to your clients. We&rsquo;ve enclosed 20 additional referral cards for your office.</p>
 
-<p>We also want to remind you of our unique attorney notification process at Putting Kids First. When your client provides your email address on their test or registration form, we will notify you immediately upon their completion of the test. This notification will include a copy of the certificate of completion, ensuring you receive timely documentation for your records.</p>
+<p>As always, whenever a client provides your email on their registration form, we automatically send you a copy of their certificate upon completion.</p>
 
-<p>If you require more Client Referral Cards to provide to your clients, please let us know. We enclose 20 cards and will be happy to supply them as needed. Please contact us at <a href="mailto:info@puttingkidsfirst.org" style="color: #2563eb;">info@puttingkidsfirst.org</a> for additional cards.</p>
+<p><strong>Now available in Spanish:</strong> Your Spanish-speaking clients can complete the full course in Spanish at <a href="https://claseparapadres.com" style="color: #2563eb;">claseparapadres.com</a>, with the same court-accepted certificate.</p>
 
-<p>Thank you again for your continued support, and we look forward to working with you again in the future.</p>`;
+<p>Need more cards or have questions? Reach out anytime at <a href="mailto:info@puttingkidsfirst.org" style="color: #2563eb;">info@puttingkidsfirst.org</a>.</p>`;
 
-  const signatureLinks = isSpanishIntro
-    ? `<div style="font-size: 11pt; color: #475569;">info@puttingkidsfirst.org</div>
-<div style="font-size: 11pt;"><a href="https://puttingkidsfirst.org" style="color: #2563eb; text-decoration: none;">puttingkidsfirst.org</a> &nbsp;|&nbsp; <a href="https://claseparapadres.com" style="color: #2563eb; text-decoration: none;">claseparapadres.com</a></div>`
-    : `<div style="font-size: 11pt; color: #475569;">info@puttingkidsfirst.org</div>
-<div style="font-size: 11pt;"><a href="https://puttingkidsfirst.org" style="color: #2563eb; text-decoration: none;">https://puttingkidsfirst.org</a></div>`;
+  const signatureLinks = `<div style="font-size: 11pt;"><a href="https://puttingkidsfirst.org" style="color: #2563eb; text-decoration: none;">puttingkidsfirst.org</a> &nbsp;|&nbsp; <a href="https://claseparapadres.com" style="color: #2563eb; text-decoration: none;">claseparapadres.com</a></div>
+<div style="font-size: 10pt; color: #475569; margin-top: 0.05in;">888-777-2298 &nbsp;|&nbsp; info@puttingkidsfirst.org</div>`;
 
-  const contactLines = isSpanishIntro
-    ? `Toll Free: 888 777 2298<br/>
-          <a href="https://puttingkidsfirst.org" style="color: #2563eb; text-decoration: none;">https://puttingkidsfirst.org</a><br/>
+  const contactLines = `Toll Free: 888-777-2298<br/>
+          <a href="https://puttingkidsfirst.org" style="color: #2563eb; text-decoration: none;">puttingkidsfirst.org</a><br/>
           <a href="https://claseparapadres.com" style="color: #2563eb; text-decoration: none;">claseparapadres.com</a><br/>
-          info@puttingkidsfirst.org`
-    : `Toll Free: 888 777 2298<br/>
-          <a href="https://puttingkidsfirst.org" style="color: #2563eb; text-decoration: none;">https://puttingkidsfirst.org</a><br/>
           info@puttingkidsfirst.org`;
 
   return `<!DOCTYPE html>
-<html><head><title>Attorney Letter${isSpanishIntro ? ' - Clase para Padres' : ''}</title>
+<html><head><title>Attorney Letter — ${isFirstTime ? 'First-Time' : 'Repeat'} Mailing</title>
 <link href="https://fonts.googleapis.com/css2?family=Short+Stack&display=swap" rel="stylesheet">
 <style>
 @page { size: letter; margin: 0; }
@@ -200,6 +193,9 @@ body { font-family: Georgia, 'Times New Roman', serif; }
 .body-text a {
   color: #2563eb;
   text-decoration: none;
+}
+.body-text strong {
+  font-weight: 700;
 }
 .signature {
   margin-top: 0.4in;
@@ -387,7 +383,7 @@ export default function AttorneyPanel() {
 
   // Letter modal
   const [showLetterModal, setShowLetterModal] = useState(false);
-  const [letterTemplate, setLetterTemplate] = useState<LetterTemplate>('standard');
+  const [letterTemplate, setLetterTemplate] = useState<LetterTemplate>('first-time');
   const [letterTarget, setLetterTarget] = useState<'needs-cards' | 'filtered' | 'single'>('needs-cards');
   const [singleLetterAttorney, setSingleLetterAttorney] = useState<Attorney | null>(null);
 
@@ -1433,18 +1429,18 @@ export default function AttorneyPanel() {
               <div>
                 <label className="block text-xs font-semibold text-white/50 mb-2">Letter Template</label>
                 <div className="space-y-2">
-                  <label className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer border transition-colors ${letterTemplate === 'standard' ? 'border-[#77DD77] bg-[#77DD77]/10' : 'border-white/10 hover:border-white/20'}`}>
-                    <input type="radio" checked={letterTemplate === 'standard'} onChange={() => setLetterTemplate('standard')} className="mt-1" />
+                  <label className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer border transition-colors ${letterTemplate === 'first-time' ? 'border-[#77DD77] bg-[#77DD77]/10' : 'border-white/10 hover:border-white/20'}`}>
+                    <input type="radio" checked={letterTemplate === 'first-time'} onChange={() => setLetterTemplate('first-time')} className="mt-1" />
                     <div>
-                      <div className="text-sm font-semibold text-white">Standard Thank You</div>
-                      <div className="text-xs text-white/40">Gratitude + attorney notification process + cards enclosed</div>
+                      <div className="text-sm font-semibold text-white">First-Time Mailing</div>
+                      <div className="text-xs text-white/40">New attorney — intro, credentials since 1993, certificate process, 20 cards</div>
                     </div>
                   </label>
-                  <label className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer border transition-colors ${letterTemplate === 'claseparapadres' ? 'border-[#77DD77] bg-[#77DD77]/10' : 'border-white/10 hover:border-white/20'}`}>
-                    <input type="radio" checked={letterTemplate === 'claseparapadres'} onChange={() => setLetterTemplate('claseparapadres')} className="mt-1" />
+                  <label className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer border transition-colors ${letterTemplate === 'repeat' ? 'border-[#77DD77] bg-[#77DD77]/10' : 'border-white/10 hover:border-white/20'}`}>
+                    <input type="radio" checked={letterTemplate === 'repeat'} onChange={() => setLetterTemplate('repeat')} className="mt-1" />
                     <div>
-                      <div className="text-sm font-semibold text-white">Clase para Padres Introduction</div>
-                      <div className="text-xs text-white/40">Gratitude + introduces claseparapadres.com for Spanish-speaking clients</div>
+                      <div className="text-sm font-semibold text-white">Repeat Mailing</div>
+                      <div className="text-xs text-white/40">Returning attorney — thank you, 20 more cards enclosed</div>
                     </div>
                   </label>
                 </div>

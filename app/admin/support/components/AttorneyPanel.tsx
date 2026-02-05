@@ -103,7 +103,7 @@ function generateLetterHTML(attorneys: Attorney[], template: LetterTemplate): st
   const isFirstTime = template === 'first-time';
 
   const letterBody = isFirstTime
-    ? `<p>Your client recently completed our co-parenting class and listed you as their attorney. A copy of their certificate of completion has been sent to your office.</p>
+    ? `<p>Your client recently completed one of our parenting classes and listed you as their attorney. A copy of their certificate of completion has been sent to your office.</p>
 
 <p>Whenever a client provides your email on their registration form, we automatically send you a copy of their certificate upon completion. No follow-up needed on your end.</p>
 

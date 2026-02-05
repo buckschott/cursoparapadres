@@ -109,23 +109,23 @@ function generateLetterHTML(attorneys: Attorney[], template: LetterTemplate): st
 
 <p>Putting Kids First has been providing court-accepted co-parenting and parenting education since 1993, the first program of its kind offered online. If you have clients who need to complete a court-ordered parenting class, we&rsquo;ve enclosed 20 referral cards for your office to make it easy.</p>
 
-<p><strong>Now available in Spanish:</strong> Your Spanish-speaking clients can complete the full course in Spanish at <a href="https://claseparapadres.com" style="color: #2563eb;">claseparapadres.com</a>, with the same court-accepted certificate.</p>
+<p><strong>Now available in Spanish:</strong> Your Spanish-speaking clients can complete the full course in Spanish at <a href="https://cursoparapadres.org" style="color: #2563eb;">cursoparapadres.org</a>, with the same court-accepted certificate.</p>
 
 <p>Need more cards or have questions? Reach out anytime at <a href="mailto:info@puttingkidsfirst.org" style="color: #2563eb;">info@puttingkidsfirst.org</a>.</p>`
     : `<p>Thank you for continuing to recommend Putting Kids First to your clients. We&rsquo;ve enclosed 20 additional referral cards for your office.</p>
 
 <p>As always, whenever a client provides your email on their registration form, we automatically send you a copy of their certificate upon completion.</p>
 
-<p><strong>Now available in Spanish:</strong> Your Spanish-speaking clients can complete the full course in Spanish at <a href="https://claseparapadres.com" style="color: #2563eb;">claseparapadres.com</a>, with the same court-accepted certificate.</p>
+<p><strong>Now available in Spanish:</strong> Your Spanish-speaking clients can complete the full course in Spanish at <a href="https://cursoparapadres.org" style="color: #2563eb;">cursoparapadres.org</a>, with the same court-accepted certificate.</p>
 
 <p>Need more cards or have questions? Reach out anytime at <a href="mailto:info@puttingkidsfirst.org" style="color: #2563eb;">info@puttingkidsfirst.org</a>.</p>`;
 
-  const signatureLinks = `<div style="font-size: 11pt;"><a href="https://puttingkidsfirst.org" style="color: #2563eb; text-decoration: none;">puttingkidsfirst.org</a> &nbsp;|&nbsp; <a href="https://claseparapadres.com" style="color: #2563eb; text-decoration: none;">claseparapadres.com</a></div>
+  const signatureLinks = `<div style="font-size: 11pt;"><a href="https://puttingkidsfirst.org" style="color: #2563eb; text-decoration: none;">puttingkidsfirst.org</a> &nbsp;|&nbsp; <a href="https://cursoparapadres.org" style="color: #2563eb; text-decoration: none;">cursoparapadres.org</a></div>
 <div style="font-size: 10pt; color: #475569; margin-top: 0.05in;">888-777-2298 &nbsp;|&nbsp; info@puttingkidsfirst.org</div>`;
 
   const contactLines = `Toll Free: 888-777-2298<br/>
           <a href="https://puttingkidsfirst.org" style="color: #2563eb; text-decoration: none;">puttingkidsfirst.org</a><br/>
-          <a href="https://claseparapadres.com" style="color: #2563eb; text-decoration: none;">claseparapadres.com</a><br/>
+          <a href="https://cursoparapadres.org" style="color: #2563eb; text-decoration: none;">cursoparapadres.org</a><br/>
           info@puttingkidsfirst.org`;
 
   return `<!DOCTYPE html>

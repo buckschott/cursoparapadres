@@ -88,11 +88,11 @@ function fuzzyMatch(str1: string, str2: string): boolean {
 }
 
 const STATE_LIST = [
-  'AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA',
-  'HI','ID','IL','IN','IA','KS','KY','LA','ME','MD',
-  'MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ',
-  'NM','NY','NC','ND','OH','OK','OR','PA','RI','SC',
-  'SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','DC'
+  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+  'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+  'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+  'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+  'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'DC'
 ];
 
 // =============================================================================
@@ -426,7 +426,7 @@ export default function AttorneyPanel() {
     // Map sort fields to actual database columns
     const dbSortField = sortField === 'name' ? 'last_name'
       : sortField === 'cards_needed' ? 'referral_count' // sort by referrals as proxy, re-sort client-side
-      : sortField;
+        : sortField;
 
     let query = supabase
       .from('attorneys')
@@ -513,6 +513,26 @@ export default function AttorneyPanel() {
   const updateCardsSent = async (id: string, val: number) => {
     await supabase.from('attorneys').update({ cards_sent: val, last_cards_sent_date: new Date().toISOString().split('T')[0] }).eq('id', id);
     setEditingId(null);
+    fetchAttorneys();
+  };
+
+  const [bulkUpdating, setBulkUpdating] = useState(false);
+
+  const bulkAddCardsSent = async () => {
+    const targets = sortedAttorneys.filter(a => getCardsNeeded(a.referral_count, a.cards_sent) > 0);
+    if (targets.length === 0) return;
+    if (!confirm(`Add 20 to Cards Sent for ${targets.length} attorney${targets.length === 1 ? '' : 's'}?`)) return;
+    setBulkUpdating(true);
+    const today = new Date().toISOString().split('T')[0];
+    // Batch update using individual calls (Supabase doesn't support increment in bulk easily)
+    const promises = targets.map(a =>
+      supabase.from('attorneys').update({
+        cards_sent: a.cards_sent + 20,
+        last_cards_sent_date: today,
+      }).eq('id', a.id)
+    );
+    await Promise.all(promises);
+    setBulkUpdating(false);
     fetchAttorneys();
   };
 
@@ -924,11 +944,10 @@ export default function AttorneyPanel() {
           <button
             key={tab}
             onClick={() => setSubTab(tab)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              subTab === tab
-                ? 'bg-white/20 text-white'
-                : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/80'
-            }`}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${subTab === tab
+              ? 'bg-white/20 text-white'
+              : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/80'
+              }`}
           >
             {tab === 'all' && `📋 All (${totalCount})`}
             {tab === 'review' && <>⚠️ Review {reviewCount > 0 && <span className="ml-1 px-2 py-0.5 bg-orange-500 text-white text-xs rounded-full">{reviewCount}</span>}</>}
@@ -1008,6 +1027,15 @@ export default function AttorneyPanel() {
                 <input type="checkbox" checked={needsCardsOnly} onChange={e => setNeedsCardsOnly(e.target.checked)} className="w-4 h-4 rounded" />
                 <span className="text-sm text-white/70">Needs cards ({needCardsCount})</span>
               </label>
+              {needsCardsOnly && needCardsCount > 0 && (
+                <button
+                  onClick={bulkAddCardsSent}
+                  disabled={bulkUpdating}
+                  className="px-3 py-2 bg-orange-600 text-white rounded-lg text-sm font-semibold hover:bg-orange-500 disabled:opacity-50 transition-colors"
+                >
+                  {bulkUpdating ? '⏳ Updating...' : `📦 Mark All Sent (+20 × ${needCardsCount})`}
+                </button>
+              )}
             </div>
           </div>
 
@@ -1184,22 +1212,40 @@ export default function AttorneyPanel() {
                     <th className="px-3 py-3 text-left text-xs font-bold text-white/60 uppercase">Email</th>
                     <th className="px-3 py-3 text-center text-xs font-bold text-white/60 uppercase w-16">State</th>
                     <th className="px-3 py-3 text-center text-xs font-bold text-white/60 uppercase w-20">Referrals</th>
-                    <th className="px-3 py-3 text-center text-xs font-bold text-white/60 uppercase w-20">Actions</th>
+                    <th className="px-3 py-3 text-center text-xs font-bold text-white/60 uppercase w-32">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {searchResults.map((a, idx) => (
-                    <tr key={a.id} className={`border-b border-white/5 hover:bg-white/5 transition-colors ${a.needs_review ? 'bg-yellow-500/10' : ''}`}>
-                      <td className="px-3 py-3 text-sm text-white font-medium">{getDisplayName(a)}</td>
-                      <td className="px-3 py-3 text-sm text-white/50">{a.firm_name || '-'}</td>
-                      <td className="px-3 py-3 text-xs text-white/50">{a.email || '-'}</td>
-                      <td className="px-3 py-3 text-sm text-center text-white/50">{a.state || '-'}</td>
-                      <td className="px-3 py-3 text-center text-sm font-bold text-white">{a.referral_count}</td>
-                      <td className="px-3 py-3 text-center">
-                        <button onClick={() => openEditModal(a)} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-500 transition-colors">Edit</button>
-                      </td>
-                    </tr>
-                  ))}
+                  {searchResults.map((a, idx) => {
+                    const hasAddress = !!(a.address && a.city && a.state);
+                    return (
+                      <tr key={a.id} className={`border-b border-white/5 hover:bg-white/5 transition-colors ${a.needs_review ? 'bg-yellow-500/10' : ''}`}>
+                        <td className="px-3 py-3 text-sm text-white font-medium">{getDisplayName(a)}</td>
+                        <td className="px-3 py-3 text-sm text-white/50">{a.firm_name || '-'}</td>
+                        <td className="px-3 py-3 text-xs text-white/50">{a.email || '-'}</td>
+                        <td className="px-3 py-3 text-sm text-center text-white/50">{a.state || '-'}</td>
+                        <td className="px-3 py-3 text-center text-sm font-bold text-white">{a.referral_count}</td>
+                        <td className="px-3 py-3 text-center">
+                          <div className="flex gap-1 justify-center">
+                            <button onClick={() => openEditModal(a)} className="px-2 py-1 bg-white/10 text-white/70 rounded text-xs hover:bg-white/20 transition-colors" title="Edit">✏️</button>
+                            <button onClick={() => openLetterModal(a)} className="px-2 py-1 bg-white/10 text-white/70 rounded text-xs hover:bg-white/20 transition-colors" title="Print letter">✉️</button>
+                            <button
+                              onClick={() => printSingleLabel(a)}
+                              className={`px-2 py-1 rounded text-xs transition-colors ${hasAddress ? 'bg-white/10 text-white/70 hover:bg-white/20' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                              title={hasAddress ? 'Print label' : 'No address on file'}
+                              disabled={!hasAddress}
+                            >🏷️</button>
+                            <button
+                              onClick={() => verifySingleAddress(a)}
+                              className={`px-2 py-1 rounded text-xs transition-colors ${hasAddress ? 'bg-white/10 text-white/70 hover:bg-white/20' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                              title={hasAddress ? 'Verify address with USPS' : 'No address to verify'}
+                              disabled={!hasAddress || verifyingId === a.id}
+                            >{verifyingId === a.id ? '⏳' : '📫'}</button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -1391,7 +1437,15 @@ export default function AttorneyPanel() {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-white/50 mb-1">Cards Sent</label>
-                  <input type="number" value={editForm.cards_sent || 0} onChange={e => setEditForm({ ...editForm, cards_sent: parseInt(e.target.value) || 0 })} className={inputClass} />
+                  <div className="flex gap-2">
+                    <input type="number" step={20} value={editForm.cards_sent || 0} onChange={e => setEditForm({ ...editForm, cards_sent: parseInt(e.target.value) || 0 })} className={inputClass} />
+                    <button
+                      type="button"
+                      onClick={() => setEditForm({ ...editForm, cards_sent: (editForm.cards_sent || 0) + 20 })}
+                      className="px-3 py-2 bg-[#77DD77]/20 text-[#77DD77] rounded-lg text-sm font-bold hover:bg-[#77DD77]/30 transition-colors whitespace-nowrap"
+                      title="Add 20 cards"
+                    >+20</button>
+                  </div>
                 </div>
               </div>
               <label className="flex items-center gap-2 cursor-pointer">

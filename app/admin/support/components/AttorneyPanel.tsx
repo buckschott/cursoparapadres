@@ -616,7 +616,6 @@ export default function AttorneyPanel() {
       referral_count: 0,
       cards_sent: 0,
       needs_review: false,
-      full_name_search: `${newAttorney.first_name} ${newAttorney.last_name}`.trim(),
     });
     if (error) { alert('Error: ' + error.message); }
     else {
@@ -909,7 +908,6 @@ export default function AttorneyPanel() {
           referral_count: 1,
           cards_sent: 0,
           needs_review: true,
-          full_name_search: row.name || `${firstName} ${lastName}`.trim(),
         });
         if (error) errorCount++;
         else addedCount++;

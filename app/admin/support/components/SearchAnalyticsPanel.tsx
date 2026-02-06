@@ -241,7 +241,7 @@ function DeviceBreakdown({
           return (
             <div key={d.device} className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
-                <span>{deviceIcons[d.device] || '🔲'}</span>
+                <span>{deviceIcons[d.device] || '📲'}</span>
                 <span className="text-white/80 capitalize">{d.device.toLowerCase()}</span>
               </div>
               <div className="flex items-center gap-4">
@@ -393,6 +393,85 @@ function DataTable({
 }
 
 // ============================================================================
+// COPY FOR CLAUDE — formats all data as paste-ready text
+// ============================================================================
+
+function formatDataForClaude(
+  data: NonNullable<ReturnType<typeof useSearchAnalytics>['data']>,
+  site: SearchAnalyticsSite,
+  range: SearchAnalyticsDateRange,
+): string {
+  const siteName = site === 'pkf' ? 'puttingkidsfirst.org' : 'claseparapadres.com';
+  const now = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  let output = '';
+  output += `=== SEO DATA EXPORT ===\n`;
+  output += `Site: ${siteName}\n`;
+  output += `Range: ${range} (${data.startDate} → ${data.endDate})\n`;
+  output += `Exported: ${now}\n\n`;
+
+  // Totals
+  output += `--- TOTALS ---\n`;
+  output += `Total Clicks: ${data.totals.clicks.toLocaleString()}`;
+  if (data.trends.clicks !== undefined) output += ` (${data.trends.clicks > 0 ? '+' : ''}${data.trends.clicks}% trend)`;
+  output += `\n`;
+  output += `Total Impressions: ${data.totals.impressions.toLocaleString()}`;
+  if (data.trends.impressions !== undefined) output += ` (${data.trends.impressions > 0 ? '+' : ''}${data.trends.impressions}% trend)`;
+  output += `\n`;
+  output += `Avg CTR: ${data.totals.ctr}%\n`;
+  output += `Avg Position: ${data.totals.position.toFixed(1)}\n\n`;
+
+  // Devices
+  if (data.devices.length > 0) {
+    const totalDevClicks = data.devices.reduce((s, d) => s + d.clicks, 0) || 1;
+    output += `--- DEVICES ---\n`;
+    data.devices.forEach(d => {
+      const pct = Math.round((d.clicks / totalDevClicks) * 100);
+      output += `${d.device}: ${d.clicks.toLocaleString()} clicks (${pct}%)\n`;
+    });
+    output += `\n`;
+  }
+
+  // Top Queries
+  if (data.queries.length > 0) {
+    const sortedQueries = [...data.queries].sort((a, b) => b.clicks - a.clicks);
+    output += `--- TOP QUERIES ---\n`;
+    output += `Query | Clicks | Impr | CTR | Pos\n`;
+    sortedQueries.forEach(q => {
+      output += `${q.query} | ${q.clicks} | ${q.impressions.toLocaleString()} | ${(q.ctr * 100).toFixed(1)}% | ${q.position.toFixed(1)}\n`;
+    });
+    output += `\n`;
+  }
+
+  // Top Pages
+  if (data.pages.length > 0) {
+    const sortedPages = [...data.pages].sort((a, b) => b.clicks - a.clicks);
+    output += `--- TOP PAGES ---\n`;
+    output += `Page | Clicks | Impr | CTR | Pos\n`;
+    sortedPages.forEach(p => {
+      let pagePath = p.page;
+      try {
+        const url = new URL(p.page);
+        pagePath = url.pathname || '/';
+      } catch { /* use raw */ }
+      output += `${pagePath} | ${p.clicks} | ${p.impressions.toLocaleString()} | ${(p.ctr * 100).toFixed(1)}% | ${p.position.toFixed(1)}\n`;
+    });
+    output += `\n`;
+  }
+
+  // Daily data
+  if (data.dateSeries.length > 0) {
+    output += `--- DAILY CLICKS ---\n`;
+    output += `Date | Clicks | Impressions\n`;
+    data.dateSeries.forEach(d => {
+      output += `${d.date} | ${d.clicks} | ${d.impressions.toLocaleString()}\n`;
+    });
+  }
+
+  return output;
+}
+
+// ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
@@ -408,6 +487,9 @@ export default function SearchAnalyticsPanel() {
     fetchAnalytics,
   } = useSearchAnalytics();
 
+  // Copy button state
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
+
   // Initial load
   const [hasLoaded, setHasLoaded] = useState(false);
   useEffect(() => {
@@ -416,6 +498,29 @@ export default function SearchAnalyticsPanel() {
       setHasLoaded(true);
     }
   }, [hasLoaded, fetchAnalytics]);
+
+  // Copy handler
+  const handleCopyForClaude = async () => {
+    if (!data) return;
+    const text = formatDataForClaude(data, selectedSite, selectedRange);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyStatus('copied');
+      setTimeout(() => setCopyStatus('idle'), 2000);
+    } catch {
+      // Fallback for older browsers
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setCopyStatus('copied');
+      setTimeout(() => setCopyStatus('idle'), 2000);
+    }
+  };
 
   // -------------------------------------------------------------------------
   // LOADING STATE
@@ -482,6 +587,23 @@ export default function SearchAnalyticsPanel() {
         <SiteSelector selected={selectedSite} onChange={changeSite} />
         <div className="flex items-center gap-3">
           <RangeSelector selected={selectedRange} onChange={changeRange} />
+
+          {/* Copy for Claude button */}
+          {data && (
+            <button
+              onClick={handleCopyForClaude}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                copyStatus === 'copied'
+                  ? 'bg-[#77DD77] text-[#1C1C1C]'
+                  : 'bg-white/10 hover:bg-white/20 text-white/60 hover:text-white'
+              }`}
+              title="Copy all SEO data as text — paste into Claude chat"
+            >
+              {copyStatus === 'copied' ? '✅ Copied!' : '📋 Copy for Claude'}
+            </button>
+          )}
+
+          {/* Refresh button */}
           <button
             onClick={() => fetchAnalytics()}
             disabled={isLoading}

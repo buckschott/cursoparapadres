@@ -279,3 +279,65 @@ export interface SwapEligibility {
   targetClass?: string;
   lessonsCompleted?: number;
 }
+
+// ============================================================================
+// SEARCH ANALYTICS TYPES
+// ============================================================================
+
+export type SearchAnalyticsSite = 'pkf' | 'cpp';
+export type SearchAnalyticsDateRange = '7d' | '28d' | '90d';
+
+export interface SearchAnalyticsQuery {
+  query: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+
+export interface SearchAnalyticsPage {
+  page: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+
+export interface SearchAnalyticsDevice {
+  device: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+}
+
+export interface SearchAnalyticsDatePoint {
+  date: string;
+  clicks: number;
+  impressions: number;
+}
+
+export interface SearchAnalyticsTotals {
+  clicks: number;
+  impressions: number;
+  ctr: number;      // percentage, e.g. 3.5 = 3.5%
+  position: number; // average position, e.g. 12.3
+}
+
+export interface SearchAnalyticsTrends {
+  clicks: number;      // percentage change, e.g. 15 = +15%
+  impressions: number; // percentage change
+}
+
+export interface SearchAnalyticsData {
+  site: string;
+  dateRange: SearchAnalyticsDateRange;
+  startDate: string;
+  endDate: string;
+  totals: SearchAnalyticsTotals;
+  trends: SearchAnalyticsTrends;
+  queries: SearchAnalyticsQuery[];
+  pages: SearchAnalyticsPage[];
+  devices: SearchAnalyticsDevice[];
+  dateSeries: SearchAnalyticsDatePoint[];
+  fetchedAt: string;
+}

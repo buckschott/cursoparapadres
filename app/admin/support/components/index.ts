@@ -25,3 +25,4 @@ export { default as DangerZone } from './DangerZone';
 export { default as ActionLog } from './ActionLog';
 export { default as CustomerServicePanel } from './CustomerServicePanel';
 export { default as AttorneyPanel } from './AttorneyPanel';
+export { default as SearchAnalyticsPanel } from './SearchAnalyticsPanel';

@@ -25,6 +25,7 @@ import {
   ActionLog,
   CustomerServicePanel,
   AttorneyPanel,
+  SearchAnalyticsPanel,
 } from './components';
 import { StuckStudentsModal, ProfileEditModal } from './components/modals';
 import type { ProfileEditData, TemplateName, SearchType } from './types';
@@ -44,7 +45,7 @@ export default function AdminSupportPage() {
   // UI STATE
   // ---------------------------------------------------------------------------
   // Customer Service is the DEFAULT tab
-  const [activeTab, setActiveTab] = useState<'customer-service' | 'dashboard' | 'attorneys'>('customer-service');
+  const [activeTab, setActiveTab] = useState<'customer-service' | 'dashboard' | 'attorneys' | 'seo'>('customer-service');
   const [showStuckModal, setShowStuckModal] = useState(false);
   const [showProfileEditModal, setShowProfileEditModal] = useState(false);
 
@@ -243,12 +244,12 @@ export default function AdminSupportPage() {
     await translateIncoming(text);
   };
 
-  const handleSelectTemplate = async (templateName: TemplateName) => {
-    await getTemplate(templateName);
-  };
-
   const handleTranslateOutgoing = async (text: string) => {
     await translateOutgoing(text);
+  };
+
+  const handleSelectTemplate = async (template: TemplateName) => {
+    await getTemplate(template);
   };
 
   const handleSendEmail = async (to: string, subject: string, body: string) => {
@@ -309,9 +310,9 @@ export default function AdminSupportPage() {
       </div>
 
       {/* ================================================================== */}
-      {/* CUSTOMER SEARCH - ALWAYS AT TOP (hidden on Attorneys tab) */}
+      {/* CUSTOMER SEARCH - ALWAYS AT TOP (hidden on Attorneys & SEO tabs) */}
       {/* ================================================================== */}
-      {activeTab !== 'attorneys' && (
+      {activeTab !== 'attorneys' && activeTab !== 'seo' && (
         <div className="max-w-7xl mx-auto mb-6">
           <CustomerSearch
             searchQuery={searchQuery}
@@ -327,7 +328,7 @@ export default function AdminSupportPage() {
 
       {/* Tab Navigation */}
       <div className="max-w-7xl mx-auto mb-6">
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setActiveTab('customer-service')}
             className={`px-6 py-3 rounded-lg font-medium transition-colors ${
@@ -358,6 +359,16 @@ export default function AdminSupportPage() {
           >
             ⚖️ Attorneys
           </button>
+          <button
+            onClick={() => setActiveTab('seo')}
+            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+              activeTab === 'seo'
+                ? 'bg-[#77DD77] text-[#1C1C1C]'
+                : 'bg-white/10 text-white hover:bg-white/20'
+            }`}
+          >
+            📈 SEO
+          </button>
         </div>
       </div>
 
@@ -384,6 +395,9 @@ export default function AdminSupportPage() {
         ) : activeTab === 'attorneys' ? (
           /* Attorneys Tab */
           <AttorneyPanel />
+        ) : activeTab === 'seo' ? (
+          /* SEO / Search Analytics Tab */
+          <SearchAnalyticsPanel />
         ) : (
           /* Dashboard Tab */
           <div className="space-y-6">

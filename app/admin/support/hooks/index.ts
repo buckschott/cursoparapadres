@@ -5,3 +5,4 @@
 // =============================================================================
 
 export { useAdminSupport, default } from './useAdminSupport';
+export { useSearchAnalytics } from './useSearchAnalytics';

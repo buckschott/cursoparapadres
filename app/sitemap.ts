@@ -5,7 +5,7 @@
 
 import { MetadataRoute } from 'next'
 
-const BASE_URL = 'https://www.claseparapadres.com'
+const BASE_URL = 'https://claseparapadres.com'
 
 // All 50 states + DC + Puerto Rico (matches seo-metadata-config.tsx)
 const stateSlugs = [

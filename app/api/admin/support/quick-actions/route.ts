@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
           type: 'recovery',
           email: email,
           options: {
-            redirectTo: 'https://www.claseparapadres.com/actualizar-contrasena',
+            redirectTo: 'https://claseparapadres.com/actualizar-contrasena',
           },
         });
 
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Send custom password reset email via our existing endpoint
-        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.claseparapadres.com';
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://claseparapadres.com';
         await fetch(`${baseUrl}/api/send-password-reset`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -233,7 +233,7 @@ export async function POST(request: NextRequest) {
               ? 'El Paquete Completo'
               : 'Clase de Coparentalidad';
 
-        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.claseparapadres.com';
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://claseparapadres.com';
 
         const emailHtml = `
 <!DOCTYPE html>
@@ -650,7 +650,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Certificate not found' }, { status: 404 });
         }
 
-        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.claseparapadres.com';
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://claseparapadres.com';
 
         // Send certificate email via existing endpoint
         await fetch(`${baseUrl}/api/send-certificate-email`, {
@@ -692,7 +692,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Certificate not found' }, { status: 404 });
         }
 
-        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.claseparapadres.com';
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://claseparapadres.com';
 
         // Send attorney email via existing endpoint
         await fetch(`${baseUrl}/api/send-attorney-email`, {

@@ -6,7 +6,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const ICON_BASE_URL = 'https://www.claseparapadres.com/images/email';
+const ICON_BASE_URL = 'https://claseparapadres.com/images/email';
 
 const EMAIL_CONFIG = {
   from: 'Clase para Padres <hola@claseparapadres.com>',
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
     };
 
     const courseName = courseNames[cert.course_type] || 'Clase';
-    const downloadUrl = `https://www.claseparapadres.com/api/certificate/${cert.id}`;
+    const downloadUrl = `https://claseparapadres.com/api/certificate/${cert.id}`;
     const firstName = profile.full_name?.split(' ')[0] || profile.legal_name?.split(' ')[0] || '';
 
     // Send celebration email to student

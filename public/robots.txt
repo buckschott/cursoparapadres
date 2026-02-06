@@ -5,7 +5,7 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://www.claseparapadres.com/sitemap.xml
+Sitemap: https://claseparapadres.com/sitemap.xml
 
 # Disallow user account pages
 Disallow: /panel

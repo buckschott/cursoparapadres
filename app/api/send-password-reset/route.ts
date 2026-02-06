@@ -6,7 +6,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const ICON_BASE_URL = 'https://www.claseparapadres.com/images/email';
+const ICON_BASE_URL = 'https://claseparapadres.com/images/email';
 
 const EMAIL_CONFIG = {
   from: 'Clase para Padres <hola@claseparapadres.com>',
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
       type: 'recovery',
       email: email,
       options: {
-        redirectTo: 'https://www.claseparapadres.com/actualizar-contrasena',
+        redirectTo: 'https://claseparapadres.com/actualizar-contrasena',
       },
     });
 
@@ -193,7 +193,7 @@ function generatePasswordResetEmailHTML(data: PasswordResetEmailData): string {
             <td style="padding-top: 24px;">
               <p style="color: rgba(255,255,255,0.5); font-size: 13px; line-height: 20px; margin: 0; font-family: 'Courier Prime', Courier, monospace;">
                 Si el botón no funciona, visite 
-                <a href="https://www.claseparapadres.com/recuperar-contrasena" style="color: #7EC8E3; text-decoration: underline;">claseparapadres.com/recuperar-contrasena</a> 
+                <a href="https://claseparapadres.com/recuperar-contrasena" style="color: #7EC8E3; text-decoration: underline;">claseparapadres.com/recuperar-contrasena</a> 
                 y solicite un nuevo enlace.
               </p>
             </td>

@@ -6,7 +6,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const ICON_BASE_URL = 'https://www.claseparapadres.com/images/email';
+const ICON_BASE_URL = 'https://claseparapadres.com/images/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -69,8 +69,8 @@ export async function POST(request: NextRequest) {
     };
 
     const courseName = courseNames[cert.course_type] || cert.course_type;
-    const verifyUrl = `https://www.claseparapadres.com/verificar/${cert.verification_code}`;
-    const downloadUrl = `https://www.claseparapadres.com/api/certificate/${cert.id}`;
+    const verifyUrl = `https://claseparapadres.com/verificar/${cert.verification_code}`;
+    const downloadUrl = `https://claseparapadres.com/api/certificate/${cert.id}`;
     const currentYear = new Date().getFullYear();
 
     // Send email to attorney

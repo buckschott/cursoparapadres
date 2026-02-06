@@ -18,7 +18,7 @@ const EMAIL_CONFIG = {
   replyTo: 'info@claseparapadres.com',
 };
 
-const ICON_BASE_URL = 'https://www.claseparapadres.com/images/email';
+const ICON_BASE_URL = 'https://claseparapadres.com/images/email';
 
 // ============================================
 // TYPES
@@ -465,7 +465,7 @@ function generateWelcomeEmailHTML(
                 <tr>
                   <td style="background-color: #77DD77; border-radius: 12px;">
                     <a 
-                      href="https://www.claseparapadres.com/panel" 
+                      href="https://claseparapadres.com/panel" 
                       style="display: inline-block; padding: 16px 32px; color: #1C1C1C; font-size: 18px; font-weight: 700; text-decoration: none; font-family: 'Courier Prime', Courier, monospace;"
                     >
                       Ir a Mi Clase →

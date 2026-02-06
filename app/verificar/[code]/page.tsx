@@ -169,7 +169,7 @@ export default function VerifyPage() {
 
         <div className="text-center mt-8">
           <p className="text-xs text-white/60 font-brand">Putting Kids First® • Established 1993</p>
-          <p className="text-xs text-white/70 mt-1">www.claseparapadres.com</p>
+          <p className="text-xs text-white/70 mt-1">claseparapadres.com</p>
         </div>
       </div>
 

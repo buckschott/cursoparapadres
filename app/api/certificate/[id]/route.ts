@@ -129,7 +129,7 @@ export async function GET(
     dateCompleted: formatDate(completionDate),
     certificateNumber: cert.certificate_number,
     verificationCode: cert.verification_code,
-    verifyUrl: `https://www.claseparapadres.com/verificar/${cert.verification_code}`
+    verifyUrl: `https://claseparapadres.com/verificar/${cert.verification_code}`
   };
 
   // ============================================
@@ -291,7 +291,7 @@ export async function GET(
   // Fetch and embed logo
   let logoWidth = 95;
   try {
-    const logoResponse = await fetch('https://www.claseparapadres.com/logo.png');
+    const logoResponse = await fetch('https://claseparapadres.com/logo.png');
     if (logoResponse.ok) {
       const logoBytes = await logoResponse.arrayBuffer();
       const logoImage = await pdfDoc.embedPng(logoBytes);
@@ -313,7 +313,7 @@ export async function GET(
   
   // Fetch and embed signature - 2pt above Executive Director line
   try {
-    const sigResponse = await fetch('https://www.claseparapadres.com/geri-signature.png');
+    const sigResponse = await fetch('https://claseparapadres.com/geri-signature.png');
     if (sigResponse.ok) {
       const sigBytes = await sigResponse.arrayBuffer();
       const sigImage = await pdfDoc.embedPng(sigBytes);

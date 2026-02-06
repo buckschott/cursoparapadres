@@ -555,7 +555,7 @@ export default function CertificadoPage() {
               {/* Right column - QR code */}
               <div className="flex flex-col items-center justify-center bg-white rounded-xl p-6">
                 <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&format=png&data=${encodeURIComponent(`https://www.claseparapadres.com/verificar/${certificate.verification_code}`)}`}
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&format=png&data=${encodeURIComponent(`https://claseparapadres.com/verificar/${certificate.verification_code}`)}`}
                   alt="Código QR de verificación"
                   className="w-32 h-32 mb-3"
                 />
@@ -744,7 +744,7 @@ export default function CertificadoPage() {
             rel="noopener noreferrer"
             className="text-[#7EC8E3] hover:underline text-sm break-all"
           >
-            https://www.claseparapadres.com/verificar/{certificate.verification_code}
+            https://claseparapadres.com/verificar/{certificate.verification_code}
           </a>
         </div>
       </div>

@@ -571,7 +571,7 @@ export default function AdminTestingPage() {
                   <div className="grid gap-3 md:grid-cols-3 mb-4">
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText('https://www.claseparapadres.com/iniciar-sesion');
+                        navigator.clipboard.writeText('https://claseparapadres.com/iniciar-sesion');
                         showMessage('success', 'Login URL copied!');
                       }}
                       className="bg-[#2A2A2A] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#7EC8E3] transition-colors text-left"

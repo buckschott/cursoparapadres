@@ -27,9 +27,9 @@ export const metadata: Metadata = {
   title: "Clases para Padres | El Certificado Más Aceptado",
   description: "El Original. El Nombre Más Reconocido. Un precio. Aceptado en todo el país. Sin sorpresas.",
   alternates: {
-    canonical: "https://www.claseparapadres.com",
+    canonical: "https://claseparapadres.com",
     languages: {
-      "es": "https://www.claseparapadres.com",
+      "es": "https://claseparapadres.com",
       "en": "https://puttingkidsfirst.org",
       "x-default": "https://puttingkidsfirst.org",
     },

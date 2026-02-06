@@ -237,7 +237,7 @@ export const copyToClipboard = async (text: string): Promise<boolean> => {
  * Get the base URL for the site.
  */
 export const getBaseUrl = (): string => {
-  return process.env.NEXT_PUBLIC_SITE_URL || 'https://www.claseparapadres.com';
+  return process.env.NEXT_PUBLIC_SITE_URL || 'https://claseparapadres.com';
 };
 
 /**

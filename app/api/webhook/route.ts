@@ -26,7 +26,7 @@ const EMAIL_CONFIG = {
   },
 };
 
-const ICON_BASE_URL = 'https://www.claseparapadres.com/images/email';
+const ICON_BASE_URL = 'https://claseparapadres.com/images/email';
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -669,7 +669,7 @@ function generateFallbackWelcomeEmailHTML(
           <tr>
             <td style="background-color: #77DD77; border-radius: 12px;">
               <a 
-                href="https://www.claseparapadres.com/recuperar-contrasena" 
+                href="https://claseparapadres.com/recuperar-contrasena" 
                 style="display: inline-block; padding: 16px 32px; color: #1C1C1C; font-size: 18px; font-weight: 700; text-decoration: none; font-family: 'Courier Prime', Courier, monospace;"
               >
                 Crear Mi Contraseña →
@@ -788,7 +788,7 @@ function generateExistingUserEmailHTML(
               
               <p style="color: rgba(255,255,255,0.7); font-size: 14px; margin: 0; line-height: 22px; font-family: 'Courier Prime', Courier, monospace;">
                 Use la contraseña que creó anteriormente. 
-                <a href="https://www.claseparapadres.com/recuperar-contrasena" style="color: #7EC8E3; text-decoration: underline;">¿Olvidó su contraseña?</a>
+                <a href="https://claseparapadres.com/recuperar-contrasena" style="color: #7EC8E3; text-decoration: underline;">¿Olvidó su contraseña?</a>
               </p>
             </td>
           </tr>
@@ -803,7 +803,7 @@ function generateExistingUserEmailHTML(
           <tr>
             <td style="background-color: #77DD77; border-radius: 12px;">
               <a 
-                href="https://www.claseparapadres.com/panel" 
+                href="https://claseparapadres.com/panel" 
                 style="display: inline-block; padding: 16px 32px; color: #1C1C1C; font-size: 18px; font-weight: 700; text-decoration: none; font-family: 'Courier Prime', Courier, monospace;"
               >
                 Continuar a Mi Clase →
@@ -914,7 +914,7 @@ function generateAlreadyOwnedEmailHTML(
               </p>
               
               <p style="color: rgba(255,255,255,0.7); font-size: 14px; margin: 0; line-height: 22px; font-family: 'Courier Prime', Courier, monospace;">
-                <a href="https://www.claseparapadres.com/recuperar-contrasena" style="color: #7EC8E3; text-decoration: underline;">¿Olvidó su contraseña? Haga clic aquí para restablecerla.</a>
+                <a href="https://claseparapadres.com/recuperar-contrasena" style="color: #7EC8E3; text-decoration: underline;">¿Olvidó su contraseña? Haga clic aquí para restablecerla.</a>
               </p>
             </td>
           </tr>
@@ -929,7 +929,7 @@ function generateAlreadyOwnedEmailHTML(
           <tr>
             <td style="background-color: #77DD77; border-radius: 12px;">
               <a 
-                href="https://www.claseparapadres.com/panel" 
+                href="https://claseparapadres.com/panel" 
                 style="display: inline-block; padding: 16px 32px; color: #1C1C1C; font-size: 18px; font-weight: 700; text-decoration: none; font-family: 'Courier Prime', Courier, monospace;"
               >
                 Ir a Mi Clase →

@@ -152,8 +152,9 @@ body { font-family: Arial, Helvetica, sans-serif; }
   border-bottom: 2px solid #2563eb;
 }
 .tagline {
-  font-family: 'Short Stack', cursive;
-  font-size: 14pt;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12pt;
+  font-weight: bold;
   color: #2563eb;
   line-height: 1.35;
   flex-shrink: 0;

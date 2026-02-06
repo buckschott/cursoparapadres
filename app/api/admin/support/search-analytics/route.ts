@@ -191,7 +191,7 @@ export async function GET(request: NextRequest) {
     const siteUrlFallback = SITES_URL_PREFIX[site];
 
     // Test with a small query first to determine the right site URL
-    let activeSiteUrl = siteUrl;
+    let activeSiteUrl: string = siteUrl;
     let testResult = await querySearchConsole(
       accessToken, siteUrl, startDate, endDate, ['query'], 1
     );

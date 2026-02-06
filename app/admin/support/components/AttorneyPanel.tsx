@@ -134,7 +134,7 @@ function generateLetterHTML(attorneys: Attorney[], template: LetterTemplate): st
 <style>
 @page { size: letter; margin: 0; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: Georgia, 'Times New Roman', serif; }
+body { font-family: Arial, Helvetica, sans-serif; }
 .page {
   width: 8.5in;
   min-height: 11in;

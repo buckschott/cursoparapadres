@@ -27,7 +27,7 @@ const SITES = {
 
 // Fallback: if domain properties aren't set up, try URL prefix
 const SITES_URL_PREFIX = {
-  pkf: 'https://www.puttingkidsfirst.org/',
+  pkf: 'https://puttingkidsfirst.org/',
   cpp: 'https://www.claseparapadres.com/',
 } as const;
 

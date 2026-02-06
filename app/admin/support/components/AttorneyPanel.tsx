@@ -227,7 +227,7 @@ body { font-family: Arial, Helvetica, sans-serif; }
 </style></head><body>
 ${attorneys.map(a => `<div class="page">
   <div class="header">
-    <div class="tagline">Better Parenting<br/>for Happier Kids</div>
+    <div class="tagline">The Original Online<br/>Parenting Class</div>
     <div class="logo-contact-group">
       <div class="contact-info">
         ${contactLines}

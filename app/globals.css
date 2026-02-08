@@ -6,6 +6,8 @@
  *     When updating values, update BOTH files.
  */
 :root {
+  color-scheme: dark;
+  
   /* Colors */
   --chalk-white: #FFFFFF;
   --chalk-yellow: #FFE566;
@@ -1100,7 +1102,7 @@ body {
 }
 
 .input-base::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .input-base:hover:not(:disabled) {

@@ -576,7 +576,7 @@ export default function ExamPage() {
                   </div>
                   <div>
                     <p className="font-semibold text-[#77DD77] text-sm">Su resultado está seguro</p>
-                    <p className="text-white/60 text-sm mt-1">
+                    <p className="text-white/65 text-sm mt-1">
                       Obtuvo <strong className="text-white">{pendingResults?.score}%</strong> ({pendingResults?.correctCount}/{QUESTIONS_PER_EXAM} correctas).
                       Solo necesitamos guardarlo en el servidor.
                     </p>

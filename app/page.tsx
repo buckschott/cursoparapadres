@@ -347,14 +347,14 @@ export default function Home() {
 
             {/* Security badge */}
             <div className="text-center mt-12">
-              <p className="flex items-center justify-center gap-2 text-sm text-white/60">
+              <p className="flex items-center justify-center gap-2 text-sm text-white/65">
                 <LockIcon className="w-4 h-4" />
                 Transacción SSL 100% Segura
               </p>
             </div>
 
             {/* Military/Indigent discount line */}
-            <p className="text-center mt-4 text-sm text-white/50">
+            <p className="text-center mt-4 text-sm text-white/60">
               ¿Servicio militar o dificultad financiera? Escríbanos a{' '}
               <a 
                 href="mailto:info@claseparapadres.com?subject=Solicitud%20de%20descuento"
@@ -470,7 +470,7 @@ export default function Home() {
                   <p className="text-white mb-6 leading-relaxed">"{review.text}"</p>
                   <div className="border-t border-[#FFFFFF]/15 pt-4">
                     <p className="font-semibold text-white">{review.name}</p>
-                    <p className="text-sm text-white/60">{review.location}</p>
+                    <p className="text-sm text-white/65">{review.location}</p>
                   </div>
                 </article>
               ))}

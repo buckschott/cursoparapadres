@@ -234,7 +234,7 @@ function ToastItem({
           </p>
           
           {toast.subMessage && (
-            <p className="text-white/60 text-sm mt-1">
+            <p className="text-white/65 text-sm mt-1">
               {toast.subMessage}
             </p>
           )}

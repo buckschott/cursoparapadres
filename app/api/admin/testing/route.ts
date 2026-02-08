@@ -27,6 +27,21 @@ function generateVerificationCode(): string {
   return generateRandomString(8).toUpperCase();
 }
 
+// Helper to find an auth user by email (handles pagination)
+async function findAuthUserByEmail(supabase: ReturnType<typeof createServerClient>, email: string) {
+  let page = 1;
+  const perPage = 500;
+  while (true) {
+    const { data: { users }, error } = await supabase.auth.admin.listUsers({ page, perPage });
+    if (error || !users || users.length === 0) break;
+    const found = users.find(u => u.email === email);
+    if (found) return found;
+    if (users.length < perPage) break; // Last page
+    page++;
+  }
+  return null;
+}
+
 export async function POST(request: NextRequest) {
   const supabase = createServerClient();
 
@@ -62,8 +77,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Find user in auth
-        const { data: existingUsers } = await supabase.auth.admin.listUsers();
-        const authUser = existingUsers?.users?.find(u => u.email === testUserEmail);
+        const authUser = await findAuthUserByEmail(supabase, testUserEmail);
 
         if (!authUser) {
           return NextResponse.json({ error: 'User not found in auth' }, { status: 404 });
@@ -97,11 +111,10 @@ export async function POST(request: NextRequest) {
         const userPassword = password || generateRandomString(12);
 
         // Check if user exists in auth
-        const { data: existingUsers } = await supabase.auth.admin.listUsers();
-        const existingUser = existingUsers?.users?.find(u => u.email === email);
+        const existingUser = await findAuthUserByEmail(supabase, email);
 
         if (existingUser) {
-          // User exists in auth — check if profile also exists
+          // User exists in auth â€” check if profile also exists
           const { data: existingProfile } = await supabase
             .from('profiles')
             .select('id')
@@ -109,7 +122,7 @@ export async function POST(request: NextRequest) {
             .single();
 
           if (existingProfile) {
-            // Both auth and profile exist — true duplicate
+            // Both auth and profile exist â€” true duplicate
             return NextResponse.json({
               error: 'User already exists',
               userId: existingUser.id
@@ -142,7 +155,7 @@ export async function POST(request: NextRequest) {
 
           return NextResponse.json({
             success: true,
-            message: 'Orphan user recovered — profile recreated',
+            message: 'Orphan user recovered â€” profile recreated',
             userId: existingUser.id,
             email: email,
             password: userPassword,
@@ -150,7 +163,7 @@ export async function POST(request: NextRequest) {
           });
         }
 
-        // No existing user — create fresh
+        // No existing user â€” create fresh
         const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
           email,
           password: userPassword,
@@ -207,8 +220,7 @@ export async function POST(request: NextRequest) {
           userId = profile.id;
         } else {
           // Check if user exists in auth but not profiles (orphan)
-          const { data: existingUsers } = await supabase.auth.admin.listUsers();
-          const authUser = existingUsers?.users?.find(u => u.email === testUserEmail);
+          const authUser = await findAuthUserByEmail(supabase, testUserEmail);
           
           if (authUser) {
             // Create missing profile for orphan
@@ -568,8 +580,7 @@ export async function POST(request: NextRequest) {
           .single();
 
         // Also check auth directly in case of orphan
-        const { data: existingUsers } = await supabase.auth.admin.listUsers();
-        const authUser = existingUsers?.users?.find(u => u.email === testUserEmail);
+        const authUser = await findAuthUserByEmail(supabase, testUserEmail);
 
         if (!profile && !authUser) {
           return NextResponse.json({ error: 'User not found in profiles or auth' }, { status: 404 });
@@ -605,12 +616,12 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'emailType and recipientEmail required' }, { status: 400 });
         }
 
-        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://claseparapadres.com';
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.claseparapadres.com';
 
         // Email templates (simplified for testing)
         const emails: Record<string, { subject: string; html: string }> = {
           welcome_with_password: {
-            subject: '¡Todo listo! — su clase lo espera',
+            subject: 'Â¡Todo listo! â€” su clase lo espera',
             html: generateWelcomeEmailWithPasswordHTML({
               userName: 'Test User',
               userEmail: recipientEmail,
@@ -620,7 +631,7 @@ export async function POST(request: NextRequest) {
             }),
           },
           welcome_no_password: {
-            subject: '¡Todo listo! — su clase lo espera',
+            subject: 'Â¡Todo listo! â€” su clase lo espera',
             html: generateWelcomeEmailHTML({
               userName: 'Test User',
               courseName: 'Clase de Coparentalidad',
@@ -628,7 +639,7 @@ export async function POST(request: NextRequest) {
             }),
           },
           existing_user: {
-            subject: '¡Todo listo! — su nueva clase lo espera',
+            subject: 'Â¡Todo listo! â€” su nueva clase lo espera',
             html: generateExistingUserEmailHTML({
               userName: 'Test User',
               courseName: 'Clase de Crianza',
@@ -645,14 +656,14 @@ export async function POST(request: NextRequest) {
             }),
           },
           password_reset: {
-            subject: 'Restablecer su contraseña',
+            subject: 'Restablecer su contraseÃ±a',
             html: generatePasswordResetEmailHTML({
               userName: 'Test User',
               resetUrl: `${baseUrl}/actualizar-contrasena?test=true`,
             }),
           },
           student_certificate: {
-            subject: '🎉 ¡Felicidades! Ha completado su clase',
+            subject: 'ðŸŽ‰ Â¡Felicidades! Ha completado su clase',
             html: generateStudentCertificateEmailHTML({
               userName: 'Test User',
               courseName: 'Clase de Coparentalidad',
@@ -713,8 +724,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Check auth first
-        const { data: existingUsers } = await supabase.auth.admin.listUsers();
-        const authUser = existingUsers?.users?.find(u => u.email === testUserEmail);
+        const authUser = await findAuthUserByEmail(supabase, testUserEmail);
 
         // Find user in profiles
         const { data: profile } = await supabase
@@ -814,19 +824,19 @@ function generateWelcomeEmailWithPasswordHTML(data: {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #2A2A2A; border-radius: 12px; overflow: hidden;">
           <tr>
             <td align="center" style="padding: 40px 40px 20px;">
-              <img src="https://claseparapadres.com/images/email/icon-checkmark.png" width="80" height="80" alt="" style="display: block;">
+              <img src="https://www.claseparapadres.com/images/email/icon-checkmark.png" width="80" height="80" alt="" style="display: block;">
             </td>
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 10px;">
-              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">¡Todo listo!</h1>
+              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">Â¡Todo listo!</h1>
             </td>
           </tr>
           <tr>
             <td style="padding: 20px 40px; color: #FFFFFF; font-size: 16px; line-height: 1.6;">
               <p style="margin: 0 0 20px;">Hola${data.userName ? ` ${data.userName}` : ''},</p>
               <p style="margin: 0 0 20px;">
-                ¡Gracias por inscribirse! Su acceso a <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span> está listo.
+                Â¡Gracias por inscribirse! Su acceso a <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span> estÃ¡ listo.
               </p>
             </td>
           </tr>
@@ -837,7 +847,7 @@ function generateWelcomeEmailWithPasswordHTML(data: {
                   <td style="padding: 20px; color: #FFFFFF; font-size: 14px;">
                     <p style="margin: 0 0 10px; color: rgba(255,255,255,0.7);">Sus credenciales:</p>
                     <p style="margin: 0 0 8px;"><strong>Email:</strong> ${data.userEmail}</p>
-                    <p style="margin: 0;"><strong>Contraseña temporal:</strong> <span style="color: #FFE566;">${data.tempPassword}</span></p>
+                    <p style="margin: 0;"><strong>ContraseÃ±a temporal:</strong> <span style="color: #FFE566;">${data.tempPassword}</span></p>
                   </td>
                 </tr>
               </table>
@@ -846,13 +856,13 @@ function generateWelcomeEmailWithPasswordHTML(data: {
           <tr>
             <td align="center" style="padding: 0 40px 40px;">
               <a href="${data.loginUrl}" style="display: inline-block; background-color: #77DD77; color: #1C1C1C; padding: 16px 32px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px;">
-                Comenzar la Clase →
+                Comenzar la Clase â†’
               </a>
             </td>
           </tr>
           <tr>
             <td style="padding: 0 40px 40px; color: rgba(255,255,255,0.7); font-size: 14px;">
-              <p style="margin: 0;">— El equipo de Clase para Padres</p>
+              <p style="margin: 0;">â€” El equipo de Clase para Padres</p>
             </td>
           </tr>
         </table>
@@ -883,32 +893,32 @@ function generateWelcomeEmailHTML(data: {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #2A2A2A; border-radius: 12px; overflow: hidden;">
           <tr>
             <td align="center" style="padding: 40px 40px 20px;">
-              <img src="https://claseparapadres.com/images/email/icon-checkmark.png" width="80" height="80" alt="" style="display: block;">
+              <img src="https://www.claseparapadres.com/images/email/icon-checkmark.png" width="80" height="80" alt="" style="display: block;">
             </td>
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 10px;">
-              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">¡Todo listo!</h1>
+              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">Â¡Todo listo!</h1>
             </td>
           </tr>
           <tr>
             <td style="padding: 20px 40px; color: #FFFFFF; font-size: 16px; line-height: 1.6;">
               <p style="margin: 0 0 20px;">Hola${data.userName ? ` ${data.userName}` : ''},</p>
               <p style="margin: 0 0 20px;">
-                ¡Gracias por inscribirse! Su acceso a <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span> está listo.
+                Â¡Gracias por inscribirse! Su acceso a <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span> estÃ¡ listo.
               </p>
             </td>
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 40px;">
               <a href="${data.loginUrl}" style="display: inline-block; background-color: #77DD77; color: #1C1C1C; padding: 16px 32px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px;">
-                Comenzar la Clase →
+                Comenzar la Clase â†’
               </a>
             </td>
           </tr>
           <tr>
             <td style="padding: 0 40px 40px; color: rgba(255,255,255,0.7); font-size: 14px;">
-              <p style="margin: 0;">— El equipo de Clase para Padres</p>
+              <p style="margin: 0;">â€” El equipo de Clase para Padres</p>
             </td>
           </tr>
         </table>
@@ -940,35 +950,35 @@ function generateExistingUserEmailHTML(data: {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #2A2A2A; border-radius: 12px; overflow: hidden;">
           <tr>
             <td align="center" style="padding: 40px 40px 20px;">
-              <img src="https://claseparapadres.com/images/email/icon-checkmark.png" width="80" height="80" alt="" style="display: block;">
+              <img src="https://www.claseparapadres.com/images/email/icon-checkmark.png" width="80" height="80" alt="" style="display: block;">
             </td>
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 10px;">
-              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">¡Nueva clase añadida!</h1>
+              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">Â¡Nueva clase aÃ±adida!</h1>
             </td>
           </tr>
           <tr>
             <td style="padding: 20px 40px; color: #FFFFFF; font-size: 16px; line-height: 1.6;">
               <p style="margin: 0 0 20px;">Hola${data.userName ? ` ${data.userName}` : ''},</p>
               <p style="margin: 0 0 20px;">
-                Hemos añadido <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span> a su cuenta.
+                Hemos aÃ±adido <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span> a su cuenta.
               </p>
               <p style="margin: 0 0 20px; color: rgba(255,255,255,0.7); font-size: 14px;">
-                Use su contraseña existente para iniciar sesión. ¿Olvidó su contraseña? <a href="${data.forgotPasswordUrl}" style="color: #7EC8E3;">Restablézcala aquí</a>.
+                Use su contraseÃ±a existente para iniciar sesiÃ³n. Â¿OlvidÃ³ su contraseÃ±a? <a href="${data.forgotPasswordUrl}" style="color: #7EC8E3;">RestablÃ©zcala aquÃ­</a>.
               </p>
             </td>
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 40px;">
               <a href="${data.loginUrl}" style="display: inline-block; background-color: #77DD77; color: #1C1C1C; padding: 16px 32px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px;">
-                Continuar a Mi Clase →
+                Continuar a Mi Clase â†’
               </a>
             </td>
           </tr>
           <tr>
             <td style="padding: 0 40px 40px; color: rgba(255,255,255,0.7); font-size: 14px;">
-              <p style="margin: 0;">— El equipo de Clase para Padres</p>
+              <p style="margin: 0;">â€” El equipo de Clase para Padres</p>
             </td>
           </tr>
         </table>
@@ -999,7 +1009,7 @@ function generateAlreadyOwnedEmailHTML(data: {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #2A2A2A; border-radius: 12px; overflow: hidden;">
           <tr>
             <td align="center" style="padding: 40px 40px 20px;">
-              <img src="https://claseparapadres.com/images/email/icon-info.png" width="80" height="80" alt="" style="display: block;">
+              <img src="https://www.claseparapadres.com/images/email/icon-info.png" width="80" height="80" alt="" style="display: block;">
             </td>
           </tr>
           <tr>
@@ -1014,20 +1024,20 @@ function generateAlreadyOwnedEmailHTML(data: {
                 Notamos que ya tiene acceso a <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span>.
               </p>
               <p style="margin: 0 0 20px;">
-                Hemos procesado un reembolso automático. Debería ver el crédito en su cuenta dentro de 5-10 días hábiles.
+                Hemos procesado un reembolso automÃ¡tico. DeberÃ­a ver el crÃ©dito en su cuenta dentro de 5-10 dÃ­as hÃ¡biles.
               </p>
             </td>
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 40px;">
               <a href="${data.loginUrl}" style="display: inline-block; background-color: #7EC8E3; color: #1C1C1C; padding: 16px 32px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px;">
-                Iniciar Sesión →
+                Iniciar SesiÃ³n â†’
               </a>
             </td>
           </tr>
           <tr>
             <td style="padding: 0 40px 40px; color: rgba(255,255,255,0.7); font-size: 14px;">
-              <p style="margin: 0;">— El equipo de Clase para Padres</p>
+              <p style="margin: 0;">â€” El equipo de Clase para Padres</p>
             </td>
           </tr>
         </table>
@@ -1057,26 +1067,26 @@ function generatePasswordResetEmailHTML(data: {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #2A2A2A; border-radius: 12px; overflow: hidden;">
           <tr>
             <td align="center" style="padding: 40px 40px 20px;">
-              <img src="https://claseparapadres.com/images/email/icon-key.png" width="80" height="80" alt="" style="display: block;">
+              <img src="https://www.claseparapadres.com/images/email/icon-key.png" width="80" height="80" alt="" style="display: block;">
             </td>
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 10px;">
-              <h1 style="color: #FFE566; font-size: 28px; margin: 0; font-weight: bold;">Restablecer Contraseña</h1>
+              <h1 style="color: #FFE566; font-size: 28px; margin: 0; font-weight: bold;">Restablecer ContraseÃ±a</h1>
             </td>
           </tr>
           <tr>
             <td style="padding: 20px 40px; color: #FFFFFF; font-size: 16px; line-height: 1.6;">
               <p style="margin: 0 0 20px;">Hola${data.userName ? ` ${data.userName}` : ''},</p>
               <p style="margin: 0 0 20px;">
-                Recibimos una solicitud para restablecer su contraseña. Haga clic en el botón a continuación para crear una nueva.
+                Recibimos una solicitud para restablecer su contraseÃ±a. Haga clic en el botÃ³n a continuaciÃ³n para crear una nueva.
               </p>
             </td>
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 20px;">
               <a href="${data.resetUrl}" style="display: inline-block; background-color: #FFE566; color: #1C1C1C; padding: 16px 32px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px;">
-                Restablecer Mi Contraseña →
+                Restablecer Mi ContraseÃ±a â†’
               </a>
             </td>
           </tr>
@@ -1085,7 +1095,7 @@ function generatePasswordResetEmailHTML(data: {
               <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #1C1C1C; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15);">
                 <tr>
                   <td style="padding: 15px; color: rgba(255,255,255,0.7); font-size: 13px;">
-                    ⏰ Este enlace expira en 1 hora. Si no solicitó este cambio, puede ignorar este mensaje.
+                    â° Este enlace expira en 1 hora. Si no solicitÃ³ este cambio, puede ignorar este mensaje.
                   </td>
                 </tr>
               </table>
@@ -1093,7 +1103,7 @@ function generatePasswordResetEmailHTML(data: {
           </tr>
           <tr>
             <td style="padding: 0 40px 40px; color: rgba(255,255,255,0.7); font-size: 14px;">
-              <p style="margin: 0;">— El equipo de Clase para Padres</p>
+              <p style="margin: 0;">â€” El equipo de Clase para Padres</p>
             </td>
           </tr>
         </table>
@@ -1126,12 +1136,12 @@ function generateStudentCertificateEmailHTML(data: {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #2A2A2A; border-radius: 12px; overflow: hidden;">
           <tr>
             <td align="center" style="padding: 40px 40px 20px;">
-              <img src="https://claseparapadres.com/images/email/icon-certificate.png" width="80" height="80" alt="" style="display: block;">
+              <img src="https://www.claseparapadres.com/images/email/icon-certificate.png" width="80" height="80" alt="" style="display: block;">
             </td>
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 10px;">
-              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">¡Felicidades!</h1>
+              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">Â¡Felicidades!</h1>
               <p style="color: #FFFFFF; font-size: 18px; margin: 10px 0 0;">Ha completado su clase exitosamente</p>
             </td>
           </tr>
@@ -1139,7 +1149,7 @@ function generateStudentCertificateEmailHTML(data: {
             <td style="padding: 20px 40px; color: #FFFFFF; font-size: 16px; line-height: 1.6;">
               <p style="margin: 0 0 20px;">Hola${data.userName ? ` ${data.userName}` : ''},</p>
               <p style="margin: 0 0 20px;">
-                ¡Lo logró! Ha completado exitosamente <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span>.
+                Â¡Lo logrÃ³! Ha completado exitosamente <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span>.
               </p>
             </td>
           </tr>
@@ -1147,13 +1157,13 @@ function generateStudentCertificateEmailHTML(data: {
             <td style="padding: 0 40px 20px;">
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="color: #77DD77; font-size: 14px; padding: 8px 0;">✓ Inscripción completada</td>
+                  <td style="color: #77DD77; font-size: 14px; padding: 8px 0;">âœ“ InscripciÃ³n completada</td>
                 </tr>
                 <tr>
-                  <td style="color: #77DD77; font-size: 14px; padding: 8px 0;">✓ 15 lecciones completadas</td>
+                  <td style="color: #77DD77; font-size: 14px; padding: 8px 0;">âœ“ 15 lecciones completadas</td>
                 </tr>
                 <tr>
-                  <td style="color: #77DD77; font-size: 14px; padding: 8px 0;">✓ Examen aprobado</td>
+                  <td style="color: #77DD77; font-size: 14px; padding: 8px 0;">âœ“ Examen aprobado</td>
                 </tr>
               </table>
             </td>
@@ -1164,7 +1174,7 @@ function generateStudentCertificateEmailHTML(data: {
                 <tr>
                   <td style="padding: 20px; color: #FFFFFF; font-size: 14px;">
                     <p style="margin: 0 0 8px;"><strong>Certificado:</strong> ${data.certificateNumber}</p>
-                    <p style="margin: 0;"><strong>Código de verificación:</strong> ${data.verificationCode}</p>
+                    <p style="margin: 0;"><strong>CÃ³digo de verificaciÃ³n:</strong> ${data.verificationCode}</p>
                   </td>
                 </tr>
               </table>
@@ -1173,13 +1183,13 @@ function generateStudentCertificateEmailHTML(data: {
           <tr>
             <td align="center" style="padding: 0 40px 40px;">
               <a href="${data.certificateUrl}" style="display: inline-block; background-color: #77DD77; color: #1C1C1C; padding: 16px 32px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px;">
-                Descargar Mi Certificado →
+                Descargar Mi Certificado â†’
               </a>
             </td>
           </tr>
           <tr>
             <td style="padding: 0 40px 40px; color: rgba(255,255,255,0.7); font-size: 14px;">
-              <p style="margin: 0;">— El equipo de Clase para Padres</p>
+              <p style="margin: 0;">â€” El equipo de Clase para Padres</p>
             </td>
           </tr>
         </table>
@@ -1215,7 +1225,7 @@ function generateAttorneyEmailHTML(data: {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #2A2A2A; border-radius: 12px; overflow: hidden;">
           <tr>
             <td align="center" style="padding: 40px 40px 20px;">
-              <img src="https://claseparapadres.com/images/email/icon-certificate.png" width="80" height="80" alt="" style="display: block;">
+              <img src="https://www.claseparapadres.com/images/email/icon-certificate.png" width="80" height="80" alt="" style="display: block;">
             </td>
           </tr>
           <tr>
@@ -1287,8 +1297,8 @@ function generateAttorneyEmailHTML(data: {
                 If you'd like materials to share with future clients who need to complete this requirement, just reply to this email and we'll send them at no cost.
               </p>
               <p style="margin: 0;">
-                — Geri Jones<br>
-                <span style="color: rgba(255,255,255,0.6);">Executive Director, Putting Kids First®</span>
+                â€” Geri Jones<br>
+                <span style="color: rgba(255,255,255,0.6);">Executive Director, Putting Kids FirstÂ®</span>
               </p>
             </td>
           </tr>

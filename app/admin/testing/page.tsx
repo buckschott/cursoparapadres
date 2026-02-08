@@ -58,6 +58,7 @@ export default function AdminTestingPage() {
   // User status
   const [userStatus, setUserStatus] = useState<UserStatus | null>(null);
   const [userNotFound, setUserNotFound] = useState(false);
+  const [notFoundDebug, setNotFoundDebug] = useState<string | null>(null);
   
   // Password reset
   const [testPassword, setTestPassword] = useState<string | null>(null);
@@ -122,7 +123,10 @@ export default function AdminTestingPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Request failed');
+        const err = new Error(result.error || 'Request failed');
+        // Attach debug info if available
+        (err as Error & { debug?: unknown }).debug = result.debug;
+        throw err;
       }
 
       return result;
@@ -186,6 +190,7 @@ export default function AdminTestingPage() {
       showMessage('success', `Reset ${targetEmail} - auth preserved, data wiped`);
       setUserStatus(null);
       setUserNotFound(false);
+      setNotFoundDebug(null);
       setTestPassword(null);
       handleGetStatus(); // Refresh status
     } catch (error) {
@@ -234,6 +239,7 @@ export default function AdminTestingPage() {
     }
 
     setUserNotFound(false);
+    setNotFoundDebug(null);
 
     try {
       const result = await apiCall('get_status', { testUserEmail: targetEmail });
@@ -244,9 +250,14 @@ export default function AdminTestingPage() {
       }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Failed to get status';
+      const debug = (error as Error & { debug?: Record<string, unknown> })?.debug;
+      
       if (errorMsg.includes('not found') || errorMsg.includes('User not found')) {
         setUserNotFound(true);
         setUserStatus(null);
+        if (debug) {
+          setNotFoundDebug(JSON.stringify(debug, null, 2));
+        }
         showMessage('warning', errorMsg);
       } else {
         showMessage('error', errorMsg);
@@ -262,6 +273,7 @@ export default function AdminTestingPage() {
       showMessage('success', `Created ${targetEmail} with password: test123`);
       setTestPassword('test123');
       setUserNotFound(false);
+      setNotFoundDebug(null);
       handleGetStatus();
     } catch (error) {
       showMessage('error', error instanceof Error ? error.message : 'Failed to create user');
@@ -406,8 +418,8 @@ export default function AdminTestingPage() {
             <h2 className="text-xl font-bold text-white mb-4">🎯 Test User</h2>
             <div className="grid gap-4 md:grid-cols-3 mb-4">
               <input
-                type="email"
-                placeholder="Test user email"
+                type="text"
+                placeholder="Email or name"
                 value={targetEmail}
                 onChange={(e) => handleEmailChange(e.target.value)}
                 className="bg-[#1C1C1C] border border-white/20 rounded-lg px-4 py-3 text-white placeholder:text-white/40 focus:outline-none focus:border-[#77DD77] md:col-span-2"
@@ -441,18 +453,31 @@ export default function AdminTestingPage() {
 
             {/* User Not Found - Create Option */}
             {userNotFound && (
-              <div className="mt-4 p-4 bg-[#FFE566]/10 border border-[#FFE566]/30 rounded-lg flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-white font-medium">User not found: <span className="text-[#FFE566]">{targetEmail}</span></p>
-                  <p className="text-white/50 text-sm mt-1">No auth account or profile exists. Create a test user to get started.</p>
+              <div className="mt-4 p-4 bg-[#FFE566]/10 border border-[#FFE566]/30 rounded-lg">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-white font-medium">User not found: <span className="text-[#FFE566]">{targetEmail}</span></p>
+                    <p className="text-white/50 text-sm mt-1">
+                      {targetEmail.includes('@') 
+                        ? 'No auth account or profile exists. Create a test user to get started.'
+                        : 'No profile found matching this name. Try searching by email address.'}
+                    </p>
+                  </div>
+                  {targetEmail.includes('@') && (
+                    <button
+                      onClick={handleCreateAndGetStatus}
+                      disabled={loading}
+                      className="bg-[#77DD77] text-[#1C1C1C] font-bold rounded-lg px-6 py-3 hover:bg-[#88EE88] transition-colors disabled:opacity-50 shrink-0"
+                    >
+                      Create User
+                    </button>
+                  )}
                 </div>
-                <button
-                  onClick={handleCreateAndGetStatus}
-                  disabled={loading}
-                  className="bg-[#77DD77] text-[#1C1C1C] font-bold rounded-lg px-6 py-3 hover:bg-[#88EE88] transition-colors disabled:opacity-50 shrink-0"
-                >
-                  Create User
-                </button>
+                {notFoundDebug && (
+                  <pre className="mt-3 p-3 bg-[#1C1C1C] rounded-lg text-white/40 text-xs overflow-auto">
+                    {notFoundDebug}
+                  </pre>
+                )}
               </div>
             )}
           </section>
@@ -599,83 +624,49 @@ export default function AdminTestingPage() {
             </div>
           </section>
 
-          {/* Section: Test as User - THE IMPORTANT REMINDER */}
-          <section className="bg-gradient-to-r from-[#B19CD9]/20 to-[#7EC8E3]/20 rounded-xl p-6 border-2 border-[#B19CD9]/50">
-            <h2 className="text-xl font-bold text-white mb-2">🔐 Test as This User</h2>
-            <p className="text-white/70 mb-4">
-              To experience the site as the test user, log in as them in a separate browser session.
-            </p>
-            
-            <div className="bg-[#1C1C1C] rounded-xl p-5 border border-white/10">
-              <div className="flex items-start gap-4">
-                <div className="text-3xl">💡</div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-white mb-3">How to Test:</h3>
-                  <ol className="text-white/70 text-sm space-y-2 list-decimal list-inside mb-4">
-                    <li>Open an <strong className="text-white">incognito/private window</strong> (Cmd+Shift+N on Mac)</li>
-                    <li>Go to the login page (copy link below)</li>
-                    <li>Log in with the credentials below</li>
-                    <li>Test the full flow (dashboard → course → exam → certificate)</li>
-                    <li>Close incognito window when done</li>
-                  </ol>
-                  
-                  {/* Quick copy credentials */}
-                  <div className="grid gap-3 md:grid-cols-3 mb-4">
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText('https://www.claseparapadres.com/iniciar-sesion');
-                        showMessage('success', 'Login URL copied!');
-                      }}
-                      className="bg-[#2A2A2A] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#7EC8E3] transition-colors text-left"
-                    >
-                      <span className="text-xs text-white/50 block">Login URL</span>
-                      <span className="text-sm text-[#7EC8E3]">📋 Click to copy</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(targetEmail);
-                        showMessage('success', 'Email copied!');
-                      }}
-                      className="bg-[#2A2A2A] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#7EC8E3] transition-colors text-left"
-                    >
-                      <span className="text-xs text-white/50 block">Email</span>
-                      <span className="text-sm truncate block">{targetEmail}</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (testPassword) {
-                          navigator.clipboard.writeText(testPassword);
-                          showMessage('success', 'Password copied!');
-                        } else {
-                          showMessage('error', 'Set password first!');
-                        }
-                      }}
-                      className={`bg-[#2A2A2A] border rounded-lg px-4 py-3 transition-colors text-left ${
-                        testPassword 
-                          ? 'border-[#77DD77]/50 text-white hover:border-[#77DD77]' 
-                          : 'border-white/10 text-white/40'
-                      }`}
-                    >
-                      <span className="text-xs text-white/50 block">Password</span>
-                      <span className={`text-sm ${testPassword ? 'text-[#77DD77]' : ''}`}>
-                        {testPassword || '(not set)'}
-                      </span>
-                    </button>
-                  </div>
-                  
-                  <button
-                    onClick={handleResetPassword}
-                    disabled={loading || !targetEmail}
-                    className="bg-[#B19CD9] text-[#1C1C1C] font-bold rounded-lg px-5 py-3 hover:bg-[#C9B8E8] transition-colors disabled:opacity-50"
-                  >
-                    {testPassword ? '🔄 Reset Password Again' : '🔑 Set Password to "test123"'}
-                  </button>
-                </div>
-              </div>
+          {/* Section: Test Credentials */}
+          <section className="bg-[#2A2A2A] rounded-xl p-6 border border-white/10">
+            <h2 className="text-xl font-bold text-white mb-4">🔐 Test Credentials</h2>
+            <div className="flex gap-3 items-end flex-wrap">
+              <button
+                onClick={handleResetPassword}
+                disabled={loading || !targetEmail}
+                className="bg-[#B19CD9] text-[#1C1C1C] font-bold rounded-lg px-5 py-3 hover:bg-[#C9B8E8] transition-colors disabled:opacity-50"
+              >
+                {testPassword ? '🔄 Reset Password' : '🔑 Set Password to "test123"'}
+              </button>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(targetEmail);
+                  showMessage('success', 'Email copied!');
+                }}
+                className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#7EC8E3] transition-colors"
+              >
+                📋 Copy Email
+              </button>
+              {testPassword && (
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(testPassword);
+                    showMessage('success', 'Password copied!');
+                  }}
+                  className="bg-[#1C1C1C] border border-[#77DD77]/50 text-[#77DD77] rounded-lg px-4 py-3 hover:border-[#77DD77] transition-colors"
+                >
+                  📋 Copy Password ({testPassword})
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText('https://www.claseparapadres.com/iniciar-sesion');
+                  showMessage('success', 'Login URL copied!');
+                }}
+                className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#7EC8E3] transition-colors"
+              >
+                📋 Copy Login URL
+              </button>
             </div>
-            
-            <p className="text-white/50 text-xs mt-4">
-              ℹ️ Using incognito keeps your admin session in this window untouched.
+            <p className="text-white/40 text-xs mt-3">
+              Use incognito to keep your admin session intact.
             </p>
           </section>
 

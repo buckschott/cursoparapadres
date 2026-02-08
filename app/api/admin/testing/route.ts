@@ -27,20 +27,47 @@ function generateVerificationCode(): string {
   return generateRandomString(8).toUpperCase();
 }
 
-// Helper to find an auth user by email (handles pagination)
+// Helper to find an auth user by email
+// Uses generateLink as a reliable email-based lookup (no pagination needed)
 async function findAuthUserByEmail(supabase: ReturnType<typeof createServerClient>, email: string) {
   const emailLower = email.toLowerCase().trim();
-  let page = 1;
-  const perPage = 500;
-  while (true) {
-    const response = await supabase.auth.admin.listUsers({ page, perPage });
-    const users = response?.data?.users;
-    if (!users || users.length === 0) break;
-    const found = users.find(u => u.email?.toLowerCase() === emailLower);
-    if (found) return found;
-    if (users.length < perPage) break; // Last page
-    page++;
+  
+  // Method 1: generateLink - returns user object if email exists in auth
+  // This is the most reliable way to look up by email without paginating
+  try {
+    const { data, error } = await supabase.auth.admin.generateLink({
+      type: 'magiclink',
+      email: emailLower,
+    });
+    
+    if (!error && data?.user) {
+      return data.user;
+    }
+  } catch (e) {
+    console.error('generateLink lookup failed:', e);
   }
+
+  // Method 2: Fallback to listUsers pagination (smaller page size)
+  try {
+    let page = 1;
+    const perPage = 50;
+    
+    while (page <= 200) { // Safety limit: 10,000 users max
+      const response = await supabase.auth.admin.listUsers({ page, perPage });
+      const users = response?.data?.users;
+      
+      if (!users || users.length === 0) break;
+      
+      const found = users.find(u => u.email?.toLowerCase() === emailLower);
+      if (found) return found;
+      
+      if (users.length < perPage) break;
+      page++;
+    }
+  } catch (e) {
+    console.error('listUsers fallback failed:', e);
+  }
+
   return null;
 }
 
@@ -725,29 +752,41 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Email required' }, { status: 400 });
         }
 
-        const emailLower = testUserEmail.toLowerCase().trim();
+        const searchTerm = testUserEmail.trim();
+        const isEmail = searchTerm.includes('@');
 
-        // Step 1: Try profiles table (case-insensitive)
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .ilike('email', emailLower)
-          .maybeSingle();
+        // Step 1: Try profiles table
+        let profile = null;
+        let profileError = null;
 
-        // Step 2: Try auth admin lookup
-        let authUser = null;
-        try {
-          authUser = await findAuthUserByEmail(supabase, emailLower);
-        } catch (authError) {
-          console.error('Auth lookup failed:', authError);
+        if (isEmail) {
+          // Search by email (case-insensitive)
+          const result = await supabase
+            .from('profiles')
+            .select('*')
+            .ilike('email', searchTerm.toLowerCase())
+            .maybeSingle();
+          profile = result.data;
+          profileError = result.error;
+        } else {
+          // Search by name (case-insensitive, partial match)
+          const result = await supabase
+            .from('profiles')
+            .select('*')
+            .or(`full_name.ilike.%${searchTerm}%,legal_name.ilike.%${searchTerm}%`)
+            .limit(1)
+            .maybeSingle();
+          profile = result.data;
+          profileError = result.error;
         }
 
-        // If auth didn't find with lowercase, try original casing
-        if (!authUser && emailLower !== testUserEmail) {
+        // Step 2: Try auth admin lookup (only for email searches)
+        let authUser = null;
+        if (isEmail) {
           try {
-            authUser = await findAuthUserByEmail(supabase, testUserEmail);
+            authUser = await findAuthUserByEmail(supabase, searchTerm.toLowerCase());
           } catch (authError) {
-            console.error('Auth lookup (original case) failed:', authError);
+            console.error('Auth lookup failed:', authError);
           }
         }
 
@@ -769,12 +808,16 @@ export async function POST(request: NextRequest) {
 
         // Neither found
         if (!profile) {
+          const hint = isEmail 
+            ? '' 
+            : ' Try searching by email instead.';
           return NextResponse.json({ 
-            error: `User not found: ${testUserEmail}`,
+            error: `User not found: ${searchTerm}.${hint}`,
             debug: {
+              searchedBy: isEmail ? 'email' : 'name',
+              profileFound: false,
               profileError: profileError?.message || null,
               authFound: !!authUser,
-              emailSearched: emailLower,
             }
           }, { status: 404 });
         }

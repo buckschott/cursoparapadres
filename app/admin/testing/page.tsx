@@ -296,7 +296,7 @@ export default function AdminTestingPage() {
         state: 'exam_ready',
       });
 
-      showMessage('success', `ðŸŽ¯ ${targetEmail} now has 15/15 lessons - exam unlocked!`);
+      showMessage('success', `🎯 ${targetEmail} now has 15/15 lessons - exam unlocked!`);
       handleGetStatus();
     } catch (error) {
       showMessage('error', error instanceof Error ? error.message : 'Failed to set exam ready');
@@ -331,7 +331,7 @@ export default function AdminTestingPage() {
         state: 'completed',
       });
 
-      showMessage('success', `ðŸ“œ ${targetEmail} is now a graduate with certificate!`);
+      showMessage('success', `📜 ${targetEmail} is now a graduate with certificate!`);
       handleGetStatus();
     } catch (error) {
       showMessage('error', error instanceof Error ? error.message : 'Failed to create graduate');
@@ -351,10 +351,10 @@ export default function AdminTestingPage() {
     return (
       <div className="min-h-screen bg-[#1C1C1C] flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-500 mb-4">â›” Unauthorized</h1>
+          <h1 className="text-2xl font-bold text-red-500 mb-4">⛔ Unauthorized</h1>
           <p className="text-white/70 mb-2">You need to log in as an admin to access this page.</p>
           <a href="/iniciar-sesion" className="inline-block mt-4 px-6 py-3 bg-[#77DD77] text-[#1C1C1C] rounded-lg font-bold hover:bg-[#88EE88] transition-colors">
-            Log In â†’
+            Log In →
           </a>
         </div>
       </div>
@@ -402,7 +402,7 @@ export default function AdminTestingPage() {
         <div className="space-y-6">
           {/* Section: Test User */}
           <section className="bg-[#2A2A2A] rounded-xl p-6 border border-white/10">
-            <h2 className="text-xl font-bold text-white mb-4">ðŸŽ¯ Test User</h2>
+            <h2 className="text-xl font-bold text-white mb-4">🎯 Test User</h2>
             <div className="grid gap-4 md:grid-cols-3 mb-4">
               <input
                 type="email"
@@ -460,15 +460,15 @@ export default function AdminTestingPage() {
           {userStatus && (
             <section className="bg-[#2A2A2A] rounded-xl p-6 border border-white/10">
               <h2 className="text-xl font-bold text-white mb-4">
-                ðŸ“Š User Status: {userStatus.profile?.email || userStatus.authEmail}
+                📊 User Status: {userStatus.profile?.email || userStatus.authEmail}
                 {userStatus.orphan && (
-                  <span className="ml-3 px-3 py-1 bg-yellow-600 text-sm rounded-full">âš ï¸ ORPHAN</span>
+                  <span className="ml-3 px-3 py-1 bg-yellow-600 text-sm rounded-full">⚠️ ORPHAN</span>
                 )}
               </h2>
               
               {userStatus.orphan ? (
                 <div className="bg-yellow-600/20 border border-yellow-600/50 rounded-lg p-4 mb-4">
-                  <p className="text-yellow-400 font-bold mb-2">âš ï¸ Orphan User Detected</p>
+                  <p className="text-yellow-400 font-bold mb-2">⚠️ Orphan User Detected</p>
                   <p className="text-white/70 text-sm">
                     Auth exists but no profile. Click &quot;Grant Access&quot; below to fix this automatically.
                   </p>
@@ -480,7 +480,7 @@ export default function AdminTestingPage() {
                     <p className="text-white/70 text-sm">Name: {userStatus.profile?.full_name || 'Not set'}</p>
                     <p className="text-white/70 text-sm">Legal Name: {userStatus.profile?.legal_name || 'Not set'}</p>
                     <p className="text-white/70 text-sm">
-                      Completed: {userStatus.profile?.profile_completed ? 'âœ… Yes' : 'âŒ No'}
+                      Completed: {userStatus.profile?.profile_completed ? '✅ Yes' : '❌ No'}
                     </p>
                   </div>
                   <div className="bg-[#1C1C1C] rounded-lg p-4">
@@ -490,7 +490,7 @@ export default function AdminTestingPage() {
                     ) : (
                       userStatus.purchases.map((p) => (
                         <p key={p.id} className="text-white/70 text-sm">
-                          â€¢ {p.course_type} ({p.status})
+                          • {p.course_type} ({p.status})
                         </p>
                       ))
                     )}
@@ -502,8 +502,8 @@ export default function AdminTestingPage() {
                     ) : (
                       userStatus.progress.map((p, i) => (
                         <p key={i} className="text-white/70 text-sm">
-                          â€¢ {p.course_type}: {p.lessons_completed?.length || 0}/15 lessons
-                          {p.completed_at && ' âœ…'}
+                          • {p.course_type}: {p.lessons_completed?.length || 0}/15 lessons
+                          {p.completed_at && ' ✅'}
                         </p>
                       ))
                     )}
@@ -515,7 +515,7 @@ export default function AdminTestingPage() {
                     ) : (
                       userStatus.examAttempts.map((e) => (
                         <p key={e.id} className="text-white/70 text-sm">
-                          â€¢ Score: {e.score} â€” {e.passed ? 'âœ… Passed' : 'âŒ Failed'}
+                          • Score: {e.score} — {e.passed ? '✅ Passed' : '❌ Failed'}
                         </p>
                       ))
                     )}
@@ -527,7 +527,7 @@ export default function AdminTestingPage() {
                     ) : (
                       userStatus.certificates.map((c) => (
                         <p key={c.id} className="text-white/70 text-sm">
-                          â€¢ {c.course_type}: {c.certificate_number} â€” 
+                          • {c.course_type}: {c.certificate_number} — 
                           <a 
                             href={`/certificado/${c.id}`} 
                             target="_blank" 
@@ -556,7 +556,7 @@ export default function AdminTestingPage() {
 
           {/* Section: Quick Actions */}
           <section className="bg-gradient-to-r from-[#77DD77]/10 to-[#7EC8E3]/10 rounded-xl p-6 border border-[#77DD77]/30">
-            <h2 className="text-xl font-bold text-white mb-2">âš¡ Quick Actions</h2>
+            <h2 className="text-xl font-bold text-white mb-2">⚡ Quick Actions</h2>
             <p className="text-white/60 mb-4 text-sm">Set up common test scenarios in one click</p>
             <div className="grid gap-3 md:grid-cols-4">
               <button
@@ -564,7 +564,7 @@ export default function AdminTestingPage() {
                 disabled={loading || !targetEmail}
                 className="bg-[#1C1C1C] border-2 border-white/20 text-white rounded-lg px-4 py-4 hover:border-[#77DD77] transition-colors disabled:opacity-50 text-left"
               >
-                <span className="text-2xl block mb-1">ðŸŽŸï¸</span>
+                <span className="text-2xl block mb-1">🎟️</span>
                 <span className="block font-bold">Grant Access</span>
                 <span className="text-white/50 text-xs">Add course purchase</span>
               </button>
@@ -573,7 +573,7 @@ export default function AdminTestingPage() {
                 disabled={loading || !targetEmail}
                 className="bg-[#1C1C1C] border-2 border-[#7EC8E3]/50 text-white rounded-lg px-4 py-4 hover:border-[#7EC8E3] transition-colors disabled:opacity-50 text-left"
               >
-                <span className="text-2xl block mb-1">ðŸŽ¯</span>
+                <span className="text-2xl block mb-1">🎯</span>
                 <span className="block font-bold text-[#7EC8E3]">Exam Ready</span>
                 <span className="text-white/50 text-xs">15/15 lessons complete</span>
               </button>
@@ -582,7 +582,7 @@ export default function AdminTestingPage() {
                 disabled={loading || !targetEmail}
                 className="bg-[#1C1C1C] border-2 border-[#FFE566]/50 text-white rounded-lg px-4 py-4 hover:border-[#FFE566] transition-colors disabled:opacity-50 text-left"
               >
-                <span className="text-2xl block mb-1">ðŸ“œ</span>
+                <span className="text-2xl block mb-1">📜</span>
                 <span className="block font-bold text-[#FFE566]">Full Graduate</span>
                 <span className="text-white/50 text-xs">Complete with certificate</span>
               </button>
@@ -591,7 +591,7 @@ export default function AdminTestingPage() {
                 disabled={loading || !targetEmail}
                 className="bg-[#1C1C1C] border-2 border-[#FF9999]/30 text-white rounded-lg px-4 py-4 hover:border-[#FF9999] transition-colors disabled:opacity-50 text-left"
               >
-                <span className="text-2xl block mb-1">ðŸ”„</span>
+                <span className="text-2xl block mb-1">🔄</span>
                 <span className="block font-bold text-[#FF9999]">Reset User</span>
                 <span className="text-white/50 text-xs">Wipe data, keep auth</span>
               </button>
@@ -600,21 +600,21 @@ export default function AdminTestingPage() {
 
           {/* Section: Test as User - THE IMPORTANT REMINDER */}
           <section className="bg-gradient-to-r from-[#B19CD9]/20 to-[#7EC8E3]/20 rounded-xl p-6 border-2 border-[#B19CD9]/50">
-            <h2 className="text-xl font-bold text-white mb-2">ðŸ” Test as This User</h2>
+            <h2 className="text-xl font-bold text-white mb-2">🔐 Test as This User</h2>
             <p className="text-white/70 mb-4">
               To experience the site as the test user, log in as them in a separate browser session.
             </p>
             
             <div className="bg-[#1C1C1C] rounded-xl p-5 border border-white/10">
               <div className="flex items-start gap-4">
-                <div className="text-3xl">ðŸ’¡</div>
+                <div className="text-3xl">💡</div>
                 <div className="flex-1">
                   <h3 className="font-bold text-white mb-3">How to Test:</h3>
                   <ol className="text-white/70 text-sm space-y-2 list-decimal list-inside mb-4">
                     <li>Open an <strong className="text-white">incognito/private window</strong> (Cmd+Shift+N on Mac)</li>
                     <li>Go to the login page (copy link below)</li>
                     <li>Log in with the credentials below</li>
-                    <li>Test the full flow (dashboard â†’ course â†’ exam â†’ certificate)</li>
+                    <li>Test the full flow (dashboard → course → exam → certificate)</li>
                     <li>Close incognito window when done</li>
                   </ol>
                   
@@ -628,7 +628,7 @@ export default function AdminTestingPage() {
                       className="bg-[#2A2A2A] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#7EC8E3] transition-colors text-left"
                     >
                       <span className="text-xs text-white/50 block">Login URL</span>
-                      <span className="text-sm text-[#7EC8E3]">ðŸ“‹ Click to copy</span>
+                      <span className="text-sm text-[#7EC8E3]">📋 Click to copy</span>
                     </button>
                     <button
                       onClick={() => {
@@ -667,20 +667,20 @@ export default function AdminTestingPage() {
                     disabled={loading || !targetEmail}
                     className="bg-[#B19CD9] text-[#1C1C1C] font-bold rounded-lg px-5 py-3 hover:bg-[#C9B8E8] transition-colors disabled:opacity-50"
                   >
-                    {testPassword ? 'ðŸ”„ Reset Password Again' : 'ðŸ”‘ Set Password to "test123"'}
+                    {testPassword ? '🔄 Reset Password Again' : '🔑 Set Password to "test123"'}
                   </button>
                 </div>
               </div>
             </div>
             
             <p className="text-white/50 text-xs mt-4">
-              â„¹ï¸ Using incognito keeps your admin session in this window untouched.
+              ℹ️ Using incognito keeps your admin session in this window untouched.
             </p>
           </section>
 
           {/* Section: Page Previews */}
           <section className="bg-[#2A2A2A] rounded-xl p-6 border border-white/10">
-            <h2 className="text-xl font-bold text-white mb-2">ðŸ‘ï¸ Page Previews</h2>
+            <h2 className="text-xl font-bold text-white mb-2">👁️ Page Previews</h2>
             <p className="text-white/50 text-sm mb-4">
               Quick links to test pages. Opens in new tab.
             </p>
@@ -691,25 +691,25 @@ export default function AdminTestingPage() {
               <div className="grid gap-2 md:grid-cols-4">
                 <a href="/" target="_blank" rel="noopener noreferrer"
                   className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#77DD77] transition-colors block">
-                  <span className="text-lg mr-2">ðŸ </span>
+                  <span className="text-lg mr-2">🏠</span>
                   <span className="font-bold text-sm">Homepage</span>
                   <span className="text-white/50 text-xs block mt-1">Main landing page</span>
                 </a>
                 <a href="/exito?session_id=test" target="_blank" rel="noopener noreferrer"
                   className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#77DD77] transition-colors block">
-                  <span className="text-lg mr-2">âœ…</span>
+                  <span className="text-lg mr-2">✅</span>
                   <span className="font-bold text-sm">Success Page</span>
                   <span className="text-white/50 text-xs block mt-1">Post-purchase flow</span>
                 </a>
                 <a href="/iniciar-sesion" target="_blank" rel="noopener noreferrer"
                   className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#77DD77] transition-colors block">
-                  <span className="text-lg mr-2">ðŸ”</span>
+                  <span className="text-lg mr-2">🔐</span>
                   <span className="font-bold text-sm">Login Page</span>
                   <span className="text-white/50 text-xs block mt-1">/iniciar-sesion</span>
                 </a>
                 <a href="/recuperar-contrasena" target="_blank" rel="noopener noreferrer"
                   className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#77DD77] transition-colors block">
-                  <span className="text-lg mr-2">ðŸ”‘</span>
+                  <span className="text-lg mr-2">🔑</span>
                   <span className="font-bold text-sm">Password Reset</span>
                   <span className="text-white/50 text-xs block mt-1">Recovery request</span>
                 </a>
@@ -722,25 +722,25 @@ export default function AdminTestingPage() {
               <div className="grid gap-2 md:grid-cols-4">
                 <a href="/panel" target="_blank" rel="noopener noreferrer"
                   className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#7EC8E3] transition-colors block">
-                  <span className="text-lg mr-2">ðŸ“Š</span>
+                  <span className="text-lg mr-2">📊</span>
                   <span className="font-bold text-sm">Dashboard</span>
                   <span className="text-white/50 text-xs block mt-1">/panel - Student home</span>
                 </a>
                 <a href="/clase/coparenting" target="_blank" rel="noopener noreferrer"
                   className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#7EC8E3] transition-colors block">
-                  <span className="text-lg mr-2">ðŸ“š</span>
+                  <span className="text-lg mr-2">📚</span>
                   <span className="font-bold text-sm">Co-Parenting Course</span>
                   <span className="text-white/50 text-xs block mt-1">Course overview</span>
                 </a>
                 <a href="/clase/parenting" target="_blank" rel="noopener noreferrer"
                   className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#7EC8E3] transition-colors block">
-                  <span className="text-lg mr-2">ðŸ“š</span>
+                  <span className="text-lg mr-2">📚</span>
                   <span className="font-bold text-sm">Parenting Course</span>
                   <span className="text-white/50 text-xs block mt-1">Course overview</span>
                 </a>
                 <a href="/clase/coparenting/leccion-1" target="_blank" rel="noopener noreferrer"
                   className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#7EC8E3] transition-colors block">
-                  <span className="text-lg mr-2">ðŸ“–</span>
+                  <span className="text-lg mr-2">📖</span>
                   <span className="font-bold text-sm">Lesson 1</span>
                   <span className="text-white/50 text-xs block mt-1">Sample lesson view</span>
                 </a>
@@ -753,26 +753,26 @@ export default function AdminTestingPage() {
               <div className="grid gap-2 md:grid-cols-4">
                 <a href="/clase/coparenting/examen" target="_blank" rel="noopener noreferrer"
                   className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#FFE566] transition-colors block">
-                  <span className="text-lg mr-2">ðŸ“</span>
+                  <span className="text-lg mr-2">📝</span>
                   <span className="font-bold text-sm">Exam Page</span>
                   <span className="text-white/50 text-xs block mt-1">Final exam (needs 15 lessons)</span>
                 </a>
                 <a href="/completar-perfil" target="_blank" rel="noopener noreferrer"
                   className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#FFE566] transition-colors block">
-                  <span className="text-lg mr-2">ðŸ‘¤</span>
+                  <span className="text-lg mr-2">👤</span>
                   <span className="font-bold text-sm">Profile Form</span>
                   <span className="text-white/50 text-xs block mt-1">Certificate info (post-exam)</span>
                 </a>
                 {userStatus?.certificates?.[0] ? (
                   <a href={`/certificado/${userStatus.certificates[0].id}`} target="_blank" rel="noopener noreferrer"
                     className="bg-[#1C1C1C] border border-[#77DD77]/50 text-white rounded-lg px-4 py-3 hover:border-[#77DD77] transition-colors block">
-                    <span className="text-lg mr-2">ðŸ“œ</span>
+                    <span className="text-lg mr-2">📜</span>
                     <span className="font-bold text-sm text-[#77DD77]">Certificate View</span>
-                    <span className="text-white/50 text-xs block mt-1">User has certificate âœ“</span>
+                    <span className="text-white/50 text-xs block mt-1">User has certificate ✓</span>
                   </a>
                 ) : (
                   <div className="bg-[#1C1C1C] border border-white/10 text-white/40 rounded-lg px-4 py-3">
-                    <span className="text-lg mr-2">ðŸ“œ</span>
+                    <span className="text-lg mr-2">📜</span>
                     <span className="font-bold text-sm">Certificate View</span>
                     <span className="text-white/30 text-xs block mt-1">No certificate yet</span>
                   </div>
@@ -780,14 +780,14 @@ export default function AdminTestingPage() {
                 {userStatus?.certificates?.[0] ? (
                   <a href={`/verificar/${userStatus.certificates[0].verification_code}`} target="_blank" rel="noopener noreferrer"
                     className="bg-[#1C1C1C] border border-[#77DD77]/50 text-white rounded-lg px-4 py-3 hover:border-[#77DD77] transition-colors block">
-                    <span className="text-lg mr-2">ðŸ”</span>
+                    <span className="text-lg mr-2">🔍</span>
                     <span className="font-bold text-sm text-[#77DD77]">Verification Page</span>
                     <span className="text-white/50 text-xs block mt-1">{userStatus.certificates[0].verification_code}</span>
                   </a>
                 ) : (
                   <a href="/verificar/TESTCODE" target="_blank" rel="noopener noreferrer"
                     className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#FFE566] transition-colors block">
-                    <span className="text-lg mr-2">ðŸ”</span>
+                    <span className="text-lg mr-2">🔍</span>
                     <span className="font-bold text-sm">Verification Page</span>
                     <span className="text-white/50 text-xs block mt-1">Public cert verify</span>
                   </a>
@@ -801,25 +801,25 @@ export default function AdminTestingPage() {
               <div className="grid gap-2 md:grid-cols-4">
                 <a href="/preguntas-frecuentes" target="_blank" rel="noopener noreferrer"
                   className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#B19CD9] transition-colors block">
-                  <span className="text-lg mr-2">â“</span>
+                  <span className="text-lg mr-2">❓</span>
                   <span className="font-bold text-sm">FAQ</span>
                   <span className="text-white/50 text-xs block mt-1">Common questions</span>
                 </a>
                 <a href="/aceptacion-de-la-corte" target="_blank" rel="noopener noreferrer"
                   className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#B19CD9] transition-colors block">
-                  <span className="text-lg mr-2">âš–ï¸</span>
+                  <span className="text-lg mr-2">⚖️</span>
                   <span className="font-bold text-sm">Court Acceptance</span>
                   <span className="text-white/50 text-xs block mt-1">Acceptance info</span>
                 </a>
                 <a href="/this-page-does-not-exist-404" target="_blank" rel="noopener noreferrer"
                   className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#B19CD9] transition-colors block">
-                  <span className="text-lg mr-2">ðŸš«</span>
+                  <span className="text-lg mr-2">🚫</span>
                   <span className="font-bold text-sm">404 Page</span>
                   <span className="text-white/50 text-xs block mt-1">Not found preview</span>
                 </a>
                 <a href="/estados/texas" target="_blank" rel="noopener noreferrer"
                   className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#B19CD9] transition-colors block">
-                  <span className="text-lg mr-2">ðŸ—ºï¸</span>
+                  <span className="text-lg mr-2">🗺️</span>
                   <span className="font-bold text-sm">State Page (TX)</span>
                   <span className="text-white/50 text-xs block mt-1">Sample state landing</span>
                 </a>
@@ -832,7 +832,7 @@ export default function AdminTestingPage() {
               <div className="grid gap-2 md:grid-cols-4">
                 <a href="/admin/attorneys" target="_blank" rel="noopener noreferrer"
                   className="bg-[#1C1C1C] border border-white/20 text-white rounded-lg px-4 py-3 hover:border-[#FFB347] transition-colors block">
-                  <span className="text-lg mr-2">ðŸ‘¨â€âš–ï¸</span>
+                  <span className="text-lg mr-2">👨‍⚖️</span>
                   <span className="font-bold text-sm">Attorney Database</span>
                   <span className="text-white/50 text-xs block mt-1">Manage attorney directory</span>
                 </a>
@@ -842,7 +842,7 @@ export default function AdminTestingPage() {
             {/* Reminder about incognito */}
             <div className="mt-4 p-3 bg-[#B19CD9]/10 border border-[#B19CD9]/30 rounded-lg">
               <p className="text-white/70 text-sm">
-                âš ï¸ <strong>Remember:</strong> These pages open as <em>your admin account</em>. To test as the test user, use the incognito instructions above.
+                ⚠️ <strong>Remember:</strong> These pages open as <em>your admin account</em>. To test as the test user, use the incognito instructions above.
               </p>
             </div>
           </section>
@@ -850,17 +850,17 @@ export default function AdminTestingPage() {
           {/* Section: Advanced - Set Progress State */}
           <details className="bg-[#2A2A2A] rounded-xl border border-white/10">
             <summary className="p-6 cursor-pointer text-lg font-bold text-white hover:text-white/80">
-              ðŸ“ˆ Advanced: Set Progress State
+              📈 Advanced: Set Progress State
             </summary>
             <div className="px-6 pb-6">
               <p className="text-white/50 text-sm mb-4">Fine-grained control over user state</p>
               <div className="flex gap-2 flex-wrap mb-4">
                 {([
-                  { value: 'new', label: 'New (0 lessons)', icon: 'ðŸ†•' },
-                  { value: 'mid_course', label: 'Mid-Course (7/15)', icon: 'ðŸ“š' },
-                  { value: 'exam_ready', label: 'Exam Ready (15/15)', icon: 'ðŸŽ¯' },
-                  { value: 'exam_passed', label: 'Exam Passed', icon: 'âœ…' },
-                  { value: 'completed', label: 'Full Graduate', icon: 'ðŸ“œ' },
+                  { value: 'new', label: 'New (0 lessons)', icon: '🆕' },
+                  { value: 'mid_course', label: 'Mid-Course (7/15)', icon: '📚' },
+                  { value: 'exam_ready', label: 'Exam Ready (15/15)', icon: '🎯' },
+                  { value: 'exam_passed', label: 'Exam Passed', icon: '✅' },
+                  { value: 'completed', label: 'Full Graduate', icon: '📜' },
                 ] as const).map((state) => (
                   <button
                     key={state.value}
@@ -888,7 +888,7 @@ export default function AdminTestingPage() {
           {/* Section: Advanced - Send Test Emails */}
           <details className="bg-[#2A2A2A] rounded-xl border border-white/10">
             <summary className="p-6 cursor-pointer text-lg font-bold text-white hover:text-white/80">
-              ðŸ“§ Advanced: Send Test Emails
+              📧 Advanced: Send Test Emails
             </summary>
             <div className="px-6 pb-6">
               <div className="grid gap-4 md:grid-cols-3 mb-4">
@@ -902,7 +902,7 @@ export default function AdminTestingPage() {
                   <option value="existing_user">Existing User (new course)</option>
                   <option value="already_owned">Already Owned (refund)</option>
                   <option value="password_reset">Password Reset</option>
-                  <option value="student_certificate">Student Certificate ðŸŽ‰</option>
+                  <option value="student_certificate">Student Certificate 🎉</option>
                   <option value="attorney_certificate">Attorney Certificate</option>
                 </select>
                 <input
@@ -921,7 +921,7 @@ export default function AdminTestingPage() {
                 </button>
               </div>
               <p className="text-white/50 text-sm">
-                ðŸ’¡ Send to your real email to preview formatting.
+                💡 Send to your real email to preview formatting.
               </p>
             </div>
           </details>

@@ -4,6 +4,7 @@ import "./globals.css";
 import AuthRedirectHandler from "./page-wrapper";
 import { Providers } from '@/components/Providers';
 import Script from 'next/script';
+import { organizationSchema, courseSchema, JsonLd } from './seo-metadata-config';
 
 const courierPrime = Courier_Prime({
   weight: ["400", "700"],
@@ -62,6 +63,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
+      <head>
+        <JsonLd data={organizationSchema} />
+        <JsonLd data={courseSchema} />
+      </head>
       <body className={`${courierPrime.variable} ${shortStack.variable} antialiased`}>
         <Providers>
           <AuthRedirectHandler>

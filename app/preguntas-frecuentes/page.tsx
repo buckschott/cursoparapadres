@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { pageMetadata } from '../seo-metadata-config';
+import { pageMetadata, faqSchema, JsonLd } from '../seo-metadata-config';
 import FAQAccordion from './FAQAccordion';
 
 export const metadata: Metadata = pageMetadata.preguntasFrecuentes;
@@ -9,6 +9,7 @@ export const metadata: Metadata = pageMetadata.preguntasFrecuentes;
 export default function PreguntasFrecuentesPage() {
   return (
     <>
+      <JsonLd data={faqSchema} />
       <Header />
       <div className="min-h-screen bg-background">
         {/* Hero */}

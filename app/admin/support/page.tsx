@@ -337,7 +337,7 @@ export default function AdminSupportPage() {
                 : 'bg-white/10 text-white hover:bg-white/20'
             }`}
           >
-            ðŸ’¬ Customer Service
+            💬 Customer Service
           </button>
           <button
             onClick={() => setActiveTab('dashboard')}
@@ -347,7 +347,7 @@ export default function AdminSupportPage() {
                 : 'bg-white/10 text-white hover:bg-white/20'
             }`}
           >
-            ðŸ“Š Dashboard & Lookup
+            📊 Dashboard & Lookup
           </button>
           <button
             onClick={() => setActiveTab('attorneys')}
@@ -357,7 +357,7 @@ export default function AdminSupportPage() {
                 : 'bg-white/10 text-white hover:bg-white/20'
             }`}
           >
-            âš–ï¸ Attorneys
+            ⚖️ Attorneys
           </button>
           <button
             onClick={() => setActiveTab('seo')}
@@ -367,7 +367,7 @@ export default function AdminSupportPage() {
                 : 'bg-white/10 text-white hover:bg-white/20'
             }`}
           >
-            ðŸ“ˆ SEO
+            📈 SEO
           </button>
 
           {/* Divider */}

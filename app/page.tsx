@@ -435,12 +435,9 @@ export default function Home() {
         >
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 id="testimonios-heading" className="text-lg md:text-4xl font-bold text-white mb-4">
+              <h2 id="testimonios-heading" className="text-lg md:text-4xl font-bold text-white">
                 Padres Confían. Cortes Aceptan.
               </h2>
-              <p className="text-lg text-white/70">
-                Vea lo que dicen otros padres.
-              </p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
@@ -448,17 +445,17 @@ export default function Home() {
                 { 
                   name: "Roberto M.", 
                   location: "Condado de Harris, Texas", 
-                  text: "Mi abogado me recomendó esta clase para mi caso de custodia. El certificado llegó a su oficina el mismo día que terminé." 
+                  text: "Mi abogado me recomendó esta clase para mi caso de custodia. El certificado llegó a su oficina el mismo día — y la corte lo aceptó sin problema." 
                 },
                 { 
                   name: "Lucía F.", 
                   location: "Condado de Fulton, Georgia", 
-                  text: "Tenía 30 días para completar el requisito del juez. Lo hice en mi teléfono entre turnos. Requisito cumplido en una semana." 
+                  text: "Tenía 30 días para completar el requisito del juez. Lo hice en mi teléfono entre turnos. Una semana después, mi abogada presentó el certificado sin problema." 
                 },
                 { 
                   name: "Miguel T.", 
                   location: "Condado de Duval, Florida", 
-                  text: "El juez ordenó una clase de coparentalidad. Esta fue aceptada sin problema. Mi abogada recibió copia del certificado automáticamente." 
+                  text: "El juez ordenó una clase de coparentalidad y no sabía por dónde empezar. La terminé en un fin de semana. La corte la aceptó y mi abogada recibió el certificado automáticamente." 
                 }
               ].map((review, i) => (
                 <article key={i} className="bg-background border-2 border-[#FFFFFF]/15 rounded-2xl p-8 shadow-xl shadow-black/40 md:hover:border-[#7EC8E3]/30 md:hover:shadow-2xl transition-all">

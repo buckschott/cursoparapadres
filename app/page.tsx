@@ -417,7 +417,7 @@ export default function Home() {
               <blockquote className="text-xl md:text-2xl lg:text-3xl text-white font-medium leading-relaxed mb-8 text-left">
                 "Completé esta clase yo mismo. Debería ser requisito para todo abogado de familia, no solo para clientes. No elogio clases — esta se lo ganó."
               </blockquote>
-              <footer className="text-white/70">
+              <footer className="text-white/70 text-left">
                 <cite className="not-italic">
                   <span className="font-semibold text-white">G. Smith</span>
                   <span className="block text-sm mt-1">Abogado de Familia</span>

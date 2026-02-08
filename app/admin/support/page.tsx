@@ -337,7 +337,7 @@ export default function AdminSupportPage() {
                 : 'bg-white/10 text-white hover:bg-white/20'
             }`}
           >
-            💬 Customer Service
+            ðŸ’¬ Customer Service
           </button>
           <button
             onClick={() => setActiveTab('dashboard')}
@@ -347,7 +347,7 @@ export default function AdminSupportPage() {
                 : 'bg-white/10 text-white hover:bg-white/20'
             }`}
           >
-            📊 Dashboard & Lookup
+            ðŸ“Š Dashboard & Lookup
           </button>
           <button
             onClick={() => setActiveTab('attorneys')}
@@ -357,7 +357,7 @@ export default function AdminSupportPage() {
                 : 'bg-white/10 text-white hover:bg-white/20'
             }`}
           >
-            ⚖️ Attorneys
+            âš–ï¸ Attorneys
           </button>
           <button
             onClick={() => setActiveTab('seo')}
@@ -367,8 +367,19 @@ export default function AdminSupportPage() {
                 : 'bg-white/10 text-white hover:bg-white/20'
             }`}
           >
-            📈 SEO
+            ðŸ“ˆ SEO
           </button>
+
+          {/* Divider */}
+          <div className="w-px bg-white/20 mx-1 self-stretch" />
+
+          {/* Admin Testing - navigates to separate page */}
+          <a
+            href="/admin/testing"
+            className="px-6 py-3 rounded-lg font-medium transition-colors bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
+          >
+            🧪 Testing
+          </a>
         </div>
       </div>
 
@@ -408,7 +419,7 @@ export default function AdminSupportPage() {
               onRefresh={loadSystemHealth}
             />
 
-            {/* Recent Signups — FIRST thing you see */}
+            {/* Recent Signups â€” FIRST thing you see */}
             <RecentSignups
               signups={stats.recentSignups}
               isLoading={isLoadingStats}

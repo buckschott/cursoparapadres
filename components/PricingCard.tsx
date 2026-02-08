@@ -34,7 +34,7 @@ export default function PricingCard({
       </div>
       <div className="mb-6">
         <span className="text-5xl font-bold text-white">{price}</span>
-        <p className="text-sm text-white/60 mt-2">Pago único</p>
+        <p className="text-sm text-white/65 mt-2">Pago único</p>
       </div>
       <div className="mb-6">
         <h4 className="text-sm font-semibold text-white mb-3">Cumple con los requisitos para:</h4>
@@ -51,7 +51,7 @@ export default function PricingCard({
       <button 
         onClick={onEnroll}
         disabled={isLoading}
-        className="group w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold transition-all duration-200 hover:bg-[#9DD8F3] hover:shadow-lg hover:shadow-[#7EC8E3]/30 active:scale-[0.98] active:bg-[#9DD8F3] mb-6 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="group w-full border-2 border-[#7EC8E3] text-[#7EC8E3] bg-transparent py-4 rounded-xl font-bold transition-all duration-200 hover:bg-[#7EC8E3]/10 hover:shadow-lg hover:shadow-[#7EC8E3]/20 active:scale-[0.98] active:bg-[#7EC8E3]/15 mb-6 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {isLoading ? (
           <>

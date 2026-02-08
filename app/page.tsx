@@ -16,17 +16,17 @@ export default function Home() {
   const [loading, setLoading] = useState<string | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const { showToast } = useToast();
-  
+
   // Bundle interstitial state
   const [isInterstitialOpen, setIsInterstitialOpen] = useState(false);
   const [pendingCourse, setPendingCourse] = useState<'coparenting' | 'parenting' | null>(null);
-  
+
   // Custom hook for scroll animations
   const mainRef = useScrollReveal();
 
   const handleCheckout = async (priceId: string, productName: string) => {
     setLoading(productName);
-    
+
     try {
       const response = await fetch('/api/create-checkout', {
         method: 'POST',
@@ -39,7 +39,7 @@ export default function Home() {
       }
 
       const data = await response.json();
-      
+
       if (data.url) {
         // Show full-page overlay before redirect
         setIsRedirecting(true);
@@ -68,7 +68,7 @@ export default function Home() {
   // ============================================
   // SINGLE CLASS HANDLERS - Open interstitial first
   // ============================================
-  
+
   const handleCoparentingClick = () => {
     setPendingCourse('coparenting');
     setIsInterstitialOpen(true);
@@ -86,7 +86,7 @@ export default function Home() {
   const handleChooseBundle = () => {
     setIsInterstitialOpen(false);
     setPendingCourse(null);
-    
+
     const priceId = process.env.NEXT_PUBLIC_PRICE_BUNDLE;
     if (!priceId) {
       showToast(
@@ -101,13 +101,13 @@ export default function Home() {
 
   const handleContinueSingle = () => {
     setIsInterstitialOpen(false);
-    
+
     if (!pendingCourse) return;
-    
+
     const priceId = pendingCourse === 'coparenting'
       ? process.env.NEXT_PUBLIC_PRICE_COPARENTING
       : process.env.NEXT_PUBLIC_PRICE_PARENTING;
-    
+
     if (!priceId) {
       showToast(
         'error',
@@ -117,7 +117,7 @@ export default function Home() {
       setPendingCourse(null);
       return;
     }
-    
+
     handleCheckout(priceId, pendingCourse);
     setPendingCourse(null);
   };
@@ -147,7 +147,7 @@ export default function Home() {
   return (
     <>
       <CheckoutOverlay isVisible={isRedirecting} />
-      
+
       {/* Bundle Upgrade Interstitial */}
       <BundleInterstitial
         isOpen={isInterstitialOpen}
@@ -156,14 +156,14 @@ export default function Home() {
         onContinueSingle={handleContinueSingle}
         onClose={handleCloseInterstitial}
       />
-      
+
       <Header />
-      
+
       <main ref={mainRef as React.RefObject<HTMLElement>} className="min-h-screen bg-background">
         {/* HERO SECTION */}
         <section className="relative w-full overflow-hidden bg-background hero-section flex justify-center z-0">
           <div className="relative w-full max-w-6xl mx-auto px-4 text-center z-10 flex flex-col justify-between hero-content">
-            
+
             <div className="flex justify-center">
               <h1 className="hero-title text-[22px] md:text-[40px] xl:text-[64px] font-bold text-white leading-[1.1] tracking-wide">
                 <span className="hero-line-1">Clases para Padres</span><br />
@@ -200,9 +200,9 @@ export default function Home() {
         </section>
 
         {/* FEATURES SECTION */}
-        <section 
-          id="caracteristicas" 
-          className="section-divider relative pt-8 pb-24 bg-background overflow-hidden z-20" 
+        <section
+          id="caracteristicas"
+          className="section-divider relative pt-8 pb-24 bg-background overflow-hidden z-20"
           aria-labelledby="caracteristicas-heading"
         >
           <div className="relative max-w-6xl mx-auto px-4 z-10">
@@ -217,8 +217,8 @@ export default function Home() {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               {FEATURES.map((feature, i) => (
-                <article 
-                  key={i} 
+                <article
+                  key={i}
                   className="scroll-reveal group p-8 rounded-2xl border border-[#FFFFFF]/15 shadow-xl shadow-black/40 md:hover:border-[#7EC8E3]/30 md:hover:shadow-2xl transition-all duration-300 md:hover:-translate-y-1 bg-background"
                 >
                   <div className="w-16 h-16 mb-6 relative overflow-visible">
@@ -237,9 +237,9 @@ export default function Home() {
         </section>
 
         {/* PRICING SECTION */}
-        <section 
-          id="precios" 
-          className="section-divider relative bg-background z-20 overflow-hidden py-24" 
+        <section
+          id="precios"
+          className="section-divider relative bg-background z-20 overflow-hidden py-24"
           aria-labelledby="precios-heading"
         >
           <div className="max-w-6xl mx-auto px-4">
@@ -293,7 +293,7 @@ export default function Home() {
                 <div className="absolute -top-3 right-6 bg-[#77DD77] text-[#1C1C1C] px-3 py-1 rounded-full text-xs font-bold tracking-wide">
                   ⭐ Mejor Valor
                 </div>
-                
+
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold text-white mb-1">El Paquete Completo</h3>
                   <p className="text-sm text-white/70">Ambas Clases. Un Precio.</p>
@@ -316,8 +316,8 @@ export default function Home() {
                     ))}
                   </ul>
                 </div>
-                
-                <button 
+
+                <button
                   onClick={handleBundleCheckout}
                   disabled={loading === 'bundle'}
                   className="group w-full bg-[#77DD77] text-[#1C1C1C] py-4 rounded-xl font-bold transition-all duration-200 hover:bg-[#88EE88] hover:shadow-lg hover:shadow-[#77DD77]/30 active:scale-[0.98] active:bg-[#88EE88] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -330,10 +330,10 @@ export default function Home() {
                   ) : (
                     <>
                       <span>Inscríbase Ahora</span>
-                      <svg 
-                        className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1 group-active:translate-x-1" 
-                        fill="none" 
-                        stroke="currentColor" 
+                      <svg
+                        className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1 group-active:translate-x-1"
+                        fill="none"
+                        stroke="currentColor"
                         viewBox="0 0 24 24"
                         aria-hidden="true"
                       >
@@ -356,7 +356,7 @@ export default function Home() {
             {/* Military/Indigent discount line */}
             <p className="text-center mt-4 text-sm text-white/60">
               ¿Servicio militar o dificultad financiera? Escríbanos a{' '}
-              <a 
+              <a
                 href="mailto:info@claseparapadres.com?subject=Solicitud%20de%20descuento"
                 className="text-white/70 underline underline-offset-2 hover:text-white transition-colors"
               >
@@ -367,9 +367,9 @@ export default function Home() {
         </section>
 
         {/* DEVICES SECTION - Moved below Pricing for better funnel flow */}
-        <section 
+        <section
           id="dispositivos"
-          className="section-divider relative bg-background overflow-hidden z-20 py-24" 
+          className="section-divider relative bg-background overflow-hidden z-20 py-24"
           aria-labelledby="dispositivos-heading"
         >
           <div className="relative max-w-6xl mx-auto px-4">
@@ -389,10 +389,10 @@ export default function Home() {
               ].map((device) => (
                 <div key={device.name} className={`device-animate device-${device.name} flex flex-col items-center gap-3`}>
                   <div className={`relative h-28 md:h-40 ${device.container}`}>
-                    <img 
-                      src={device.src} 
-                      alt={device.label} 
-                      className={`device-img ${device.size} absolute bottom-0 left-0`} 
+                    <img
+                      src={device.src}
+                      alt={device.label}
+                      className={`device-img ${device.size} absolute bottom-0 left-0`}
                     />
                   </div>
                 </div>
@@ -402,9 +402,9 @@ export default function Home() {
         </section>
 
         {/* ATTORNEY ENDORSEMENT SECTION */}
-        <section 
-          id="respaldo-profesional" 
-          className="section-divider py-16 bg-background relative z-20" 
+        <section
+          id="respaldo-profesional"
+          className="section-divider py-16 bg-background relative z-20"
           aria-labelledby="respaldo-profesional-heading"
         >
           <div className="max-w-4xl mx-auto px-4">
@@ -428,9 +428,9 @@ export default function Home() {
         </section>
 
         {/* TESTIMONIALS SECTION */}
-        <section 
-          id="testimonios" 
-          className="section-divider py-24 bg-background relative z-20" 
+        <section
+          id="testimonios"
+          className="section-divider py-24 bg-background relative z-20"
           aria-labelledby="testimonios-heading"
         >
           <div className="max-w-6xl mx-auto px-4">
@@ -439,23 +439,23 @@ export default function Home() {
                 Padres Confían. Cortes Aceptan.
               </h2>
             </div>
-            
+
             <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
               {[
-                { 
-                  name: "Roberto M.", 
-                  location: "Condado de Harris, Texas", 
-                  text: "Mi abogado me recomendó esta clase para mi caso de custodia. El certificado llegó a su oficina el mismo día — y la corte lo aceptó sin problema." 
+                {
+                  name: "Roberto M.",
+                  location: "Condado de Harris, Texas",
+                  text: "Mi abogado me recomendó esta clase para mi caso de custodia. El certificado llegó a su oficina el mismo día — y la corte lo aceptó sin problema."
                 },
-                { 
-                  name: "Lucía F.", 
-                  location: "Condado de Fulton, Georgia", 
-                  text: "Tenía 30 días para completar el requisito del juez. Lo hice en mi teléfono entre turnos. Una semana después, mi abogada presentó el certificado sin problema." 
+                {
+                  name: "Lucía F.",
+                  location: "Condado de Fulton, Georgia",
+                  text: "Tenía 30 días para completar el requisito del juez. Lo hice en mi teléfono entre turnos. Una semana después, mi abogada presentó el certificado sin problema."
                 },
-                { 
-                  name: "Miguel T.", 
-                  location: "Condado de Duval, Florida", 
-                  text: "El juez ordenó una clase de coparentalidad y no sabía por dónde empezar. La terminé en un fin de semana. La corte la aceptó y mi abogada recibió el certificado automáticamente." 
+                {
+                  name: "Miguel T.",
+                  location: "Condado de Duval, Florida",
+                  text: "El juez ordenó una clase de coparentalidad y no sabía por dónde empezar. La terminé en un fin de semana. La corte la aceptó y mi abogada recibió el certificado automáticamente."
                 }
               ].map((review, i) => (
                 <article key={i} className="bg-background border-2 border-[#FFFFFF]/15 rounded-2xl p-8 shadow-xl shadow-black/40 md:hover:border-[#7EC8E3]/30 md:hover:shadow-2xl transition-all">
@@ -476,9 +476,9 @@ export default function Home() {
         </section>
 
         {/* FAQ SECTION */}
-        <section 
-          id="preguntas-frecuentes" 
-          className="section-divider py-24 bg-background relative z-20" 
+        <section
+          id="preguntas-frecuentes"
+          className="section-divider py-24 bg-background relative z-20"
           aria-labelledby="preguntas-frecuentes-heading"
         >
           <div className="max-w-4xl mx-auto px-4">
@@ -490,7 +490,7 @@ export default function Home() {
                 Detalles clave sobre la aceptación de la corte, su certificado y el acceso a la clase.
               </p>
             </div>
-            
+
             <div className="space-y-4">
               {[
                 { question: "¿Puedo empezar hoy?", answer: "Sí. El acceso es inmediato después de inscribirse. Sin esperas, sin citas." },
@@ -510,6 +510,31 @@ export default function Home() {
                 </details>
               ))}
             </div>
+
+            {/* Link to full FAQ page */}
+            <div className="text-center mt-10">
+              <a
+                href="/preguntas-frecuentes"
+                className="text-[#7EC8E3] hover:text-[#9DD8F3] font-medium underline underline-offset-4 transition-colors"
+              >
+                Ver todas las preguntas frecuentes →
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* FINAL CTA SECTION */}
+        <section className="section-divider py-24 bg-background relative z-20">
+          <div className="max-w-3xl mx-auto px-4 text-center">
+            <h2 className="scroll-reveal text-2xl md:text-4xl font-bold text-white mb-4">
+              Comience Hoy
+            </h2>
+            <p className="scroll-reveal text-lg md:text-xl text-white/70 mb-10">
+              Online. A su ritmo. Certificado instantáneo.
+            </p>
+            <CTAButton href="#precios" showArrow={true}>
+              Inscríbase Ahora
+            </CTAButton>
           </div>
         </section>
       </main>
@@ -528,7 +553,7 @@ export default function Home() {
 function CheckIcon({ className = '' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 20 20" fill="currentColor">
-      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
     </svg>
   );
 }
@@ -536,7 +561,7 @@ function CheckIcon({ className = '' }: { className?: string }) {
 function StarIcon({ className = '' }: { className?: string }) {
   return (
     <svg className={className} fill="currentColor" viewBox="0 0 20 20">
-      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
     </svg>
   );
 }
@@ -559,23 +584,23 @@ function ChevronIcon({ className = '' }: { className?: string }) {
 
 function LoadingSpinner() {
   return (
-    <svg 
-      className="w-5 h-5 animate-spin" 
-      viewBox="0 0 24 24" 
+    <svg
+      className="w-5 h-5 animate-spin"
+      viewBox="0 0 24 24"
       fill="none"
       aria-hidden="true"
     >
-      <circle 
-        className="opacity-25" 
-        cx="12" 
-        cy="12" 
-        r="10" 
-        stroke="currentColor" 
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
         strokeWidth="3"
       />
-      <path 
-        className="opacity-75" 
-        fill="currentColor" 
+      <path
+        className="opacity-75"
+        fill="currentColor"
         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
       />
     </svg>

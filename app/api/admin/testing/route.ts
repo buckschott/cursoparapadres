@@ -29,12 +29,14 @@ function generateVerificationCode(): string {
 
 // Helper to find an auth user by email (handles pagination)
 async function findAuthUserByEmail(supabase: ReturnType<typeof createServerClient>, email: string) {
+  const emailLower = email.toLowerCase().trim();
   let page = 1;
   const perPage = 500;
   while (true) {
-    const { data: { users }, error } = await supabase.auth.admin.listUsers({ page, perPage });
-    if (error || !users || users.length === 0) break;
-    const found = users.find(u => u.email === email);
+    const response = await supabase.auth.admin.listUsers({ page, perPage });
+    const users = response?.data?.users;
+    if (!users || users.length === 0) break;
+    const found = users.find(u => u.email?.toLowerCase() === emailLower);
     if (found) return found;
     if (users.length < perPage) break; // Last page
     page++;
@@ -213,8 +215,8 @@ export async function POST(request: NextRequest) {
         const { data: profile } = await supabase
           .from('profiles')
           .select('id')
-          .eq('email', testUserEmail)
-          .single();
+          .ilike('email', testUserEmail.toLowerCase().trim())
+          .maybeSingle();
 
         if (profile) {
           userId = profile.id;
@@ -325,8 +327,8 @@ export async function POST(request: NextRequest) {
         const { data: profile } = await supabase
           .from('profiles')
           .select('id, email')
-          .eq('email', testUserEmail)
-          .single();
+          .ilike('email', testUserEmail.toLowerCase().trim())
+          .maybeSingle();
 
         if (!profile) {
           return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -525,8 +527,8 @@ export async function POST(request: NextRequest) {
         const { data: profile } = await supabase
           .from('profiles')
           .select('id')
-          .eq('email', testUserEmail)
-          .single();
+          .ilike('email', testUserEmail.toLowerCase().trim())
+          .maybeSingle();
 
         if (!profile) {
           return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -576,8 +578,8 @@ export async function POST(request: NextRequest) {
         const { data: profile } = await supabase
           .from('profiles')
           .select('id')
-          .eq('email', testUserEmail)
-          .single();
+          .ilike('email', testUserEmail.toLowerCase().trim())
+          .maybeSingle();
 
         // Also check auth directly in case of orphan
         const authUser = await findAuthUserByEmail(supabase, testUserEmail);
@@ -621,7 +623,7 @@ export async function POST(request: NextRequest) {
         // Email templates (simplified for testing)
         const emails: Record<string, { subject: string; html: string }> = {
           welcome_with_password: {
-            subject: 'Â¡Todo listo! â€” su clase lo espera',
+            subject: '¡Todo listo! â€” su clase lo espera',
             html: generateWelcomeEmailWithPasswordHTML({
               userName: 'Test User',
               userEmail: recipientEmail,
@@ -631,7 +633,7 @@ export async function POST(request: NextRequest) {
             }),
           },
           welcome_no_password: {
-            subject: 'Â¡Todo listo! â€” su clase lo espera',
+            subject: '¡Todo listo! â€” su clase lo espera',
             html: generateWelcomeEmailHTML({
               userName: 'Test User',
               courseName: 'Clase de Coparentalidad',
@@ -639,7 +641,7 @@ export async function POST(request: NextRequest) {
             }),
           },
           existing_user: {
-            subject: 'Â¡Todo listo! â€” su nueva clase lo espera',
+            subject: '¡Todo listo! â€” su nueva clase lo espera',
             html: generateExistingUserEmailHTML({
               userName: 'Test User',
               courseName: 'Clase de Crianza',
@@ -656,14 +658,14 @@ export async function POST(request: NextRequest) {
             }),
           },
           password_reset: {
-            subject: 'Restablecer su contraseÃ±a',
+            subject: 'Restablecer su contraseña',
             html: generatePasswordResetEmailHTML({
               userName: 'Test User',
               resetUrl: `${baseUrl}/actualizar-contrasena?test=true`,
             }),
           },
           student_certificate: {
-            subject: 'ðŸŽ‰ Â¡Felicidades! Ha completado su clase',
+            subject: 'ðŸŽ‰ ¡Felicidades! Ha completado su clase',
             html: generateStudentCertificateEmailHTML({
               userName: 'Test User',
               courseName: 'Clase de Coparentalidad',
@@ -723,17 +725,33 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Email required' }, { status: 400 });
         }
 
-        // Check auth first
-        const authUser = await findAuthUserByEmail(supabase, testUserEmail);
+        const emailLower = testUserEmail.toLowerCase().trim();
 
-        // Find user in profiles
-        const { data: profile } = await supabase
+        // Step 1: Try profiles table (case-insensitive)
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('*')
-          .eq('email', testUserEmail)
-          .single();
+          .ilike('email', emailLower)
+          .maybeSingle();
 
-        // Handle orphan case
+        // Step 2: Try auth admin lookup
+        let authUser = null;
+        try {
+          authUser = await findAuthUserByEmail(supabase, emailLower);
+        } catch (authError) {
+          console.error('Auth lookup failed:', authError);
+        }
+
+        // If auth didn't find with lowercase, try original casing
+        if (!authUser && emailLower !== testUserEmail) {
+          try {
+            authUser = await findAuthUserByEmail(supabase, testUserEmail);
+          } catch (authError) {
+            console.error('Auth lookup (original case) failed:', authError);
+          }
+        }
+
+        // Handle orphan case: auth exists but no profile
         if (authUser && !profile) {
           return NextResponse.json({
             success: true,
@@ -749,29 +767,34 @@ export async function POST(request: NextRequest) {
           });
         }
 
+        // Neither found
         if (!profile) {
-          return NextResponse.json({ error: 'User not found' }, { status: 404 });
+          return NextResponse.json({ 
+            error: `User not found: ${testUserEmail}`,
+            debug: {
+              profileError: profileError?.message || null,
+              authFound: !!authUser,
+              emailSearched: emailLower,
+            }
+          }, { status: 404 });
         }
 
-        // Get purchases
+        // Profile found - get all related data
         const { data: purchases } = await supabase
           .from('purchases')
           .select('*')
           .eq('user_id', profile.id);
 
-        // Get progress
         const { data: progress } = await supabase
           .from('course_progress')
           .select('*')
           .eq('user_id', profile.id);
 
-        // Get exam attempts
         const { data: examAttempts } = await supabase
           .from('exam_attempts')
           .select('*')
           .eq('user_id', profile.id);
 
-        // Get certificates
         const { data: certificates } = await supabase
           .from('certificates')
           .select('*')
@@ -829,14 +852,14 @@ function generateWelcomeEmailWithPasswordHTML(data: {
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 10px;">
-              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">Â¡Todo listo!</h1>
+              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">¡Todo listo!</h1>
             </td>
           </tr>
           <tr>
             <td style="padding: 20px 40px; color: #FFFFFF; font-size: 16px; line-height: 1.6;">
               <p style="margin: 0 0 20px;">Hola${data.userName ? ` ${data.userName}` : ''},</p>
               <p style="margin: 0 0 20px;">
-                Â¡Gracias por inscribirse! Su acceso a <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span> estÃ¡ listo.
+                ¡Gracias por inscribirse! Su acceso a <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span> estÃ¡ listo.
               </p>
             </td>
           </tr>
@@ -847,7 +870,7 @@ function generateWelcomeEmailWithPasswordHTML(data: {
                   <td style="padding: 20px; color: #FFFFFF; font-size: 14px;">
                     <p style="margin: 0 0 10px; color: rgba(255,255,255,0.7);">Sus credenciales:</p>
                     <p style="margin: 0 0 8px;"><strong>Email:</strong> ${data.userEmail}</p>
-                    <p style="margin: 0;"><strong>ContraseÃ±a temporal:</strong> <span style="color: #FFE566;">${data.tempPassword}</span></p>
+                    <p style="margin: 0;"><strong>Contraseña temporal:</strong> <span style="color: #FFE566;">${data.tempPassword}</span></p>
                   </td>
                 </tr>
               </table>
@@ -898,14 +921,14 @@ function generateWelcomeEmailHTML(data: {
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 10px;">
-              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">Â¡Todo listo!</h1>
+              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">¡Todo listo!</h1>
             </td>
           </tr>
           <tr>
             <td style="padding: 20px 40px; color: #FFFFFF; font-size: 16px; line-height: 1.6;">
               <p style="margin: 0 0 20px;">Hola${data.userName ? ` ${data.userName}` : ''},</p>
               <p style="margin: 0 0 20px;">
-                Â¡Gracias por inscribirse! Su acceso a <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span> estÃ¡ listo.
+                ¡Gracias por inscribirse! Su acceso a <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span> estÃ¡ listo.
               </p>
             </td>
           </tr>
@@ -955,17 +978,17 @@ function generateExistingUserEmailHTML(data: {
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 10px;">
-              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">Â¡Nueva clase aÃ±adida!</h1>
+              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">¡Nueva clase añadida!</h1>
             </td>
           </tr>
           <tr>
             <td style="padding: 20px 40px; color: #FFFFFF; font-size: 16px; line-height: 1.6;">
               <p style="margin: 0 0 20px;">Hola${data.userName ? ` ${data.userName}` : ''},</p>
               <p style="margin: 0 0 20px;">
-                Hemos aÃ±adido <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span> a su cuenta.
+                Hemos añadido <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span> a su cuenta.
               </p>
               <p style="margin: 0 0 20px; color: rgba(255,255,255,0.7); font-size: 14px;">
-                Use su contraseÃ±a existente para iniciar sesiÃ³n. Â¿OlvidÃ³ su contraseÃ±a? <a href="${data.forgotPasswordUrl}" style="color: #7EC8E3;">RestablÃ©zcala aquÃ­</a>.
+                Use su contraseña existente para iniciar sesión. Â¿Olvidó su contraseña? <a href="${data.forgotPasswordUrl}" style="color: #7EC8E3;">Restablézcala aquí</a>.
               </p>
             </td>
           </tr>
@@ -1024,14 +1047,14 @@ function generateAlreadyOwnedEmailHTML(data: {
                 Notamos que ya tiene acceso a <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span>.
               </p>
               <p style="margin: 0 0 20px;">
-                Hemos procesado un reembolso automÃ¡tico. DeberÃ­a ver el crÃ©dito en su cuenta dentro de 5-10 dÃ­as hÃ¡biles.
+                Hemos procesado un reembolso automÃ¡tico. Debería ver el crédito en su cuenta dentro de 5-10 días hÃ¡biles.
               </p>
             </td>
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 40px;">
               <a href="${data.loginUrl}" style="display: inline-block; background-color: #7EC8E3; color: #1C1C1C; padding: 16px 32px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px;">
-                Iniciar SesiÃ³n â†’
+                Iniciar Sesión â†’
               </a>
             </td>
           </tr>
@@ -1072,21 +1095,21 @@ function generatePasswordResetEmailHTML(data: {
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 10px;">
-              <h1 style="color: #FFE566; font-size: 28px; margin: 0; font-weight: bold;">Restablecer ContraseÃ±a</h1>
+              <h1 style="color: #FFE566; font-size: 28px; margin: 0; font-weight: bold;">Restablecer Contraseña</h1>
             </td>
           </tr>
           <tr>
             <td style="padding: 20px 40px; color: #FFFFFF; font-size: 16px; line-height: 1.6;">
               <p style="margin: 0 0 20px;">Hola${data.userName ? ` ${data.userName}` : ''},</p>
               <p style="margin: 0 0 20px;">
-                Recibimos una solicitud para restablecer su contraseÃ±a. Haga clic en el botÃ³n a continuaciÃ³n para crear una nueva.
+                Recibimos una solicitud para restablecer su contraseña. Haga clic en el botón a continuación para crear una nueva.
               </p>
             </td>
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 20px;">
               <a href="${data.resetUrl}" style="display: inline-block; background-color: #FFE566; color: #1C1C1C; padding: 16px 32px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px;">
-                Restablecer Mi ContraseÃ±a â†’
+                Restablecer Mi Contraseña â†’
               </a>
             </td>
           </tr>
@@ -1095,7 +1118,7 @@ function generatePasswordResetEmailHTML(data: {
               <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #1C1C1C; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15);">
                 <tr>
                   <td style="padding: 15px; color: rgba(255,255,255,0.7); font-size: 13px;">
-                    â° Este enlace expira en 1 hora. Si no solicitÃ³ este cambio, puede ignorar este mensaje.
+                    ⏰ Este enlace expira en 1 hora. Si no solicitó este cambio, puede ignorar este mensaje.
                   </td>
                 </tr>
               </table>
@@ -1141,7 +1164,7 @@ function generateStudentCertificateEmailHTML(data: {
           </tr>
           <tr>
             <td align="center" style="padding: 0 40px 10px;">
-              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">Â¡Felicidades!</h1>
+              <h1 style="color: #77DD77; font-size: 32px; margin: 0; font-weight: bold;">¡Felicidades!</h1>
               <p style="color: #FFFFFF; font-size: 18px; margin: 10px 0 0;">Ha completado su clase exitosamente</p>
             </td>
           </tr>
@@ -1149,7 +1172,7 @@ function generateStudentCertificateEmailHTML(data: {
             <td style="padding: 20px 40px; color: #FFFFFF; font-size: 16px; line-height: 1.6;">
               <p style="margin: 0 0 20px;">Hola${data.userName ? ` ${data.userName}` : ''},</p>
               <p style="margin: 0 0 20px;">
-                Â¡Lo logrÃ³! Ha completado exitosamente <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span>.
+                ¡Lo logró! Ha completado exitosamente <span style="color: #77DD77; font-weight: bold;">${data.courseName}</span>.
               </p>
             </td>
           </tr>
@@ -1157,7 +1180,7 @@ function generateStudentCertificateEmailHTML(data: {
             <td style="padding: 0 40px 20px;">
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="color: #77DD77; font-size: 14px; padding: 8px 0;">âœ“ InscripciÃ³n completada</td>
+                  <td style="color: #77DD77; font-size: 14px; padding: 8px 0;">âœ“ Inscripción completada</td>
                 </tr>
                 <tr>
                   <td style="color: #77DD77; font-size: 14px; padding: 8px 0;">âœ“ 15 lecciones completadas</td>
@@ -1174,7 +1197,7 @@ function generateStudentCertificateEmailHTML(data: {
                 <tr>
                   <td style="padding: 20px; color: #FFFFFF; font-size: 14px;">
                     <p style="margin: 0 0 8px;"><strong>Certificado:</strong> ${data.certificateNumber}</p>
-                    <p style="margin: 0;"><strong>CÃ³digo de verificaciÃ³n:</strong> ${data.verificationCode}</p>
+                    <p style="margin: 0;"><strong>Código de verificación:</strong> ${data.verificationCode}</p>
                   </td>
                 </tr>
               </table>
@@ -1298,7 +1321,7 @@ function generateAttorneyEmailHTML(data: {
               </p>
               <p style="margin: 0;">
                 â€” Geri Jones<br>
-                <span style="color: rgba(255,255,255,0.6);">Executive Director, Putting Kids FirstÂ®</span>
+                <span style="color: rgba(255,255,255,0.6);">Executive Director, Putting Kids First®</span>
               </p>
             </td>
           </tr>

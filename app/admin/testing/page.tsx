@@ -244,9 +244,10 @@ export default function AdminTestingPage() {
       }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Failed to get status';
-      if (errorMsg.includes('not found')) {
+      if (errorMsg.includes('not found') || errorMsg.includes('User not found')) {
         setUserNotFound(true);
         setUserStatus(null);
+        showMessage('warning', errorMsg);
       } else {
         showMessage('error', errorMsg);
       }
@@ -847,12 +848,9 @@ export default function AdminTestingPage() {
             </div>
           </section>
 
-          {/* Section: Advanced - Set Progress State */}
-          <details className="bg-[#2A2A2A] rounded-xl border border-white/10">
-            <summary className="p-6 cursor-pointer text-lg font-bold text-white hover:text-white/80">
-              📈 Advanced: Set Progress State
-            </summary>
-            <div className="px-6 pb-6">
+          {/* Section: Set Progress State */}
+          <section className="bg-[#2A2A2A] rounded-xl p-6 border border-white/10">
+            <h2 className="text-xl font-bold text-white mb-2">📈 Set Progress State</h2>
               <p className="text-white/50 text-sm mb-4">Fine-grained control over user state</p>
               <div className="flex gap-2 flex-wrap mb-4">
                 {([
@@ -882,15 +880,11 @@ export default function AdminTestingPage() {
               >
                 Set Progress State
               </button>
-            </div>
-          </details>
+          </section>
 
-          {/* Section: Advanced - Send Test Emails */}
-          <details className="bg-[#2A2A2A] rounded-xl border border-white/10">
-            <summary className="p-6 cursor-pointer text-lg font-bold text-white hover:text-white/80">
-              📧 Advanced: Send Test Emails
-            </summary>
-            <div className="px-6 pb-6">
+          {/* Section: Send Test Emails */}
+          <section className="bg-[#2A2A2A] rounded-xl p-6 border border-white/10">
+            <h2 className="text-xl font-bold text-white mb-4">📧 Send Test Emails</h2>
               <div className="grid gap-4 md:grid-cols-3 mb-4">
                 <select
                   value={emailType}
@@ -923,8 +917,7 @@ export default function AdminTestingPage() {
               <p className="text-white/50 text-sm">
                 💡 Send to your real email to preview formatting.
               </p>
-            </div>
-          </details>
+          </section>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import CTAButton from '@/components/CTAButton';
 import { pageMetadata, faqSchema, JsonLd } from '../seo-metadata-config';
 import FAQAccordion from './FAQAccordion';
 
@@ -29,6 +30,21 @@ export default function PreguntasFrecuentesPage() {
         <section className="section-divider py-12 px-4">
           <div className="max-w-3xl mx-auto">
             <FAQAccordion />
+          </div>
+        </section>
+
+        {/* FINAL CTA SECTION */}
+        <section className="section-divider py-24 bg-background relative z-20">
+          <div className="max-w-3xl mx-auto px-4 text-center">
+            <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">
+              ¿Listo/a para empezar?
+            </h2>
+            <p className="text-lg md:text-xl text-white/70 mb-10">
+              Online. A su ritmo. Certificado instantáneo.
+            </p>
+            <CTAButton href="/#precios" showArrow={true}>
+              Inscríbase Ahora
+            </CTAButton>
           </div>
         </section>
       </div>

@@ -190,6 +190,7 @@ function FAQItem({ question, answer, isOpen, onClick }: {
     <div className="border-b border-white/15 last:border-b-0">
       <button
         onClick={onClick}
+        aria-expanded={isOpen}
         className="w-full py-5 px-4 flex justify-between items-center text-left hover:bg-white/5 transition-colors"
       >
         <span className="font-semibold text-white pr-4">{question}</span>
@@ -198,15 +199,21 @@ function FAQItem({ question, answer, isOpen, onClick }: {
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
+          aria-hidden="true"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      {isOpen && (
-        <div className="px-4 pb-5 text-white/70 whitespace-pre-line">
-          {answer}
+      <div
+        className="grid transition-[grid-template-rows] duration-200 ease-out"
+        style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
+      >
+        <div className="overflow-hidden">
+          <div className="px-4 pb-5 text-white/70 whitespace-pre-line">
+            {answer}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

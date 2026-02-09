@@ -29,7 +29,7 @@ export const SITE_CONFIG = {
   locale: 'es_US',
   language: 'es',
   themeColor: '#2563eb',
-  foundedYear: String(FOUNDED_YEAR), // Structured data only — never in visible copy
+  foundedYear: String(FOUNDED_YEAR), // Structured data only â€” never in visible copy
   phone: SUPPORT_PHONE,
   phoneFormatted: `+1-${SUPPORT_PHONE}`,
   email: SUPPORT_EMAIL,
@@ -70,7 +70,7 @@ export function generatePageMetadata(
           url: `${SITE_CONFIG.url}/og-image.png`,
           width: 1200,
           height: 630,
-          alt: 'Clases para Padres - El Certificado Más Aceptado',
+          alt: 'Clases para Padres - El Certificado MÃ¡s Aceptado',
         },
       ],
     },
@@ -103,47 +103,47 @@ export function generatePageMetadata(
 export const pageMetadata = {
   // Public pages
   aceptacionCorte: generatePageMetadata(
-    'Aceptación por la Corte',
-    'El Certificado Más Aceptado. Nuestra clase de coparentalidad es aceptada por tribunales en todo el país.',
+    'AceptaciÃ³n por la Corte',
+    'El Certificado MÃ¡s Aceptado. Nuestra clase de coparentalidad es aceptada por tribunales en todo el paÃ­s.',
     '/aceptacion-de-la-corte'
   ),
   
   preguntasFrecuentes: generatePageMetadata(
     'Preguntas Frecuentes',
-    'Respuestas a las preguntas más comunes sobre nuestra clase de coparentalidad en línea. Certificado, duración, y más.',
+    'Respuestas a las preguntas mÃ¡s comunes sobre nuestra clase de coparentalidad en lÃ­nea. Certificado, duraciÃ³n, y mÃ¡s.',
     '/preguntas-frecuentes'
   ),
   
   privacidad: generatePageMetadata(
-    'Política de Privacidad',
-    'Cómo protegemos su información personal. Política de privacidad de Clases para Padres / Putting Kids First®.',
+    'PolÃ­tica de Privacidad',
+    'CÃ³mo protegemos su informaciÃ³n personal. PolÃ­tica de privacidad de Clases para Padres / Putting Kids FirstÂ®.',
     '/politica-de-privacidad'
   ),
   
   terminos: generatePageMetadata(
-    'Términos y Condiciones',
-    'Términos y condiciones de uso de la clase de coparentalidad en línea de Putting Kids First®.',
+    'TÃ©rminos y Condiciones',
+    'TÃ©rminos y condiciones de uso de la clase de coparentalidad en lÃ­nea de Putting Kids FirstÂ®.',
     '/terminos-de-servicio'
   ),
 
   // Auth pages (noIndex)
   iniciarSesion: generatePageMetadata(
-    'Iniciar Sesión',
+    'Iniciar SesiÃ³n',
     'Acceda a su cuenta para continuar su clase de coparentalidad.',
     '/iniciar-sesion',
     true // noIndex
   ),
   
   recuperarContrasena: generatePageMetadata(
-    'Recuperar Contraseña',
-    'Restablezca su contraseña para acceder a su cuenta.',
+    'Recuperar ContraseÃ±a',
+    'Restablezca su contraseÃ±a para acceder a su cuenta.',
     '/recuperar-contrasena',
     true // noIndex
   ),
   
   restablecerContrasena: generatePageMetadata(
-    'Restablecer Contraseña',
-    'Cree una nueva contraseña para su cuenta.',
+    'Restablecer ContraseÃ±a',
+    'Cree una nueva contraseÃ±a para su cuenta.',
     '/restablecer-contrasena',
     true // noIndex
   ),
@@ -158,7 +158,7 @@ export const pageMetadata = {
   
   completarPerfil: generatePageMetadata(
     'Completar Perfil',
-    'Complete su información para generar su certificado.',
+    'Complete su informaciÃ³n para generar su certificado.',
     '/completar-perfil',
     true // noIndex
   ),
@@ -195,18 +195,18 @@ export const states: StateInfo[] = [
   { name: 'North Carolina', nameEs: 'Carolina del Norte', slug: 'carolina-del-norte' },
   { name: 'Colorado', nameEs: 'Colorado', slug: 'colorado' },
   { name: 'Nevada', nameEs: 'Nevada', slug: 'nevada' },
-  { name: 'New Mexico', nameEs: 'Nuevo México', slug: 'nuevo-mexico' },
+  { name: 'New Mexico', nameEs: 'Nuevo MÃ©xico', slug: 'nuevo-mexico' },
   // Tier 1 expansion - High Hispanic population
   { name: 'Puerto Rico', nameEs: 'Puerto Rico', slug: 'puerto-rico' },
   { name: 'Washington', nameEs: 'Washington', slug: 'washington' },
-  { name: 'Oregon', nameEs: 'Oregón', slug: 'oregon' },
+  { name: 'Oregon', nameEs: 'OregÃ³n', slug: 'oregon' },
   { name: 'Massachusetts', nameEs: 'Massachusetts', slug: 'massachusetts' },
   { name: 'Connecticut', nameEs: 'Connecticut', slug: 'connecticut' },
   { name: 'Maryland', nameEs: 'Maryland', slug: 'maryland' },
   { name: 'Virginia', nameEs: 'Virginia', slug: 'virginia' },
   { name: 'Pennsylvania', nameEs: 'Pensilvania', slug: 'pensilvania' },
   // Tier 2 expansion - Medium Hispanic population
-  { name: 'Michigan', nameEs: 'Míchigan', slug: 'michigan' },
+  { name: 'Michigan', nameEs: 'MÃ­chigan', slug: 'michigan' },
   { name: 'Ohio', nameEs: 'Ohio', slug: 'ohio' },
   { name: 'Indiana', nameEs: 'Indiana', slug: 'indiana' },
   { name: 'Wisconsin', nameEs: 'Wisconsin', slug: 'wisconsin' },
@@ -219,7 +219,7 @@ export const states: StateInfo[] = [
   { name: 'Alaska', nameEs: 'Alaska', slug: 'alaska' },
   { name: 'Arkansas', nameEs: 'Arkansas', slug: 'arkansas' },
   { name: 'Delaware', nameEs: 'Delaware', slug: 'delaware' },
-  { name: 'Hawaii', nameEs: 'Hawái', slug: 'hawai' },
+  { name: 'Hawaii', nameEs: 'HawÃ¡i', slug: 'hawai' },
   { name: 'Idaho', nameEs: 'Idaho', slug: 'idaho' },
   { name: 'Iowa', nameEs: 'Iowa', slug: 'iowa' },
   { name: 'Kansas', nameEs: 'Kansas', slug: 'kansas' },
@@ -242,8 +242,8 @@ export const states: StateInfo[] = [
 ]
 
 export function generateStateMetadata(state: StateInfo): Metadata {
-  const title = `Clases para Padres en ${state.nameEs} | El Certificado Más Aceptado`
-  const description = `Clase de coparentalidad aceptada por tribunales en ${state.nameEs}. Certificado instantáneo. 100% en español. Líderes en educación parental desde hace décadas.`
+  const title = `Clases para Padres en ${state.nameEs} | El Certificado MÃ¡s Aceptado`
+  const description = `Clase de coparentalidad aceptada por tribunales en ${state.nameEs}. Certificado instantÃ¡neo. 100% en espaÃ±ol. LÃ­deres en educaciÃ³n parental desde hace dÃ©cadas.`
   const path = `/estados/${state.slug}`
   
   return {
@@ -258,7 +258,7 @@ export function generateStateMetadata(state: StateInfo): Metadata {
       // Keep 'curso' variants for search capture
       `curso para padres ${state.nameEs}`,
       `curso coparentalidad ${state.nameEs}`,
-      `parenting class ${state.name} español`,
+      `parenting class ${state.name} espaÃ±ol`,
     ],
 
     openGraph: {
@@ -324,7 +324,7 @@ export const courseSchema = {
   '@context': 'https://schema.org',
   '@type': 'Course',
   name: 'Clase de Coparentalidad Para Padres',
-  description: 'Clase de coparentalidad en línea aceptada por tribunales en todo el país. Diseñada para padres en proceso de divorcio o separación. 100% en español.',
+  description: 'Clase de coparentalidad en lÃ­nea aceptada por tribunales en todo el paÃ­s. DiseÃ±ada para padres en proceso de divorcio o separaciÃ³n. 100% en espaÃ±ol.',
   provider: {
     '@type': 'Organization',
     name: COMPANY_NAME,
@@ -351,52 +351,79 @@ export const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
   mainEntity: [
+    // ---- Aceptación ----
     {
       '@type': 'Question',
       name: '¿Esta clase es aceptada en mi estado?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Sí. Somos El Original — el nombre más reconocido y el certificado más aceptado por tribunales en todo el país.',
+        text: 'Sí. Nuestras clases son aceptadas en todo el país. Putting Kids First® es el nombre más reconocido en educación parental — líderes en educación parental desde hace décadas. Miles de padres han presentado sus certificados exitosamente en los 50 estados.',
       },
     },
+    {
+      '@type': 'Question',
+      name: '¿Qué clase necesito tomar?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Si su orden judicial es por divorcio, custodia, separación, o modificación de una orden existente, necesita la Clase de Co-Parenting. Si su orden dice habilidades para padres o clase general de crianza, necesita la Clase de Crianza. Revise sus documentos del tribunal o pregunte a su abogado si no está seguro.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Necesito verificar con mi corte antes de tomar la clase?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'No es necesario. Nuestra clase cumple con los requisitos estándar de educación parental aceptados en todo el país. Sin embargo, si su orden judicial especifica un proveedor particular o requisitos muy específicos, le recomendamos verificar primero.',
+      },
+    },
+    // ---- Precio y Pago ----
+    {
+      '@type': 'Question',
+      name: '¿Cuánto cuesta la clase?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Clase de Co-Parenting: $60 (4 horas). Clase de Crianza: $60 (4 horas). Paquete Combinado: $80 (8 horas).',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Qué formas de pago aceptan?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Aceptamos todas las tarjetas de crédito y débito principales: Visa, Mastercard, American Express, y Discover. El pago se procesa de forma segura a través de Stripe.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Puedo obtener el precio del paquete después de comprar una clase?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'No. El precio especial del Paquete Completo ($80 por ambas clases) solo está disponible antes de su primera compra. Si decide tomar la segunda clase después, el precio será $60.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Ofrecen reembolsos?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Sí. Ofrecemos reembolso completo del 100% si su tribunal no acepta el certificado con no-aceptación comprobada.',
+      },
+    },
+    // ---- Duración y Formato ----
     {
       '@type': 'Question',
       name: '¿Cuánto tiempo toma completar la clase?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'La clase toma aproximadamente 4 horas para completar. Puede trabajar a su propio ritmo, pausar cuando necesite, y su progreso se guarda automáticamente.',
+        text: 'La clase toma aproximadamente 4 horas para completar. Puede completar la clase a su propio ritmo. No tiene que terminar todo en una sesión.',
       },
     },
     {
       '@type': 'Question',
-      name: '¿El certificado está en español?',
+      name: '¿Puedo pausar y continuar después?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'La clase está 100% en español, pero el certificado se emite en inglés para su aceptación por los tribunales de Estados Unidos. Esto es estándar para todas las clases de coparentalidad.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: '¿Cuándo recibo mi certificado?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Recibe su certificado PDF inmediatamente después de completar la clase. Puede descargarlo e imprimirlo al instante. El certificado incluye un código QR para verificación.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: '¿Hay ayuda disponible en español?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: `Sí. Todo nuestro sitio web, clase, y soporte al cliente están disponibles en español. Puede contactarnos en ${SUPPORT_EMAIL} o llamar al ${SUPPORT_PHONE}.`,
-      },
-    },
-    {
-      '@type': 'Question',
-      name: '¿Es seguro pagar en línea?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Sí. Utilizamos Stripe, uno de los procesadores de pago más seguros del mundo. Su información financiera está encriptada y protegida. Nunca almacenamos los datos de su tarjeta.',
+        text: 'Sí. Su progreso se guarda automáticamente. Puede cerrar el navegador y regresar después, cambiar de dispositivo, y completar la clase en varios días si lo prefiere.',
       },
     },
     {
@@ -404,15 +431,83 @@ export const faqSchema = {
       name: '¿Puedo tomar la clase en mi teléfono?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Sí. Nuestra clase funciona perfectamente en teléfonos móviles, tabletas, y computadoras. Puede comenzar en un dispositivo y continuar en otro — su progreso se guarda automáticamente.',
+        text: 'Sí. Nuestra clase funciona perfectamente en teléfonos móviles, tabletas, y computadoras. Puede comenzar en un dispositivo y continuar en otro sin perder su progreso.',
+      },
+    },
+    // ---- Certificado ----
+    {
+      '@type': 'Question',
+      name: '¿Cuándo recibo mi certificado?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Recibe su certificado inmediatamente después de completar la clase. El certificado se genera como un archivo PDF que puede descargar, imprimir, o enviar por correo electrónico a su abogado.',
       },
     },
     {
       '@type': 'Question',
-      name: '¿Qué información necesito para el certificado?',
+      name: '¿El certificado está en español?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Necesitará su nombre completo (como aparece en documentos legales), su estado, el condado donde se presenta su caso, y su número de caso. Esta información aparecerá en su certificado.',
+        text: 'La clase está 100% en español, pero el certificado se emite en inglés. Esto es estándar y necesario para que los tribunales de Estados Unidos lo acepten.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Cómo verifican la autenticidad del certificado?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Cada certificado incluye un código QR que enlaza a una página de verificación. Al escanear el código o visitar el enlace, cualquier persona puede confirmar que el certificado es auténtico.',
+      },
+    },
+    // ---- Contenido de la Clase ----
+    {
+      '@type': 'Question',
+      name: '¿Esta clase es solo para divorcios?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'No. La clase es útil para cualquier situación donde dos padres necesitan coordinar la crianza desde hogares separados, incluyendo divorcio, separación legal, padres que nunca estuvieron casados, casos de custodia, y modificaciones de custodia.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Ambos padres tienen que tomar la clase?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Depende de lo que requiera su tribunal. Algunos requieren que ambos padres completen la clase; otros solo requieren uno. Cada padre debe comprar y completar la clase por separado.',
+      },
+    },
+    // ---- Soporte ----
+    {
+      '@type': 'Question',
+      name: '¿Hay ayuda disponible en español?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: `Sí. Todo nuestro sitio web, clase, y soporte están disponibles en español. Puede contactarnos en ${SUPPORT_EMAIL} o llamar al ${SUPPORT_PHONE}.`,
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Cómo puedo contactarlos si tengo problemas?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: `Puede contactarnos por correo electrónico: ${SUPPORT_EMAIL}. Respondemos generalmente dentro de 24 horas en días laborales.`,
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Qué hago si tengo problemas técnicos?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: `Intente actualizar la página, usar otro navegador, o verificar su conexión a internet. Si el problema persiste, contáctenos en ${SUPPORT_EMAIL} con una descripción del problema y qué dispositivo está usando.`,
+      },
+    },
+    // ---- Sobre Nosotros ----
+    {
+      '@type': 'Question',
+      name: '¿Quién es Putting Kids First?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Putting Kids First® es el nombre más reconocido en educación parental — líderes en educación parental desde hace décadas. Miles de padres han completado nuestras clases y presentado sus certificados exitosamente en tribunales de todo el país.',
       },
     },
   ],

@@ -12,7 +12,7 @@ export default function PreguntasFrecuentesPage() {
   return (
     <>
       <Header />
-      <div ref={mainRef} className="min-h-screen bg-background">
+      <div ref={mainRef as React.RefObject<HTMLDivElement>} className="min-h-screen bg-background">
         {/* Hero */}
         <section className="bg-background py-16 px-4 border-b border-[#FFFFFF]/10">
           <div className="max-w-4xl mx-auto text-center">

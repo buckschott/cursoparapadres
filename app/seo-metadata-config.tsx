@@ -29,7 +29,7 @@ export const SITE_CONFIG = {
   locale: 'es_US',
   language: 'es',
   themeColor: '#2563eb',
-  foundedYear: String(FOUNDED_YEAR), // Structured data only â€” never in visible copy
+  foundedYear: String(FOUNDED_YEAR), // Structured data only — never in visible copy
   phone: SUPPORT_PHONE,
   phoneFormatted: `+1-${SUPPORT_PHONE}`,
   email: SUPPORT_EMAIL,
@@ -53,11 +53,11 @@ export function generatePageMetadata(
   noIndex: boolean = false
 ): Metadata {
   const url = `${SITE_CONFIG.url}${path}`
-
+  
   return {
     title: `${title} | Clases para Padres`,
     description,
-
+    
     openGraph: {
       type: 'website',
       locale: 'es_US',
@@ -70,7 +70,7 @@ export function generatePageMetadata(
           url: `${SITE_CONFIG.url}/og-image.png`,
           width: 1200,
           height: 630,
-          alt: 'Clases para Padres - El Certificado MÃ¡s Aceptado',
+          alt: 'Clases para Padres - El Certificado Más Aceptado',
         },
       ],
     },
@@ -103,47 +103,47 @@ export function generatePageMetadata(
 export const pageMetadata = {
   // Public pages
   aceptacionCorte: generatePageMetadata(
-    'AceptaciÃ³n por la Corte',
-    'El Certificado MÃ¡s Aceptado. Nuestra clase de coparentalidad es aceptada por tribunales en todo el paÃ­s.',
+    'Aceptación por la Corte',
+    'El Certificado Más Aceptado. Nuestra clase de coparentalidad es aceptada por tribunales en todo el país.',
     '/aceptacion-de-la-corte'
   ),
-
+  
   preguntasFrecuentes: generatePageMetadata(
     'Preguntas Frecuentes',
-    'Preguntas frecuentes sobre la clase para padres en línea. Precio, certificado, duración, aceptación por la corte, y cómo empezar hoy.',
+    'Respuestas a las preguntas más comunes sobre nuestra clase de coparentalidad en línea. Certificado, duración, y más.',
     '/preguntas-frecuentes'
   ),
-
+  
   privacidad: generatePageMetadata(
-    'PolÃ­tica de Privacidad',
-    'CÃ³mo protegemos su informaciÃ³n personal. PolÃ­tica de privacidad de Clases para Padres / Putting Kids FirstÂ®.',
+    'Política de Privacidad',
+    'Cómo protegemos su información personal. Política de privacidad de Clases para Padres / Putting Kids First®.',
     '/politica-de-privacidad'
   ),
-
+  
   terminos: generatePageMetadata(
-    'TÃ©rminos y Condiciones',
-    'TÃ©rminos y condiciones de uso de la clase de coparentalidad en lÃ­nea de Putting Kids FirstÂ®.',
+    'Términos y Condiciones',
+    'Términos y condiciones de uso de la clase de coparentalidad en línea de Putting Kids First®.',
     '/terminos-de-servicio'
   ),
 
   // Auth pages (noIndex)
   iniciarSesion: generatePageMetadata(
-    'Iniciar SesiÃ³n',
+    'Iniciar Sesión',
     'Acceda a su cuenta para continuar su clase de coparentalidad.',
     '/iniciar-sesion',
     true // noIndex
   ),
-
+  
   recuperarContrasena: generatePageMetadata(
-    'Recuperar ContraseÃ±a',
-    'Restablezca su contraseÃ±a para acceder a su cuenta.',
+    'Recuperar Contraseña',
+    'Restablezca su contraseña para acceder a su cuenta.',
     '/recuperar-contrasena',
     true // noIndex
   ),
-
+  
   restablecerContrasena: generatePageMetadata(
-    'Restablecer ContraseÃ±a',
-    'Cree una nueva contraseÃ±a para su cuenta.',
+    'Restablecer Contraseña',
+    'Cree una nueva contraseña para su cuenta.',
     '/restablecer-contrasena',
     true // noIndex
   ),
@@ -155,14 +155,14 @@ export const pageMetadata = {
     '/panel',
     true // noIndex
   ),
-
+  
   completarPerfil: generatePageMetadata(
     'Completar Perfil',
-    'Complete su informaciÃ³n para generar su certificado.',
+    'Complete su información para generar su certificado.',
     '/completar-perfil',
     true // noIndex
   ),
-
+  
   exito: generatePageMetadata(
     'Compra Exitosa',
     'Su compra ha sido procesada exitosamente.',
@@ -195,18 +195,18 @@ export const states: StateInfo[] = [
   { name: 'North Carolina', nameEs: 'Carolina del Norte', slug: 'carolina-del-norte' },
   { name: 'Colorado', nameEs: 'Colorado', slug: 'colorado' },
   { name: 'Nevada', nameEs: 'Nevada', slug: 'nevada' },
-  { name: 'New Mexico', nameEs: 'Nuevo MÃ©xico', slug: 'nuevo-mexico' },
+  { name: 'New Mexico', nameEs: 'Nuevo México', slug: 'nuevo-mexico' },
   // Tier 1 expansion - High Hispanic population
   { name: 'Puerto Rico', nameEs: 'Puerto Rico', slug: 'puerto-rico' },
   { name: 'Washington', nameEs: 'Washington', slug: 'washington' },
-  { name: 'Oregon', nameEs: 'OregÃ³n', slug: 'oregon' },
+  { name: 'Oregon', nameEs: 'Oregón', slug: 'oregon' },
   { name: 'Massachusetts', nameEs: 'Massachusetts', slug: 'massachusetts' },
   { name: 'Connecticut', nameEs: 'Connecticut', slug: 'connecticut' },
   { name: 'Maryland', nameEs: 'Maryland', slug: 'maryland' },
   { name: 'Virginia', nameEs: 'Virginia', slug: 'virginia' },
   { name: 'Pennsylvania', nameEs: 'Pensilvania', slug: 'pensilvania' },
   // Tier 2 expansion - Medium Hispanic population
-  { name: 'Michigan', nameEs: 'MÃ­chigan', slug: 'michigan' },
+  { name: 'Michigan', nameEs: 'Míchigan', slug: 'michigan' },
   { name: 'Ohio', nameEs: 'Ohio', slug: 'ohio' },
   { name: 'Indiana', nameEs: 'Indiana', slug: 'indiana' },
   { name: 'Wisconsin', nameEs: 'Wisconsin', slug: 'wisconsin' },
@@ -219,7 +219,7 @@ export const states: StateInfo[] = [
   { name: 'Alaska', nameEs: 'Alaska', slug: 'alaska' },
   { name: 'Arkansas', nameEs: 'Arkansas', slug: 'arkansas' },
   { name: 'Delaware', nameEs: 'Delaware', slug: 'delaware' },
-  { name: 'Hawaii', nameEs: 'HawÃ¡i', slug: 'hawai' },
+  { name: 'Hawaii', nameEs: 'Hawái', slug: 'hawai' },
   { name: 'Idaho', nameEs: 'Idaho', slug: 'idaho' },
   { name: 'Iowa', nameEs: 'Iowa', slug: 'iowa' },
   { name: 'Kansas', nameEs: 'Kansas', slug: 'kansas' },
@@ -242,14 +242,14 @@ export const states: StateInfo[] = [
 ]
 
 export function generateStateMetadata(state: StateInfo): Metadata {
-  const title = `Clases para Padres en ${state.nameEs} | El Certificado MÃ¡s Aceptado`
-  const description = `Clase de coparentalidad aceptada por tribunales en ${state.nameEs}. Certificado instantÃ¡neo. 100% en espaÃ±ol. LÃ­deres en educaciÃ³n parental desde hace dÃ©cadas.`
+  const title = `Clases para Padres en ${state.nameEs} | El Certificado Más Aceptado`
+  const description = `Clase de coparentalidad aceptada por tribunales en ${state.nameEs}. Certificado instantáneo. 100% en español. Líderes en educación parental desde hace décadas.`
   const path = `/estados/${state.slug}`
-
+  
   return {
     title,
     description,
-
+    
     keywords: [
       // Lead with 'clases' variants
       `clases para padres ${state.nameEs}`,
@@ -258,7 +258,7 @@ export function generateStateMetadata(state: StateInfo): Metadata {
       // Keep 'curso' variants for search capture
       `curso para padres ${state.nameEs}`,
       `curso coparentalidad ${state.nameEs}`,
-      `parenting class ${state.name} espaÃ±ol`,
+      `parenting class ${state.name} español`,
     ],
 
     openGraph: {
@@ -324,7 +324,7 @@ export const courseSchema = {
   '@context': 'https://schema.org',
   '@type': 'Course',
   name: 'Clase de Coparentalidad Para Padres',
-  description: 'Clase de coparentalidad en lÃ­nea aceptada por tribunales en todo el paÃ­s. DiseÃ±ada para padres en proceso de divorcio o separaciÃ³n. 100% en espaÃ±ol.',
+  description: 'Clase de coparentalidad en línea aceptada por tribunales en todo el país. Diseñada para padres en proceso de divorcio o separación. 100% en español.',
   provider: {
     '@type': 'Organization',
     name: COMPANY_NAME,
@@ -541,11 +541,11 @@ export function JsonLd({ data }: { data: object }) {
 // USAGE EXAMPLE IN LAYOUT.TSX
 // ============================================
 /*
-import {
-  organizationSchema,
-  courseSchema,
+import { 
+  organizationSchema, 
+  courseSchema, 
   faqSchema,
-  JsonLd
+  JsonLd 
 } from './seo-metadata-config'
 
 // Note: Homepage metadata is defined directly in layout.tsx

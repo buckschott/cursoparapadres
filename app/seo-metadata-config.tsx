@@ -53,11 +53,11 @@ export function generatePageMetadata(
   noIndex: boolean = false
 ): Metadata {
   const url = `${SITE_CONFIG.url}${path}`
-  
+
   return {
     title: `${title} | Clases para Padres`,
     description,
-    
+
     openGraph: {
       type: 'website',
       locale: 'es_US',
@@ -107,19 +107,19 @@ export const pageMetadata = {
     'El Certificado MÃ¡s Aceptado. Nuestra clase de coparentalidad es aceptada por tribunales en todo el paÃ­s.',
     '/aceptacion-de-la-corte'
   ),
-  
+
   preguntasFrecuentes: generatePageMetadata(
     'Preguntas Frecuentes',
-    'Respuestas a las preguntas mÃ¡s comunes sobre nuestra clase de coparentalidad en lÃ­nea. Certificado, duraciÃ³n, y mÃ¡s.',
+    'Preguntas frecuentes sobre la clase para padres en línea. Precio, certificado, duración, aceptación por la corte, y cómo empezar hoy.',
     '/preguntas-frecuentes'
   ),
-  
+
   privacidad: generatePageMetadata(
     'PolÃ­tica de Privacidad',
     'CÃ³mo protegemos su informaciÃ³n personal. PolÃ­tica de privacidad de Clases para Padres / Putting Kids FirstÂ®.',
     '/politica-de-privacidad'
   ),
-  
+
   terminos: generatePageMetadata(
     'TÃ©rminos y Condiciones',
     'TÃ©rminos y condiciones de uso de la clase de coparentalidad en lÃ­nea de Putting Kids FirstÂ®.',
@@ -133,14 +133,14 @@ export const pageMetadata = {
     '/iniciar-sesion',
     true // noIndex
   ),
-  
+
   recuperarContrasena: generatePageMetadata(
     'Recuperar ContraseÃ±a',
     'Restablezca su contraseÃ±a para acceder a su cuenta.',
     '/recuperar-contrasena',
     true // noIndex
   ),
-  
+
   restablecerContrasena: generatePageMetadata(
     'Restablecer ContraseÃ±a',
     'Cree una nueva contraseÃ±a para su cuenta.',
@@ -155,14 +155,14 @@ export const pageMetadata = {
     '/panel',
     true // noIndex
   ),
-  
+
   completarPerfil: generatePageMetadata(
     'Completar Perfil',
     'Complete su informaciÃ³n para generar su certificado.',
     '/completar-perfil',
     true // noIndex
   ),
-  
+
   exito: generatePageMetadata(
     'Compra Exitosa',
     'Su compra ha sido procesada exitosamente.',
@@ -245,11 +245,11 @@ export function generateStateMetadata(state: StateInfo): Metadata {
   const title = `Clases para Padres en ${state.nameEs} | El Certificado MÃ¡s Aceptado`
   const description = `Clase de coparentalidad aceptada por tribunales en ${state.nameEs}. Certificado instantÃ¡neo. 100% en espaÃ±ol. LÃ­deres en educaciÃ³n parental desde hace dÃ©cadas.`
   const path = `/estados/${state.slug}`
-  
+
   return {
     title,
     description,
-    
+
     keywords: [
       // Lead with 'clases' variants
       `clases para padres ${state.nameEs}`,
@@ -541,11 +541,11 @@ export function JsonLd({ data }: { data: object }) {
 // USAGE EXAMPLE IN LAYOUT.TSX
 // ============================================
 /*
-import { 
-  organizationSchema, 
-  courseSchema, 
+import {
+  organizationSchema,
+  courseSchema,
   faqSchema,
-  JsonLd 
+  JsonLd
 } from './seo-metadata-config'
 
 // Note: Homepage metadata is defined directly in layout.tsx

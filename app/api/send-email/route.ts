@@ -165,7 +165,7 @@ function generateSupportEmailHTML(body: string): string {
           <!-- Logo -->
           <tr>
             <td align="center" style="padding-bottom: 30px;">
-              <img src="https://www.claseparapadres.com/logo.png" 
+              <img src="https://claseparapadres.com/logo.png" 
                    alt="Clase para Padres" 
                    width="200" 
                    style="display: block; max-width: 200px; height: auto;">

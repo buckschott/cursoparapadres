@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase';
 import { courseModules, TOTAL_MODULES, courseTypeNames } from '@/lib/courseContent';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { isPurchaseExpired } from '@/lib/purchase-utils';
 
 interface CourseProgress {
   lessons_completed: number[];
@@ -50,6 +51,25 @@ export default function CourseOverviewPage() {
       if (!purchase) {
         window.location.href = '/panel';
         return;
+      }
+
+      // Check if purchase has expired
+      if (isPurchaseExpired(purchase.purchased_at)) {
+        // Purchase expired — check if user has a valid certificate (they can still view cert)
+        const { data: certCheck } = await supabase
+          .from('certificates')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('course_type', courseType)
+          .limit(1);
+
+        if (certCheck && certCheck.length > 0) {
+          // Has certificate — allow through (they can view the course overview with cert banner)
+        } else {
+          // No certificate — redirect to panel (they'll see the expired card there)
+          window.location.href = '/panel';
+          return;
+        }
       }
 
       // Check for existing certificate

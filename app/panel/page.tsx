@@ -3,6 +3,12 @@ import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import {
+  isPurchaseExpired,
+  isPurchaseExpiringSoon,
+  getPurchaseExpirationDate,
+  getDaysRemaining,
+} from '@/lib/purchase-utils';
 
 // ============================================
 // TYPES
@@ -267,6 +273,16 @@ export default function DashboardPage() {
   // Check if user has access to a course (direct purchase OR bundle)
   const hasCourse = (courseType: string) => {
     return purchases.some(p =>
+      p.course_type === courseType || p.course_type === 'bundle'
+    );
+  };
+
+  /**
+   * Get the purchase record for a specific course type.
+   * Returns the direct purchase or the bundle purchase, whichever exists.
+   */
+  const getPurchaseForCourse = (courseType: string): Purchase | undefined => {
+    return purchases.find(p =>
       p.course_type === courseType || p.course_type === 'bundle'
     );
   };
@@ -596,7 +612,7 @@ export default function DashboardPage() {
                 <div>
                   <h2 className="text-lg font-bold text-[#77DD77] mb-1">¡Bienvenido! Su cuenta está lista.</h2>
                   <p className="text-white/70">
-                    Haga clic en <span className="text-white font-medium">"Comenzar Clase"</span> abajo para iniciar su primera lección.
+                    Haga clic en <span className="text-white font-medium">&quot;Comenzar Clase&quot;</span> abajo para iniciar su primera lección.
                     Recibirá su certificado al completar todas las lecciones y aprobar el examen final.
                   </p>
                 </div>
@@ -658,6 +674,7 @@ export default function DashboardPage() {
                     certificate={getCertificate('coparenting')}
                     examPassed={hasPassedExam('coparenting')}
                     totalLessons={TOTAL_LESSONS}
+                    purchasedAt={getPurchaseForCourse('coparenting')?.purchased_at}
                   />
                 </div>
               )}
@@ -673,6 +690,7 @@ export default function DashboardPage() {
                     certificate={getCertificate('parenting')}
                     examPassed={hasPassedExam('parenting')}
                     totalLessons={TOTAL_LESSONS}
+                    purchasedAt={getPurchaseForCourse('parenting')?.purchased_at}
                   />
                 </div>
               )}
@@ -736,6 +754,7 @@ interface CourseCardProps {
   certificate: Certificate | undefined;
   examPassed: boolean;
   totalLessons: number;
+  purchasedAt?: string;
 }
 
 function CourseCard({
@@ -745,25 +764,36 @@ function CourseCard({
   progress,
   certificate,
   examPassed,
-  totalLessons
+  totalLessons,
+  purchasedAt,
 }: CourseCardProps) {
   const completedCount = progress?.lessons_completed?.length || 0;
   const progressPercent = (completedCount / totalLessons) * 100;
   const [animatedProgress, setAnimatedProgress] = useState(0);
 
-  // Check if certificate is expired (older than 12 months)
-  const isExpired = certificate ? isCertificateExpired(certificate.issued_at) : false;
-  const expirationDate = certificate ? getExpirationDate(certificate.issued_at) : '';
+  // Certificate expiration check (existing logic — do not confuse with purchase expiration)
+  const isCertExpired = certificate ? isCertificateExpired(certificate.issued_at) : false;
+  const certExpirationDate = certificate ? getExpirationDate(certificate.issued_at) : '';
 
-  // State logic:
-  // 1. Has certificate AND expired → Expired
-  // 2. Has certificate AND not expired → Complete
-  // 3. Passed exam but no certificate → Profile Required
-  // 4. All lessons complete but no passed exam → Exam Ready
-  // 5. Otherwise → In Progress
-  const isComplete = !!certificate && !isExpired;
-  const isProfileRequired = !certificate && examPassed;
-  const isExamReady = completedCount >= totalLessons && !certificate && !examPassed;
+  // Purchase expiration check (NEW)
+  const purchaseExpired = purchasedAt ? isPurchaseExpired(purchasedAt) : false;
+  const purchaseExpiringSoon = purchasedAt ? isPurchaseExpiringSoon(purchasedAt) : false;
+  const purchaseExpirationDate = purchasedAt ? getPurchaseExpirationDate(purchasedAt) : '';
+  const daysLeft = purchasedAt ? getDaysRemaining(purchasedAt) : 0;
+
+  // Has a valid (non-expired) certificate?
+  const hasValidCertificate = !!certificate && !isCertExpired;
+
+  // State logic (updated order):
+  // STATE -1: Purchase expired AND no valid certificate → show expired card with re-enroll CTA
+  // STATE  0: Has certificate AND certificate expired → existing behavior
+  // STATE  1: Has certificate AND not expired → existing behavior (works even if purchase expired)
+  // STATE  2: Passed exam but no certificate → only if purchase NOT expired
+  // STATE  3: All lessons complete but no passed exam → only if purchase NOT expired
+  // STATE  4: Otherwise → In Progress, only if purchase NOT expired
+  const isComplete = hasValidCertificate;
+  const isProfileRequired = !certificate && examPassed && !purchaseExpired;
+  const isExamReady = completedCount >= totalLessons && !certificate && !examPassed && !purchaseExpired;
 
   // Animate progress bar on mount
   useEffect(() => {
@@ -774,9 +804,60 @@ function CourseCard({
   }, [progressPercent]);
 
   // ============================================
+  // STATE -1: Purchase Expired (no valid certificate)
+  // ============================================
+  if (purchaseExpired && !hasValidCertificate) {
+    return (
+      <div className="bg-background rounded-2xl p-6 md:p-8 border border-[#FFFFFF]/10 shadow-xl shadow-black/40 h-full relative overflow-hidden opacity-75">
+        {/* Expired badge */}
+        <div className="absolute top-4 right-4 bg-[#FF9999]/20 text-[#FF9999] px-3 py-1 rounded-full text-xs font-medium">
+          Acceso Expirado
+        </div>
+
+        <div className="relative z-10">
+          <div className="mb-4">
+            <h3 className="text-xl md:text-2xl font-bold text-white/60 mb-1">{title}</h3>
+            <p className="text-sm text-white/40">{subtitle}</p>
+          </div>
+
+          <div className="bg-[#1C1C1C] border border-[#FFFFFF]/10 rounded-xl p-4 mb-6">
+            <div className="flex items-start gap-3">
+              {/* Universal clock icon */}
+              <div className="w-10 h-10 flex-shrink-0">
+                <img 
+                  src="/clock.svg" 
+                  alt="" 
+                  className="w-full h-full opacity-50"
+                  aria-hidden="true"
+                />
+              </div>
+              <div>
+                <p className="font-semibold text-white/60 mb-1">Inscripción Expirada</p>
+                <p className="text-white/40 text-sm">
+                  Su acceso expiró el {purchaseExpirationDate}. Para completar la clase, debe inscribirse de nuevo.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <Link
+            href="/#precios"
+            className="flex items-center justify-center gap-2 w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold hover:bg-[#9DD8F3] transition-all hover:shadow-lg hover:shadow-[#7EC8E3]/25 active:scale-[0.98]"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Inscribirse de Nuevo
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // ============================================
   // STATE 0: Expired Certificate
   // ============================================
-  if (certificate && isExpired) {
+  if (certificate && isCertExpired) {
     return (
       <div className="bg-background rounded-2xl p-6 md:p-8 border border-[#FFFFFF]/10 shadow-xl shadow-black/40 h-full relative overflow-hidden opacity-75">
         {/* Expired badge */}
@@ -804,7 +885,7 @@ function CourseCard({
               <div>
                 <p className="font-semibold text-white/60 mb-1">Certificado Expirado</p>
                 <p className="text-white/40 text-sm">
-                  Este certificado expiró el {expirationDate}. Para obtener un nuevo certificado para un nuevo caso, debe inscribirse de nuevo.
+                  Este certificado expiró el {certExpirationDate}. Para obtener un nuevo certificado para un nuevo caso, debe inscribirse de nuevo.
                 </p>
               </div>
             </div>
@@ -865,7 +946,7 @@ function CourseCard({
               </span>
             </div>
             <p className="text-[#77DD77]/60 text-xs mt-2">
-              Válido hasta: {expirationDate}
+              Válido hasta: {certExpirationDate}
             </p>
           </div>
 
@@ -1011,6 +1092,26 @@ function CourseCard({
           </div>
         </div>
       </div>
+
+      {/* 30-Day Warning Banner */}
+      {purchaseExpiringSoon && (
+        <div className="bg-[#FFB347]/10 border border-[#FFB347]/30 rounded-xl p-3 mb-6">
+          <div className="flex items-center gap-2">
+            <img 
+              src="/clock.svg" 
+              alt="" 
+              className="w-5 h-5 flex-shrink-0"
+              aria-hidden="true"
+              style={{ filter: 'brightness(0) saturate(100%) invert(78%) sepia(40%) saturate(600%) hue-rotate(346deg) brightness(101%) contrast(97%)' }}
+            />
+            <p className="text-[#FFB347] text-sm font-medium">
+              {daysLeft === 1
+                ? 'Le queda 1 día para completar su clase.'
+                : `Le quedan ${daysLeft} días para completar su clase.`}
+            </p>
+          </div>
+        </div>
+      )}
 
       <Link
         href={`/clase/${courseType}`}

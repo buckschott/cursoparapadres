@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { isPurchaseExpired } from '@/lib/purchase-utils';
 
 // ============================================
 // CONSTANTS
@@ -49,6 +50,23 @@ export default function ModulePage() {
       
       if (!user) {
         window.location.href = '/iniciar-sesion';
+        return;
+      }
+
+      // Check if user has a valid (non-expired) purchase for this course
+      const { data: purchases } = await supabase
+        .from('purchases')
+        .select('purchased_at')
+        .eq('user_id', user.id)
+        .or(`course_type.eq.${courseType},course_type.eq.bundle`)
+        .eq('status', 'active')
+        .limit(1);
+
+      const purchase = purchases?.[0];
+
+      if (!purchase || isPurchaseExpired(purchase.purchased_at)) {
+        // No purchase or purchase expired — no lesson access, period
+        window.location.href = '/panel';
         return;
       }
 

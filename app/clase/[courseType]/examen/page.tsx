@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase';
 import { QUESTIONS_PER_EXAM, PASS_THRESHOLD } from '@/lib/courseContent';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { isPurchaseExpired } from '@/lib/purchase-utils';
 
 // ============================================
 // TYPES
@@ -182,6 +183,23 @@ export default function ExamPage() {
         if (!user) { 
           window.location.href = '/iniciar-sesion'; 
           return; 
+        }
+
+        // Check if user has a valid (non-expired) purchase
+        const { data: examPurchases } = await supabase
+          .from('purchases')
+          .select('purchased_at')
+          .eq('user_id', user.id)
+          .or(`course_type.eq.${courseType},course_type.eq.bundle`)
+          .eq('status', 'active')
+          .limit(1);
+
+        const examPurchase = examPurchases?.[0];
+
+        if (!examPurchase || isPurchaseExpired(examPurchase.purchased_at)) {
+          // No purchase or purchase expired — no exam access
+          window.location.href = '/panel';
+          return;
         }
 
         // Check for existing certificate - if they already have one, redirect there

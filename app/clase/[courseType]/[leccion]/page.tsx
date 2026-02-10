@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase';
 import { getCourseLessons, getContentFileName, supplementalContent, TOTAL_MODULES } from '@/lib/courseContent';
 import Link from 'next/link';
@@ -12,9 +12,6 @@ import { isPurchaseExpired } from '@/lib/purchase-utils';
 // CONSTANTS
 // ============================================
 
-// User must scroll to this percentage before they can mark complete
-const SCROLL_THRESHOLD = 95;
-
 // ============================================
 // MAIN COMPONENT
 // ============================================
@@ -23,23 +20,24 @@ export default function ModulePage() {
   const params = useParams();
   const courseType = params.courseType as string;
   const moduleSlug = params.leccion as string;
-  
+
   // Get lessons for this course type
   const courseModules = getCourseLessons(courseType);
-  
+
   const [content, setContent] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [hasReachedBottom, setHasReachedBottom] = useState(false);
   const [isMarking, setIsMarking] = useState(false);
-  
+
+  const contentEndRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
 
   const isSupplemental = supplementalContent.some(s => s.slug === moduleSlug);
   const moduleInfo = courseModules.find(m => m.slug === moduleSlug);
   const supplementalInfo = supplementalContent.find(s => s.slug === moduleSlug);
-  
+
   const title = moduleInfo?.titleEs || supplementalInfo?.titleEs || '';
   const moduleId = moduleInfo?.id;
   const estimatedTime = moduleInfo?.estimatedTime;
@@ -47,7 +45,7 @@ export default function ModulePage() {
   useEffect(() => {
     const loadContent = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         window.location.href = '/iniciar-sesion';
         return;
@@ -85,7 +83,7 @@ export default function ModulePage() {
       }
 
       // Use getContentFileName to get the correct path based on course type
-      const fileName = moduleInfo 
+      const fileName = moduleInfo
         ? getContentFileName(moduleInfo.id, courseType)
         : supplementalInfo?.fileName;
 
@@ -107,26 +105,38 @@ export default function ModulePage() {
     loadContent();
   }, [courseType, moduleSlug, moduleId]);
 
-  // Track scroll progress
+  // Track scroll progress (visual only — for progress bar)
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
       setScrollProgress(progress);
-      
-      // Once user reaches threshold, unlock the button (stays unlocked)
-      if (progress >= SCROLL_THRESHOLD && !hasReachedBottom) {
-        setHasReachedBottom(true);
-      }
     };
 
     window.addEventListener('scroll', handleScroll);
-    // Check initial scroll position (for short content or resumed reading)
     handleScroll();
-    
+
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [hasReachedBottom]);
+  }, []);
+
+  // Unlock completion when user reaches end of lesson CONTENT (not end of page)
+  useEffect(() => {
+    if (hasReachedBottom || !contentEndRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasReachedBottom(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(contentEndRef.current);
+    return () => observer.disconnect();
+  }, [hasReachedBottom, loading]);
 
   const markComplete = async () => {
     if (!moduleId || isMarking || !hasReachedBottom) return;
@@ -144,10 +154,10 @@ export default function ModulePage() {
 
     if (progressData && !progressData.lessons_completed.includes(moduleId)) {
       const newCompleted = [...progressData.lessons_completed, moduleId];
-      
+
       await supabase
         .from('course_progress')
-        .update({ 
+        .update({
           lessons_completed: newCompleted,
           current_lesson: Math.max(...newCompleted) + 1
         })
@@ -193,7 +203,7 @@ export default function ModulePage() {
 
   const nextModule = getNextModule();
   const prevModule = getPrevModule();
-  
+
   // Calculate if button should be enabled
   const canMarkComplete = hasReachedBottom && !isCompleted;
 
@@ -201,9 +211,9 @@ export default function ModulePage() {
     <main className="min-h-screen bg-background">
       {/* Reading Progress Bar */}
       <div className="fixed top-0 left-0 w-full h-1 bg-white/10 z-50">
-        <div 
+        <div
           className="h-full bg-gradient-to-r from-[#7EC8E3] to-[#77DD77] transition-all duration-150"
-          style={{ 
+          style={{
             width: `${scrollProgress}%`,
             boxShadow: scrollProgress > 0 ? '0 0 10px rgba(126, 200, 227, 0.5)' : 'none'
           }}
@@ -213,8 +223,8 @@ export default function ModulePage() {
       {/* Header */}
       <header className="bg-background border-b border-white/15 sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
-          <Link 
-            href={`/clase/${courseType}`} 
+          <Link
+            href={`/clase/${courseType}`}
             className="text-[#7EC8E3] hover:text-white text-sm font-medium flex items-center gap-2 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,7 +232,7 @@ export default function ModulePage() {
             </svg>
             Volver a la Clase
           </Link>
-          
+
           {isCompleted && (
             <span className="inline-flex items-center gap-1.5 bg-[#77DD77]/20 text-[#77DD77] text-xs font-semibold px-3 py-1.5 rounded-full border border-[#77DD77]/30">
               <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
@@ -265,22 +275,21 @@ export default function ModulePage() {
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {content}
           </ReactMarkdown>
+          <div ref={contentEndRef} aria-hidden="true" />
         </article>
 
         {/* Completion Section */}
         {moduleId && !isSupplemental && (
           <div className="mb-8">
             {!isCompleted ? (
-              <div className={`border-2 rounded-2xl p-6 md:p-8 text-center transition-all duration-300 ${
-                hasReachedBottom 
-                  ? 'bg-[#7EC8E3]/10 border-[#7EC8E3]/30' 
-                  : 'bg-white/5 border-white/10'
-              }`}>
-                <div className={`inline-flex items-center justify-center w-14 h-14 rounded-full mb-4 transition-all duration-300 ${
-                  hasReachedBottom 
-                    ? 'bg-[#7EC8E3]/20 border border-[#7EC8E3]/30' 
-                    : 'bg-white/10 border border-white/10'
+              <div className={`border-2 rounded-2xl p-6 md:p-8 text-center transition-all duration-300 ${hasReachedBottom
+                ? 'bg-[#7EC8E3]/10 border-[#7EC8E3]/30'
+                : 'bg-white/5 border-white/10'
                 }`}>
+                <div className={`inline-flex items-center justify-center w-14 h-14 rounded-full mb-4 transition-all duration-300 ${hasReachedBottom
+                  ? 'bg-[#7EC8E3]/20 border border-[#7EC8E3]/30'
+                  : 'bg-white/10 border border-white/10'
+                  }`}>
                   {hasReachedBottom ? (
                     <svg className="w-7 h-7 text-[#7EC8E3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -291,28 +300,26 @@ export default function ModulePage() {
                     </svg>
                   )}
                 </div>
-                
-                <h3 className={`font-bold text-lg mb-2 transition-colors ${
-                  hasReachedBottom ? 'text-white' : 'text-white/60'
-                }`}>
-                  {hasReachedBottom 
-                    ? '¿Terminó de leer esta lección?' 
+
+                <h3 className={`font-bold text-lg mb-2 transition-colors ${hasReachedBottom ? 'text-white' : 'text-white/60'
+                  }`}>
+                  {hasReachedBottom
+                    ? '¿Terminó de leer esta lección?'
                     : 'Continúe leyendo...'}
                 </h3>
-                
-                <p className={`mb-6 text-sm max-w-md mx-auto transition-colors ${
-                  hasReachedBottom ? 'text-white/70' : 'text-white/50'
-                }`}>
-                  {hasReachedBottom 
+
+                <p className={`mb-6 text-sm max-w-md mx-auto transition-colors ${hasReachedBottom ? 'text-white/70' : 'text-white/50'
+                  }`}>
+                  {hasReachedBottom
                     ? 'Marque como completada para desbloquear la siguiente lección y continuar su progreso.'
                     : 'Desplácese hasta el final de la lección para continuar.'}
                 </p>
-                
+
                 {/* Progress indicator when not yet scrolled */}
                 {!hasReachedBottom && (
                   <div className="mb-6">
                     <div className="w-full max-w-xs mx-auto bg-white/10 rounded-full h-2 overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-gradient-to-r from-[#7EC8E3] to-[#77DD77] transition-all duration-150 rounded-full"
                         style={{ width: `${Math.min(scrollProgress, 100)}%` }}
                       />
@@ -322,15 +329,14 @@ export default function ModulePage() {
                     </p>
                   </div>
                 )}
-                
+
                 <button
                   onClick={markComplete}
                   disabled={!canMarkComplete || isMarking}
-                  className={`inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold transition-all ${
-                    canMarkComplete
-                      ? 'bg-[#7EC8E3] text-[#1C1C1C] hover:bg-[#9DD8F3] hover:shadow-lg hover:shadow-[#7EC8E3]/25 cursor-pointer'
-                      : 'bg-white/10 text-white/30 cursor-not-allowed'
-                  } disabled:opacity-70`}
+                  className={`inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold transition-all ${canMarkComplete
+                    ? 'bg-[#7EC8E3] text-[#1C1C1C] hover:bg-[#9DD8F3] hover:shadow-lg hover:shadow-[#7EC8E3]/25 cursor-pointer'
+                    : 'bg-white/10 text-white/30 cursor-not-allowed'
+                    } disabled:opacity-70`}
                 >
                   {isMarking ? (
                     <>
@@ -362,7 +368,7 @@ export default function ModulePage() {
                   </svg>
                 </div>
                 <h3 className="font-bold text-[#77DD77] text-lg mb-4">¡Lección Completada!</h3>
-                
+
                 <div className="flex flex-col sm:flex-row justify-center gap-3">
                   {nextModule && (
                     <Link
@@ -406,7 +412,7 @@ export default function ModulePage() {
               <span className="sm:hidden">Anterior</span>
             </Link>
           ) : <div />}
-          
+
           {nextModule && (
             <Link
               href={`/clase/${courseType}/${nextModule.slug}`}

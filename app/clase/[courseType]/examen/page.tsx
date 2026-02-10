@@ -133,13 +133,13 @@ export default function ExamPage() {
   const params = useParams();
   const courseType = params.courseType as string;
   const STORAGE_KEY = `exam_v3_${courseType}`;
-  
+
   const [loading, setLoading] = useState(true);
   const [phase, setPhase] = useState<'intro' | 'exam' | 'saving' | 'done'>('intro');
   const [hasResumable, setHasResumable] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isStarting, setIsStarting] = useState(false);
-  
+
   // Exam state
   const [questions, setQuestions] = useState<ShuffledQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -150,28 +150,32 @@ export default function ExamPage() {
   const [wrongRed, setWrongRed] = useState('');
   const [showFeedback, setShowFeedback] = useState(false);
   const [wrongAnswers, setWrongAnswers] = useState<WrongAnswer[]>([]);
-  
+
   // Save state for error recovery
   const [saveError, setSaveError] = useState<string | null>(null);
   const [pendingResults, setPendingResults] = useState<PendingResults | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  
+
+  // Purchase and version tracking for exam save
+  const [purchaseId, setPurchaseId] = useState<string | null>(null);
+  const [examVersion, setExamVersion] = useState<string>('A');
+
   const supabase = createClient();
 
   // Save state to localStorage (including wrongAnswers)
   useEffect(() => {
     if (phase === 'exam' && questions.length > 0) {
-      const state = { 
-        questions, 
-        currentIndex, 
-        correctCount, 
-        selectedAnswer, 
-        submitted, 
-        isCorrect, 
+      const state = {
+        questions,
+        currentIndex,
+        correctCount,
+        selectedAnswer,
+        submitted,
+        isCorrect,
         wrongRed,
-        wrongAnswers 
+        wrongAnswers
       };
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { }
     }
   }, [phase, questions, currentIndex, correctCount, selectedAnswer, submitted, isCorrect, wrongRed, wrongAnswers, STORAGE_KEY]);
 
@@ -180,15 +184,15 @@ export default function ExamPage() {
     const check = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) { 
-          window.location.href = '/iniciar-sesion'; 
-          return; 
+        if (!user) {
+          window.location.href = '/iniciar-sesion';
+          return;
         }
 
         // Check if user has a valid (non-expired) purchase
         const { data: examPurchases } = await supabase
           .from('purchases')
-          .select('purchased_at')
+          .select('id, purchased_at, exam_version')
           .eq('user_id', user.id)
           .or(`course_type.eq.${courseType},course_type.eq.bundle`)
           .eq('status', 'active')
@@ -200,6 +204,12 @@ export default function ExamPage() {
           // No purchase or purchase expired — no exam access
           window.location.href = '/panel';
           return;
+        }
+
+        // Store purchase ID for exam save
+        setPurchaseId(examPurchase.id);
+        if (examPurchase.exam_version) {
+          setExamVersion(examPurchase.exam_version);
         }
 
         // Check for existing certificate - if they already have one, redirect there
@@ -241,7 +251,7 @@ export default function ExamPage() {
             const p = JSON.parse(saved);
             if (p.questions?.length) setHasResumable(true);
           }
-        } catch {}
+        } catch { }
 
         setLoading(false);
       } catch (err) {
@@ -253,10 +263,10 @@ export default function ExamPage() {
     check();
   }, [courseType, STORAGE_KEY]);
 
-  const clear = useCallback(() => { 
+  const clear = useCallback(() => {
     try {
-      localStorage.removeItem(STORAGE_KEY); 
-    } catch {}
+      localStorage.removeItem(STORAGE_KEY);
+    } catch { }
   }, [STORAGE_KEY]);
 
   const resume = () => {
@@ -277,9 +287,9 @@ export default function ExamPage() {
         setHasResumable(false);
         setError(null);
       }
-    } catch (err) { 
+    } catch (err) {
       console.error('Error resuming exam:', err);
-      clear(); 
+      clear();
       setError('No se pudo continuar el examen. Por favor, comience de nuevo.');
     }
   };
@@ -287,7 +297,7 @@ export default function ExamPage() {
   const start = async () => {
     setIsStarting(true);
     setError(null);
-    
+
     try {
       clear();
       setHasResumable(false);
@@ -299,7 +309,8 @@ export default function ExamPage() {
       }
 
       const versions = ['A', 'B', 'C'];
-      const ver = versions[Math.floor(Math.random() * versions.length)];
+      const ver = examVersion || versions[Math.floor(Math.random() * versions.length)];
+      setExamVersion(ver);
 
       const { data: qs, error: fetchError } = await supabase
         .from('exam_questions')
@@ -312,7 +323,7 @@ export default function ExamPage() {
         throw new Error('No se pudieron cargar las preguntas del examen.');
       }
 
-      if (!qs?.length) { 
+      if (!qs?.length) {
         throw new Error('No hay preguntas disponibles para este examen.');
       }
 
@@ -324,7 +335,7 @@ export default function ExamPage() {
           { label: 'C', text: q.answer_c, originalLabel: 'C' },
           { label: 'D', text: q.answer_d, originalLabel: 'D' }
         ];
-        return { ...q, shuffledAnswers: shuffle(ans).map((a, i) => ({ ...a, label: ['A','B','C','D'][i] })) };
+        return { ...q, shuffledAnswers: shuffle(ans).map((a, i) => ({ ...a, label: ['A', 'B', 'C', 'D'][i] })) };
       });
 
       setQuestions(processed);
@@ -349,11 +360,11 @@ export default function ExamPage() {
 
   const handleSubmit = () => {
     if (!selectedAnswer || submitted) return;
-    
+
     const q = questions[currentIndex];
     const sel = q.shuffledAnswers.find(a => a.label === selectedAnswer);
     const correct = sel?.originalLabel?.toUpperCase() === q.correct_position?.toUpperCase();
-    
+
     let red = '';
     if (!correct && sel) {
       const o = sel.originalLabel;
@@ -361,7 +372,7 @@ export default function ExamPage() {
       if (o === 'B') red = q.wrong_b_redirect || '';
       if (o === 'C') red = q.wrong_c_redirect || '';
       if (o === 'D') red = q.wrong_d_redirect || '';
-      
+
       // Track wrong answer for "Temas para Repasar" section
       const lessonNum = extractLessonNumber(red);
       if (lessonNum) {
@@ -373,13 +384,13 @@ export default function ExamPage() {
     setWrongRed(red);
     setSubmitted(true);
     if (correct) setCorrectCount(prev => prev + 1);
-    
+
     setTimeout(() => setShowFeedback(true), 100);
   };
 
   const handleNext = () => {
     setShowFeedback(false);
-    
+
     setTimeout(() => {
       if (currentIndex < questions.length - 1) {
         setCurrentIndex(prev => prev + 1);
@@ -401,14 +412,14 @@ export default function ExamPage() {
     setPhase('saving');
     setIsSaving(true);
     setSaveError(null);
-    
+
     const passed = correctCount >= PASS_SCORE;
     const score = Math.round((correctCount / QUESTIONS_PER_EXAM) * 100);
     const questionIds = questions.map(q => q.id);
-    
+
     // Store results in case we need to retry
     setPendingResults({ passed, score, correctCount, questionIds });
-    
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -418,10 +429,11 @@ export default function ExamPage() {
 
       const { error: insertError } = await supabase.from('exam_attempts').insert({
         user_id: user.id,
-        course_type: courseType,
+        purchase_id: purchaseId,
+        version: examVersion,
         questions_shown: questionIds,
         score,
-        passed
+        passed,
       });
 
       if (insertError) {
@@ -444,10 +456,10 @@ export default function ExamPage() {
   // ============================================
   const retrySave = async () => {
     if (!pendingResults) return;
-    
+
     setIsSaving(true);
     setSaveError(null);
-    
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -457,10 +469,11 @@ export default function ExamPage() {
 
       const { error: insertError } = await supabase.from('exam_attempts').insert({
         user_id: user.id,
-        course_type: courseType,
+        purchase_id: purchaseId,
+        version: examVersion,
         questions_shown: pendingResults.questionIds,
         score: pendingResults.score,
-        passed: pendingResults.passed
+        passed: pendingResults.passed,
       });
 
       if (insertError) {
@@ -504,10 +517,10 @@ export default function ExamPage() {
         uniqueLessons.set(wa.lessonNumber, wa.lessonRedirect);
       }
     });
-    
+
     const sorted = Array.from(uniqueLessons.entries())
       .sort((a, b) => a[0] - b[0]);
-    
+
     return {
       lessons: sorted.slice(0, 5),
       hasMore: sorted.length > 5,
@@ -580,10 +593,10 @@ export default function ExamPage() {
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
               </div>
-              
+
               <h1 className="text-xl font-bold text-white mb-2">Error al Guardar</h1>
               <p className="text-white/60 mb-6">{saveError}</p>
-              
+
               {/* Reassurance box */}
               <div className="bg-[#1C1C1C] rounded-xl p-4 mb-6 text-left border border-white/10">
                 <div className="flex items-start gap-3">
@@ -601,8 +614,8 @@ export default function ExamPage() {
                   </div>
                 </div>
               </div>
-              
-              <button 
+
+              <button
                 onClick={retrySave}
                 className="flex items-center justify-center gap-2 w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold hover:bg-[#9DD8F3] transition-all mb-3 active:scale-[0.98]"
               >
@@ -611,11 +624,11 @@ export default function ExamPage() {
                 </svg>
                 Intentar Guardar de Nuevo
               </button>
-              
+
               <p className="text-white/40 text-xs mt-4">
                 Si el problema continúa, contáctenos:{' '}
-                <a href="mailto:info@puttingkidsfirst.org" className="text-[#7EC8E3] hover:underline">
-                  info@puttingkidsfirst.org
+                <a href="mailto:info@claseparapadres.com" className="text-[#7EC8E3] hover:underline">
+                  info@claseparapadres.com
                 </a>
               </p>
             </>
@@ -634,7 +647,7 @@ export default function ExamPage() {
     const finalCorrectCount = pendingResults?.correctCount ?? correctCount;
     const { lessons: lessonsToReview, hasMore, moreCount } = getLessonsToReview();
     const lessonTitles = LESSON_TITLES[courseType] || LESSON_TITLES.coparenting;
-    
+
     return (
       <main className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="bg-background rounded-2xl p-8 md:p-10 max-w-md w-full text-center border border-[#FFFFFF]/15 shadow-xl shadow-black/40 relative overflow-hidden">
@@ -659,7 +672,7 @@ export default function ExamPage() {
                   />
                 ))}
               </div>
-              
+
               <div className="relative z-10">
                 <div className="relative inline-flex items-center justify-center w-24 h-24 mb-6">
                   <div className="absolute inset-0 bg-[#77DD77]/20 rounded-full animate-ping" style={{ animationDuration: '2s' }} />
@@ -669,17 +682,17 @@ export default function ExamPage() {
                     </svg>
                   </div>
                 </div>
-                
+
                 <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">¡Felicidades!</h1>
                 <p className="text-white/60 mb-4">Ha aprobado el examen final</p>
-                
+
                 <div className="inline-flex items-center gap-2 bg-[#77DD77]/10 border border-[#77DD77]/30 rounded-full px-5 py-2.5 mb-8">
                   <span className="text-[#77DD77] font-bold text-xl">{score}%</span>
                   <span className="text-[#77DD77]/70 text-sm">({finalCorrectCount}/{QUESTIONS_PER_EXAM} correctas)</span>
                 </div>
-                
+
                 {/* Always go to /completar-perfil - certificate created there */}
-                <Link 
+                <Link
                   href="/completar-perfil"
                   className="flex items-center justify-center gap-2 w-full bg-[#77DD77] text-[#1C1C1C] py-4 rounded-xl font-bold text-lg hover:bg-[#88EE88] transition-all hover:shadow-lg hover:shadow-[#77DD77]/25 mb-3 active:scale-[0.98]"
                 >
@@ -688,9 +701,9 @@ export default function ExamPage() {
                   </svg>
                   Obtener Mi Certificado
                 </Link>
-                
-                <Link 
-                  href="/panel" 
+
+                <Link
+                  href="/panel"
                   className="block w-full text-white/50 py-3 rounded-xl hover:text-white transition-colors text-sm"
                 >
                   Volver al Panel
@@ -705,10 +718,10 @@ export default function ExamPage() {
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </div>
-              
+
               <h1 className="text-2xl font-bold text-white mb-2">No Aprobó Esta Vez</h1>
               <p className="text-white/60 mb-6">Obtuvo {score}% — necesita 70% para aprobar</p>
-              
+
               {/* ============================================ */}
               {/* TEMAS PARA REPASAR - New Enhancement */}
               {/* ============================================ */}
@@ -746,18 +759,18 @@ export default function ExamPage() {
                   </div>
                 </div>
               )}
-              
+
               <div className="bg-[#1C1C1C] rounded-xl p-4 mb-6 text-left border border-white/10">
                 <p className="text-white/60 text-sm">
-                  <strong className="text-white">No se preocupe</strong> — puede retomar el examen las veces que necesite. 
-                  {lessonsToReview.length > 0 
+                  <strong className="text-white">No se preocupe</strong> — puede retomar el examen las veces que necesite.
+                  {lessonsToReview.length > 0
                     ? ' Revise las lecciones indicadas arriba antes de intentar de nuevo.'
                     : ' Le recomendamos revisar las lecciones antes de intentar de nuevo.'
                   }
                 </p>
               </div>
-              
-              <button 
+
+              <button
                 onClick={handleRetry}
                 className="flex items-center justify-center gap-2 w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold hover:bg-[#9DD8F3] transition-all mb-3 active:scale-[0.98]"
               >
@@ -766,9 +779,9 @@ export default function ExamPage() {
                 </svg>
                 Reintentar Examen
               </button>
-              
-              <Link 
-                href={`/clase/${courseType}`} 
+
+              <Link
+                href={`/clase/${courseType}`}
                 className="block w-full bg-transparent border border-white/20 text-white py-3 rounded-xl hover:bg-white/5 transition-colors"
               >
                 Revisar la Clase
@@ -776,7 +789,7 @@ export default function ExamPage() {
             </>
           )}
         </div>
-        
+
         {/* Float animation keyframes */}
         <style jsx global>{`
           @keyframes float {
@@ -797,8 +810,8 @@ export default function ExamPage() {
         {/* Header */}
         <header className="bg-background border-b border-[#FFFFFF]/10 sticky top-0 z-50">
           <div className="max-w-4xl mx-auto px-4 md:px-6 py-4">
-            <Link 
-              href={`/clase/${courseType}`} 
+            <Link
+              href={`/clase/${courseType}`}
               className="text-white/60 hover:text-white text-sm font-medium flex items-center gap-2 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -852,13 +865,13 @@ export default function ExamPage() {
                   <div className="flex-1">
                     <p className="font-semibold text-[#FFB347] mb-3">Tiene un examen en progreso</p>
                     <div className="flex flex-wrap gap-2">
-                      <button 
-                        onClick={resume} 
+                      <button
+                        onClick={resume}
                         className="bg-[#FFB347] text-[#1C1C1C] px-5 py-2.5 rounded-lg font-semibold hover:bg-[#FFC05C] transition-colors"
                       >
                         Continuar Examen
                       </button>
-                      <button 
+                      <button
                         onClick={start}
                         disabled={isStarting}
                         className="bg-white/10 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-white/20 transition-colors disabled:opacity-50"
@@ -913,7 +926,7 @@ export default function ExamPage() {
 
             {/* Start Button */}
             {!hasResumable && (
-              <button 
+              <button
                 onClick={start}
                 disabled={isStarting}
                 className="w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold text-lg hover:bg-[#9DD8F3] transition-all hover:shadow-lg hover:shadow-[#7EC8E3]/25 flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
@@ -970,9 +983,9 @@ export default function ExamPage() {
             </span>
           </div>
           <div className="w-full bg-[#1C1C1C] rounded-full h-2.5 overflow-hidden border border-white/10">
-            <div 
+            <div
               className="bg-gradient-to-r from-[#7EC8E3] to-[#77DD77] h-full rounded-full transition-all duration-500"
-              style={{ 
+              style={{
                 width: `${progressPercent}%`,
                 boxShadow: '0 0 12px rgba(126, 200, 227, 0.4)'
               }}
@@ -988,27 +1001,27 @@ export default function ExamPage() {
           <h2 className="text-lg md:text-xl font-semibold text-white mb-6 leading-relaxed">
             {q.question_text}
           </h2>
-          
+
           {/* Answer Options */}
           <div className="space-y-3 mb-6">
             {q.shuffledAnswers.map((ans) => {
               const isSelected = selectedAnswer === ans.label;
               const showWrong = submitted && isSelected && !isCorrect;
               const showCorrect = submitted && isCorrect && isSelected;
-              
+
               return (
-                <button 
-                  key={`q${currentIndex}-${ans.label}`} 
-                  onClick={() => !submitted && setSelectedAnswer(ans.label)} 
+                <button
+                  key={`q${currentIndex}-${ans.label}`}
+                  onClick={() => !submitted && setSelectedAnswer(ans.label)}
                   disabled={submitted}
                   className={`
                     w-full p-4 rounded-xl border-2 text-left transition-all
-                    ${showWrong 
-                      ? 'border-[#FF9999] bg-[#FF9999]/10' 
+                    ${showWrong
+                      ? 'border-[#FF9999] bg-[#FF9999]/10'
                       : showCorrect
                         ? 'border-[#77DD77] bg-[#77DD77]/10'
-                        : isSelected 
-                          ? 'border-[#7EC8E3] bg-[#7EC8E3]/10' 
+                        : isSelected
+                          ? 'border-[#7EC8E3] bg-[#7EC8E3]/10'
                           : 'border-white/10 hover:border-white/20 bg-[#1C1C1C]'
                     }
                     ${submitted ? 'cursor-default' : 'cursor-pointer active:scale-[0.99]'}
@@ -1017,12 +1030,12 @@ export default function ExamPage() {
                   <div className="flex items-start gap-3">
                     <span className={`
                       w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0 transition-all
-                      ${showWrong 
-                        ? 'bg-[#FF9999] text-[#1C1C1C]' 
+                      ${showWrong
+                        ? 'bg-[#FF9999] text-[#1C1C1C]'
                         : showCorrect
                           ? 'bg-[#77DD77] text-[#1C1C1C]'
-                          : isSelected 
-                            ? 'bg-[#7EC8E3] text-[#1C1C1C]' 
+                          : isSelected
+                            ? 'bg-[#7EC8E3] text-[#1C1C1C]'
                             : 'bg-white/10 text-white/50'
                       }
                     `}>
@@ -1066,7 +1079,7 @@ export default function ExamPage() {
                 </div>
               </div>
             )}
-            
+
             {submitted && isCorrect && (
               <div className="bg-[#77DD77]/10 border border-[#77DD77]/30 rounded-xl p-4 mb-6">
                 <div className="flex items-center gap-3">
@@ -1083,16 +1096,16 @@ export default function ExamPage() {
 
           {/* Action Button */}
           {!submitted ? (
-            <button 
-              onClick={handleSubmit} 
-              disabled={!selectedAnswer} 
+            <button
+              onClick={handleSubmit}
+              disabled={!selectedAnswer}
               className="w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold text-lg hover:bg-[#9DD8F3] disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
             >
               Confirmar Respuesta
             </button>
           ) : (
-            <button 
-              onClick={handleNext} 
+            <button
+              onClick={handleNext}
               className="w-full bg-[#7EC8E3] text-[#1C1C1C] py-4 rounded-xl font-bold text-lg hover:bg-[#9DD8F3] transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
             >
               {currentIndex < questions.length - 1 ? (

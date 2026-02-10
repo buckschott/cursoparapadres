@@ -645,7 +645,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'emailType and recipientEmail required' }, { status: 400 });
         }
 
-        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.claseparapadres.com';
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://claseparapadres.com';
 
         // Email templates (simplified for testing)
         const emails: Record<string, { subject: string; html: string }> = {
@@ -890,7 +890,7 @@ function generateWelcomeEmailWithPasswordHTML(data: {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #2A2A2A; border-radius: 12px; overflow: hidden;">
           <tr>
             <td align="center" style="padding: 40px 40px 20px;">
-              <img src="https://www.claseparapadres.com/images/email/icon-checkmark.png" width="80" height="80" alt="" style="display: block;">
+              <img src="https://claseparapadres.com/images/email/icon-checkmark.png" width="80" height="80" alt="" style="display: block;">
             </td>
           </tr>
           <tr>
@@ -959,7 +959,7 @@ function generateWelcomeEmailHTML(data: {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #2A2A2A; border-radius: 12px; overflow: hidden;">
           <tr>
             <td align="center" style="padding: 40px 40px 20px;">
-              <img src="https://www.claseparapadres.com/images/email/icon-checkmark.png" width="80" height="80" alt="" style="display: block;">
+              <img src="https://claseparapadres.com/images/email/icon-checkmark.png" width="80" height="80" alt="" style="display: block;">
             </td>
           </tr>
           <tr>
@@ -1016,7 +1016,7 @@ function generateExistingUserEmailHTML(data: {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #2A2A2A; border-radius: 12px; overflow: hidden;">
           <tr>
             <td align="center" style="padding: 40px 40px 20px;">
-              <img src="https://www.claseparapadres.com/images/email/icon-checkmark.png" width="80" height="80" alt="" style="display: block;">
+              <img src="https://claseparapadres.com/images/email/icon-checkmark.png" width="80" height="80" alt="" style="display: block;">
             </td>
           </tr>
           <tr>
@@ -1075,7 +1075,7 @@ function generateAlreadyOwnedEmailHTML(data: {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #2A2A2A; border-radius: 12px; overflow: hidden;">
           <tr>
             <td align="center" style="padding: 40px 40px 20px;">
-              <img src="https://www.claseparapadres.com/images/email/icon-info.png" width="80" height="80" alt="" style="display: block;">
+              <img src="https://claseparapadres.com/images/email/icon-info.png" width="80" height="80" alt="" style="display: block;">
             </td>
           </tr>
           <tr>
@@ -1133,7 +1133,7 @@ function generatePasswordResetEmailHTML(data: {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #2A2A2A; border-radius: 12px; overflow: hidden;">
           <tr>
             <td align="center" style="padding: 40px 40px 20px;">
-              <img src="https://www.claseparapadres.com/images/email/icon-key.png" width="80" height="80" alt="" style="display: block;">
+              <img src="https://claseparapadres.com/images/email/icon-key.png" width="80" height="80" alt="" style="display: block;">
             </td>
           </tr>
           <tr>
@@ -1202,7 +1202,7 @@ function generateStudentCertificateEmailHTML(data: {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #2A2A2A; border-radius: 12px; overflow: hidden;">
           <tr>
             <td align="center" style="padding: 40px 40px 20px;">
-              <img src="https://www.claseparapadres.com/images/email/icon-certificate.png" width="80" height="80" alt="" style="display: block;">
+              <img src="https://claseparapadres.com/images/email/icon-certificate.png" width="80" height="80" alt="" style="display: block;">
             </td>
           </tr>
           <tr>
@@ -1291,7 +1291,7 @@ function generateAttorneyEmailHTML(data: {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #2A2A2A; border-radius: 12px; overflow: hidden;">
           <tr>
             <td align="center" style="padding: 40px 40px 20px;">
-              <img src="https://www.claseparapadres.com/images/email/icon-certificate.png" width="80" height="80" alt="" style="display: block;">
+              <img src="https://claseparapadres.com/images/email/icon-certificate.png" width="80" height="80" alt="" style="display: block;">
             </td>
           </tr>
           <tr>

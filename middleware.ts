@@ -44,10 +44,11 @@ export async function middleware(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser()
 
-    // Not logged in → redirect to login
+    // Not logged in → redirect to login WITH return path
     if (!user) {
       const url = request.nextUrl.clone()
       url.pathname = '/iniciar-sesion'
+      url.searchParams.set('next', request.nextUrl.pathname)
       return NextResponse.redirect(url)
     }
 

@@ -174,7 +174,9 @@ function LoginContent() {
       setError('login_failed');
       setLoading(false);
     } else {
-      window.location.href = '/panel';
+      // Redirect to ?next= param if present (e.g., /admin/support), otherwise /panel
+      const nextPath = searchParams.get('next') || '/panel';
+      window.location.href = nextPath;
     }
   };
 

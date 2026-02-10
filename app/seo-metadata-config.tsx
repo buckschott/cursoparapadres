@@ -28,7 +28,7 @@ export const SITE_CONFIG = {
   englishUrl: SITE_URL.EN,
   locale: 'es_US',
   language: 'es',
-  themeColor: '#2563eb',
+  themeColor: '#1C1C1C',
   foundedYear: String(FOUNDED_YEAR), // Structured data only — never in visible copy
   phone: SUPPORT_PHONE,
   phoneFormatted: `+1-${SUPPORT_PHONE}`,
@@ -88,7 +88,7 @@ export function generatePageMetadata(
 
     robots: noIndex ? {
       index: false,
-      follow: false,
+      follow: true,
     } : {
       index: true,
       follow: true,
@@ -347,17 +347,24 @@ export const courseSchema = {
   },
 }
 
+// ============================================
+// FAQ SCHEMA — Must match FAQAccordion.tsx exactly
+// ============================================
+// Source of truth: /app/preguntas-frecuentes/FAQAccordion.tsx
+// 15 questions across 5 categories
+// ============================================
+
 export const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
   mainEntity: [
-    // ---- Aceptación ----
+    // ---- Aceptación (3) ----
     {
       '@type': 'Question',
       name: '¿Esta clase es aceptada en mi estado?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Sí. Nuestras clases son aceptadas en todo el país. Putting Kids First® es el nombre más reconocido en educación parental — líderes en educación parental desde hace décadas. Miles de padres han presentado sus certificados exitosamente en los 50 estados.',
+        text: 'Sí. Nuestras clases son aceptadas por tribunales en todo el país. Putting Kids First® es el nombre más reconocido en educación parental — líderes en educación parental desde hace décadas. Miles de padres han completado nuestras clases y presentado sus certificados exitosamente. El Original. El Certificado Más Aceptado.',
       },
     },
     {
@@ -365,24 +372,49 @@ export const faqSchema = {
       name: '¿Qué clase necesito tomar?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Si su orden judicial es por divorcio, custodia, separación, o modificación de una orden existente, necesita la Clase de Co-Parenting. Si su orden dice habilidades para padres o clase general de crianza, necesita la Clase de Crianza. Revise sus documentos del tribunal o pregunte a su abogado si no está seguro.',
+        text: 'Si su orden judicial es por divorcio, custodia, separación, o modificación de una orden existente, necesita la Clase de Co-Parenting. Si su orden dice habilidades para padres o clase general de crianza, necesita la Clase de Crianza. La mayoría de los padres necesitan la Clase de Co-Parenting.',
       },
     },
     {
       '@type': 'Question',
-      name: '¿Necesito verificar con mi corte antes de tomar la clase?',
+      name: '¿Quién es Putting Kids First?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'No es necesario. Nuestra clase cumple con los requisitos estándar de educación parental aceptados en todo el país. Sin embargo, si su orden judicial especifica un proveedor particular o requisitos muy específicos, le recomendamos verificar primero.',
+        text: 'Putting Kids First® es el nombre más reconocido en educación parental en Estados Unidos — líderes desde hace más de tres décadas. El Original. El Certificado Más Aceptado.',
       },
     },
-    // ---- Precio y Pago ----
+    // ---- Certificado (3) ----
+    {
+      '@type': 'Question',
+      name: '¿Cuándo recibo mi certificado?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Inmediatamente. Su certificado se genera en el momento que completa la clase. Es un archivo PDF que puede descargar, imprimir, o enviar directamente a su abogado o al tribunal. Sin esperas. Sin cargos de envío.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿El certificado está en español?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'La clase está 100% en español, pero el certificado se emite en inglés. Esto es estándar y necesario para que los tribunales de Estados Unidos lo acepten.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Cómo puede la corte verificar mi certificado?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Cada certificado incluye un código QR y un código de verificación único. La corte, su abogado, o cualquier persona puede confirmar la autenticidad en segundos.',
+      },
+    },
+    // ---- Precio y Pago (4) ----
     {
       '@type': 'Question',
       name: '¿Cuánto cuesta la clase?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Clase de Co-Parenting: $60 (4 horas). Clase de Crianza: $60 (4 horas). Paquete Combinado: $80 (8 horas).',
+        text: 'Clase de Co-Parenting: $60 (4 horas). Clase de Crianza: $60 (4 horas). Paquete Completo: $80 (ambas clases — ahorra $40). Un precio. Sin cargos adicionales. Incluye la clase completa, el examen, y su certificado instantáneo.',
       },
     },
     {
@@ -390,7 +422,7 @@ export const faqSchema = {
       name: '¿Qué formas de pago aceptan?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Aceptamos todas las tarjetas de crédito y débito principales: Visa, Mastercard, American Express, y Discover. El pago se procesa de forma segura a través de Stripe.',
+        text: 'Aceptamos todas las tarjetas de crédito y débito principales — Visa, Mastercard, American Express, y Discover. El pago se procesa de forma segura a través de Stripe, uno de los procesadores de pago más confiables del mundo.',
       },
     },
     {
@@ -406,16 +438,16 @@ export const faqSchema = {
       name: '¿Ofrecen reembolsos?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Sí. Ofrecemos reembolso completo del 100% si su tribunal no acepta el certificado con no-aceptación comprobada.',
+        text: 'Sí. Si su tribunal no acepta el certificado, le devolvemos el 100% de su dinero. En más de tres décadas, nuestros certificados han sido aceptados por tribunales en todo el país.',
       },
     },
-    // ---- Duración y Formato ----
+    // ---- Duración y Formato (3) ----
     {
       '@type': 'Question',
       name: '¿Cuánto tiempo toma completar la clase?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'La clase toma aproximadamente 4 horas para completar. Puede completar la clase a su propio ritmo. No tiene que terminar todo en una sesión.',
+        text: 'La clase es de 4 horas. Puede completarla a su propio ritmo — no tiene que terminar en una sola sesión.',
       },
     },
     {
@@ -423,7 +455,7 @@ export const faqSchema = {
       name: '¿Puedo pausar y continuar después?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Sí. Su progreso se guarda automáticamente. Puede cerrar el navegador y regresar después, cambiar de dispositivo, y completar la clase en varios días si lo prefiere.',
+        text: 'Sí. Su progreso se guarda automáticamente. Puede cerrar el navegador, tomar descansos, o completar la clase en varios días. Cuando regrese, inicie sesión y continúe donde lo dejó.',
       },
     },
     {
@@ -431,41 +463,16 @@ export const faqSchema = {
       name: '¿Puedo tomar la clase en mi teléfono?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Sí. Nuestra clase funciona perfectamente en teléfonos móviles, tabletas, y computadoras. Puede comenzar en un dispositivo y continuar en otro sin perder su progreso.',
+        text: 'Sí. La clase funciona en teléfonos, tabletas, y computadoras. Puede comenzar en un dispositivo y continuar en otro sin perder su progreso.',
       },
     },
-    // ---- Certificado ----
-    {
-      '@type': 'Question',
-      name: '¿Cuándo recibo mi certificado?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Recibe su certificado inmediatamente después de completar la clase. El certificado se genera como un archivo PDF que puede descargar, imprimir, o enviar por correo electrónico a su abogado.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: '¿El certificado está en español?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'La clase está 100% en español, pero el certificado se emite en inglés. Esto es estándar y necesario para que los tribunales de Estados Unidos lo acepten.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: '¿Cómo verifican la autenticidad del certificado?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Cada certificado incluye un código QR que enlaza a una página de verificación. Al escanear el código o visitar el enlace, cualquier persona puede confirmar que el certificado es auténtico.',
-      },
-    },
-    // ---- Contenido de la Clase ----
+    // ---- Requisitos (2) ----
     {
       '@type': 'Question',
       name: '¿Esta clase es solo para divorcios?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'No. La clase es útil para cualquier situación donde dos padres necesitan coordinar la crianza desde hogares separados, incluyendo divorcio, separación legal, padres que nunca estuvieron casados, casos de custodia, y modificaciones de custodia.',
+        text: 'No. La clase aplica a cualquier situación donde dos padres crían a sus hijos desde hogares separados — divorcio, separación legal, custodia, modificaciones de custodia, o padres que nunca estuvieron casados.',
       },
     },
     {
@@ -473,41 +480,7 @@ export const faqSchema = {
       name: '¿Ambos padres tienen que tomar la clase?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Depende de lo que requiera su tribunal. Algunos requieren que ambos padres completen la clase; otros solo requieren uno. Cada padre debe comprar y completar la clase por separado.',
-      },
-    },
-    // ---- Soporte ----
-    {
-      '@type': 'Question',
-      name: '¿Hay ayuda disponible en español?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: `Sí. Todo nuestro sitio web, clase, y soporte están disponibles en español. Puede contactarnos en ${SUPPORT_EMAIL} o llamar al ${SUPPORT_PHONE}.`,
-      },
-    },
-    {
-      '@type': 'Question',
-      name: '¿Cómo puedo contactarlos si tengo problemas?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: `Puede contactarnos por correo electrónico: ${SUPPORT_EMAIL}. Respondemos generalmente dentro de 24 horas en días laborales.`,
-      },
-    },
-    {
-      '@type': 'Question',
-      name: '¿Qué hago si tengo problemas técnicos?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: `Intente actualizar la página, usar otro navegador, o verificar su conexión a internet. Si el problema persiste, contáctenos en ${SUPPORT_EMAIL} con una descripción del problema y qué dispositivo está usando.`,
-      },
-    },
-    // ---- Sobre Nosotros ----
-    {
-      '@type': 'Question',
-      name: '¿Quién es Putting Kids First?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Putting Kids First® es el nombre más reconocido en educación parental — líderes en educación parental desde hace décadas. Miles de padres han completado nuestras clases y presentado sus certificados exitosamente en tribunales de todo el país.',
+        text: 'Revise su orden judicial — la mayoría de los tribunales requieren que ambos padres completen la clase. Cada padre debe inscribirse y completar la clase por separado. No se puede compartir una cuenta ni un certificado.',
       },
     },
   ],

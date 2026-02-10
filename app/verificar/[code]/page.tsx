@@ -160,7 +160,7 @@ export default function VerifyPage() {
               <div className="pt-4 border-t border-[#FFFFFF]/15">
                 <label className="text-xs font-semibold text-white/60 uppercase tracking-wide">Issuing Provider</label>
                 <p className="text-white font-medium font-brand">Putting Kids First®</p>
-                <p className="text-sm text-white/70">info@claseparapadres.com</p>
+                <p className="text-sm text-white/70">hola@claseparapadres.com</p>
                 <p className="text-sm text-white/70">888-777-2298</p>
               </div>
             </div>

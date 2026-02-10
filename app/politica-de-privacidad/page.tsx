@@ -93,7 +93,7 @@ export default function PoliticaDePrivacidad() {
                   <li>Solicitar la eliminación de su cuenta y datos personales.</li>
                 </ul>
                 <p className="mt-4 text-white/80">
-                  Para ejercer estos derechos, contáctenos a <a href="mailto:info@claseparapadres.com" className="text-[#7EC8E3] hover:underline">info@claseparapadres.com</a>.
+                  Para ejercer estos derechos, contáctenos a <a href="mailto:hola@claseparapadres.com" className="text-[#7EC8E3] hover:underline">hola@claseparapadres.com</a>.
                 </p>
               </section>
 
@@ -118,7 +118,7 @@ export default function PoliticaDePrivacidad() {
                 </p>
                 <p className="mt-4 text-white/80">
                   <strong className="text-white">Putting Kids First®</strong><br />
-                  Correo electrónico: <a href="mailto:info@claseparapadres.com" className="text-[#7EC8E3] hover:underline">info@claseparapadres.com</a>
+                  Correo electrónico: <a href="mailto:hola@claseparapadres.com" className="text-[#7EC8E3] hover:underline">hola@claseparapadres.com</a>
                 </p>
               </section>
 

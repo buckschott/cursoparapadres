@@ -10,7 +10,7 @@ const ICON_BASE_URL = 'https://claseparapadres.com/images/email';
 
 const EMAIL_CONFIG = {
   from: 'Clase para Padres <hola@claseparapadres.com>',
-  replyTo: 'info@claseparapadres.com',
+  replyTo: 'hola@claseparapadres.com',
 };
 
 export async function POST(request: NextRequest) {

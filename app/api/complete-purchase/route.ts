@@ -15,7 +15,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const EMAIL_CONFIG = {
   from: 'Clase para Padres <hola@claseparapadres.com>',
-  replyTo: 'info@claseparapadres.com',
+  replyTo: 'hola@claseparapadres.com',
 };
 
 const ICON_BASE_URL = 'https://claseparapadres.com/images/email';

@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 
     const { data, error } = await resend.emails.send({
       from: 'Atención al Cliente <atencionalcliente@claseparapadres.com>',
-      to: ['info@claseparapadres.com'],
+      to: ['hola@claseparapadres.com'],
       subject: `📬 New Inquiry - ${nombre} - claseparapadres.com`,
       html: `
 <!DOCTYPE html>

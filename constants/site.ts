@@ -8,7 +8,7 @@
 // ===== CONTACT =====
 
 /** Public support email - shown in UI */
-export const SUPPORT_EMAIL = 'info@claseparapadres.com';
+export const SUPPORT_EMAIL = 'hola@claseparapadres.com';
 
 /** Support phone number */
 export const SUPPORT_PHONE = '888-777-2298';

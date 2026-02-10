@@ -110,7 +110,7 @@ export const pageMetadata = {
   
   preguntasFrecuentes: generatePageMetadata(
     'Preguntas Frecuentes',
-    'Respuestas a las preguntas más comunes sobre nuestra clase de coparentalidad en línea. Certificado, duración, y más.',
+    'Clases para padres en línea — preguntas frecuentes. Certificado instantáneo. Aceptada por tribunales en todo el país. Putting Kids First®.',
     '/preguntas-frecuentes'
   ),
   

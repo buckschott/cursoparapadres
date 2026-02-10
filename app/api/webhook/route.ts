@@ -17,12 +17,12 @@ const EMAIL_CONFIG = {
   // Spanish site - customer-facing emails
   spanish: {
     from: 'Clase para Padres <hola@claseparapadres.com>',
-    replyTo: 'info@claseparapadres.com',
+    replyTo: 'hola@claseparapadres.com',
   },
   // Attorney emails stay in English with PKF branding
   attorney: {
     from: 'Putting Kids First <certificates@claseparapadres.com>',
-    replyTo: 'info@claseparapadres.com',
+    replyTo: 'hola@claseparapadres.com',
   },
 };
 

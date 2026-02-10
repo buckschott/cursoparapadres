@@ -22,7 +22,7 @@ export default function NotFound() {
       '',
     ].join('\n');
 
-    return `mailto:info@claseparapadres.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    return `mailto:hola@claseparapadres.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   return (

@@ -75,7 +75,7 @@ export default function TerminosDeServicio() {
                   <strong className="text-white">Precio:</strong> Todos los precios se muestran en dólares estadounidenses. El pago se procesa de forma segura a través de Stripe.
                 </p>
                 <p className="text-white/80">
-                  <strong className="text-white">Política de Reembolsos:</strong> Todos los pagos son finales una vez que se accede al contenido de la clase. Si tiene problemas técnicos que le impiden completar la clase, contáctenos en <a href="mailto:info@claseparapadres.com" className="text-[#7EC8E3] hover:underline">info@claseparapadres.com</a> para asistencia.
+                  <strong className="text-white">Política de Reembolsos:</strong> Todos los pagos son finales una vez que se accede al contenido de la clase. Si tiene problemas técnicos que le impiden completar la clase, contáctenos en <a href="mailto:hola@claseparapadres.com" className="text-[#7EC8E3] hover:underline">hola@claseparapadres.com</a> para asistencia.
                 </p>
               </section>
 
@@ -161,7 +161,7 @@ export default function TerminosDeServicio() {
                 </p>
                 <p className="mt-4 text-white/80">
                   <strong className="text-white">Putting Kids First®</strong><br />
-                  Correo electrónico: <a href="mailto:info@claseparapadres.com" className="text-[#7EC8E3] hover:underline">info@claseparapadres.com</a>
+                  Correo electrónico: <a href="mailto:hola@claseparapadres.com" className="text-[#7EC8E3] hover:underline">hola@claseparapadres.com</a>
                 </p>
               </section>
 

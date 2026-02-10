@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
 
     const { data, error } = await resend.emails.send({
       from: 'Clase para Padres <hola@claseparapadres.com>',
-      replyTo: 'info@claseparapadres.com',
+      replyTo: 'hola@claseparapadres.com',
       to: to.trim(),
       subject: subject.trim(),
       html: htmlBody,

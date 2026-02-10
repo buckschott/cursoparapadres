@@ -357,10 +357,10 @@ export default function Home() {
             <p className="text-center mt-4 text-sm text-white/60">
               ¿Servicio militar o dificultad financiera? Escríbanos a{' '}
               <a
-                href="mailto:info@claseparapadres.com?subject=Solicitud%20de%20descuento"
+                href="mailto:hola@claseparapadres.com?subject=Solicitud%20de%20descuento"
                 className="text-white/70 underline underline-offset-2 hover:text-white transition-colors"
               >
-                info@claseparapadres.com
+                hola@claseparapadres.com
               </a>
             </p>
           </div>

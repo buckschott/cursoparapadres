@@ -481,7 +481,7 @@ export default function DashboardPage() {
               </button>
 
               <a
-                href="mailto:info@claseparapadres.com?subject=Mi%20clase%20no%20aparece%20después%20de%20pagar"
+                href="mailto:hola@claseparapadres.com?subject=Mi%20clase%20no%20aparece%20después%20de%20pagar"
                 className="block w-full bg-white/10 text-white py-3 px-6 rounded-xl font-medium hover:bg-white/20 transition-colors"
               >
                 Contactar Soporte
@@ -1061,7 +1061,7 @@ function HelpSection() {
           </div>
         </Link>
         <a
-          href="mailto:info@claseparapadres.com"
+          href="mailto:hola@claseparapadres.com"
           className="flex items-center gap-4 p-4 rounded-xl border border-[#FFFFFF]/10 hover:border-[#FFB347]/30 hover:bg-[#FFB347]/5 transition-all group"
         >
           <div className="w-12 h-12 rounded-xl bg-[#FFB347]/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#FFB347]/20 transition-colors">
@@ -1071,7 +1071,7 @@ function HelpSection() {
           </div>
           <div>
             <p className="font-semibold text-white group-hover:text-[#FFB347] transition-colors">Contactar Soporte</p>
-            <p className="text-sm text-white/50">info@claseparapadres.com</p>
+            <p className="text-sm text-white/50">hola@claseparapadres.com</p>
           </div>
         </a>
       </div>

@@ -260,7 +260,40 @@ export default function AdminSupportPage() {
     setSearchQuery(email);
     setSearchType('email');
     searchCustomer(email, 'email');
-    setActiveTab('dashboard');
+    // Stay on current tab — customer data loads in background
+  };
+
+  // ---------------------------------------------------------------------------
+  // COMBINED ACTION HANDLERS (for CustomerServicePanel one-click actions)
+  // ---------------------------------------------------------------------------
+
+  const handleResetPasswordAndEmail = async (email: string) => {
+    if (!customer?.profile?.id) return { success: false, message: 'Customer not loaded — look up first' };
+    return await resetPassword(customer.profile.id, email);
+  };
+
+  const handleGrantAccessAndEmail = async () => {
+    if (!customer?.profile?.id) return { success: false, message: 'Customer not loaded — look up first' };
+    // Grant access to whichever course they purchased, default coparenting
+    const courseType = customer.purchases?.[0]?.course_type || 'coparenting';
+    return await grantCourseAccess(customer.profile.id, courseType);
+  };
+
+  const handleResendCertificateAndEmail = async () => {
+    if (!customer?.profile?.id || !customer?.profile?.email) {
+      return { success: false, message: 'Customer not loaded — look up first' };
+    }
+    const courseType = customer.certificates?.[0]?.course_type || 'coparenting';
+    return await resendWelcomeEmail(customer.profile.id, customer.profile.email, courseType);
+  };
+
+  const handleSwapClassAndEmail = async () => {
+    if (!customer?.profile?.id || !customer?.purchases?.[0]) {
+      return { success: false, message: 'Customer not loaded — look up first' };
+    }
+    const purchase = customer.purchases[0];
+    const targetCourse = purchase.course_type === 'coparenting' ? 'parenting' : 'coparenting';
+    return await swapClass(customer.profile.id, purchase.id, targetCourse);
   };
 
   // ---------------------------------------------------------------------------
@@ -402,6 +435,15 @@ export default function AdminSupportPage() {
             onSelectTemplate={handleSelectTemplate}
             onSendEmail={handleSendEmail}
             onLookupCustomer={handleLookupCustomer}
+            // Combined action handlers
+            onResetPassword={handleResetPasswordAndEmail}
+            onGrantAccess={handleGrantAccessAndEmail}
+            onResendCertificateEmail={handleResendCertificateAndEmail}
+            onSwapClass={handleSwapClassAndEmail}
+            // Customer context
+            customerLoaded={!!customer?.profile}
+            customerEmail={customer?.profile?.email}
+            customerName={customer?.profile?.full_name || customer?.profile?.legal_name || undefined}
           />
         ) : activeTab === 'attorneys' ? (
           /* Attorneys Tab */
@@ -419,7 +461,7 @@ export default function AdminSupportPage() {
               onRefresh={loadSystemHealth}
             />
 
-            {/* Recent Signups â€” FIRST thing you see */}
+            {/* Recent Signups — FIRST thing you see */}
             <RecentSignups
               signups={stats.recentSignups}
               isLoading={isLoadingStats}

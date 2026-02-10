@@ -95,8 +95,8 @@ export async function POST(request: NextRequest) {
     const htmlBody = generateSupportEmailHTML(body);
 
     const { data, error } = await resend.emails.send({
-      from: 'Clase para Padres <hola@claseparapadres.com>',
-      replyTo: 'hola@claseparapadres.com',
+      from: 'Clase para Padres <info@claseparapadres.com>',
+      replyTo: 'info@claseparapadres.com',
       to: to.trim(),
       subject: subject.trim(),
       html: htmlBody,

@@ -424,7 +424,7 @@ export default function CourseOverviewPage() {
           <p className="text-white/40 text-sm">
             ¿Tiene preguntas?{' '}
             <a 
-              href="mailto:hola@claseparapadres.com" 
+              href="mailto:info@claseparapadres.com" 
               className="text-[#7EC8E3] hover:text-[#9DD8F3] transition-colors underline underline-offset-2"
             >
               Contáctenos

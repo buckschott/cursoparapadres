@@ -160,7 +160,7 @@ export default function VerifyPage() {
               <div className="pt-4 border-t border-[#FFFFFF]/15">
                 <label className="text-xs font-semibold text-white/60 uppercase tracking-wide">Issuing Provider</label>
                 <p className="text-white font-medium font-brand">Putting Kids First®</p>
-                <p className="text-sm text-white/70">hola@claseparapadres.com</p>
+                <p className="text-sm text-white/70">info@claseparapadres.com</p>
                 <p className="text-sm text-white/70">888-777-2298</p>
               </div>
             </div>
@@ -169,7 +169,7 @@ export default function VerifyPage() {
 
         <div className="text-center mt-8">
           <p className="text-xs text-white/60 font-brand">Putting Kids First® • Established 1993</p>
-          <p className="text-xs text-white/70 mt-1">claseparapadres.com</p>
+          <p className="text-xs text-white/70 mt-1">www.claseparapadres.com</p>
         </div>
       </div>
 

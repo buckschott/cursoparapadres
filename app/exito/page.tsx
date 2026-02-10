@@ -20,7 +20,7 @@ interface PurchaseDetails {
 
 const PREVIEW_CONFIG = {
   allowedEmails: [
-    'hola@claseparapadres.com',
+    'info@claseparapadres.com',
     'info@puttingkidsfirst.org',
   ],
   mockPurchase: {
@@ -448,7 +448,7 @@ function ExitoContent() {
               <p className="text-white/40 text-xs text-center mt-6">
                 ¿Sigue sin funcionar después de varios intentos?{' '}
                 <a
-                  href="mailto:hola@claseparapadres.com?subject=Problema%20al%20crear%20cuenta%20después%20de%20pagar"
+                  href="mailto:info@claseparapadres.com?subject=Problema%20al%20crear%20cuenta%20después%20de%20pagar"
                   className="text-[#7EC8E3] hover:text-[#9DD8F3] underline underline-offset-2"
                 >
                   Escríbanos

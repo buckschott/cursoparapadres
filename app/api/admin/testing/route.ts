@@ -725,7 +725,7 @@ export async function POST(request: NextRequest) {
         const isAttorneyEmail = emailType === 'attorney_certificate';
         const from = isAttorneyEmail
           ? 'Putting Kids First <certificates@claseparapadres.com>'
-          : 'Clase para Padres <hola@claseparapadres.com>';
+          : 'Clase para Padres <info@claseparapadres.com>';
 
         const { error: sendError } = await resend.emails.send({
           from,

@@ -279,7 +279,7 @@ export async function POST(request: NextRequest) {
 </html>`;
 
         await resend.emails.send({
-          from: 'Clase para Padres <hola@claseparapadres.com>',
+          from: 'Clase para Padres <info@claseparapadres.com>',
           to: email,
           subject: '¡Todo listo! — su clase lo espera',
           html: emailHtml,

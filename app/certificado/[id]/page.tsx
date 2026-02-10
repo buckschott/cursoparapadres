@@ -531,7 +531,7 @@ export default function CertificadoPage() {
                   <p className="text-white/40 text-sm mb-1">Nombre en Certificado</p>
                   <p className="text-white font-medium">{certificate.participant_name}</p>
                   <p className="text-white/40 text-xs mt-1">
-                    Para cambiar el nombre, contacte a <a href="mailto:hola@claseparapadres.com" className="text-[#7EC8E3] hover:underline">hola@claseparapadres.com</a>
+                    Para cambiar el nombre, contacte a <a href="mailto:info@claseparapadres.com" className="text-[#7EC8E3] hover:underline">info@claseparapadres.com</a>
                   </p>
                 </div>
                 

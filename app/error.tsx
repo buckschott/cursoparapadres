@@ -62,7 +62,7 @@ export default function Error({
       '',
     ].join('\n');
 
-    return `mailto:hola@claseparapadres.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    return `mailto:info@claseparapadres.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   // Copy link for Safari users to open in another browser

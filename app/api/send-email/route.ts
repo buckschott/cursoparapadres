@@ -1,171 +1,197 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from '@/lib/supabase-server';
 import { Resend } from 'resend';
-import { NextResponse } from 'next/server';
+import { isAdmin } from '@/lib/admin';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Constants
+const MAX_SUBJECT_LENGTH = 200;
+const MAX_BODY_LENGTH = 10000;
 
-export async function POST(request: Request) {
+// Types
+interface SendEmailPayload {
+  to: string;
+  subject: string;
+  body: string;
+}
+
+/**
+ * POST /api/admin/support/send-email
+ * 
+ * Sends a support email to a customer.
+ * Admin-only endpoint.
+ */
+export async function POST(request: NextRequest) {
+  // Initialize Resend inside handler to avoid module-level crashes
+  if (!process.env.RESEND_API_KEY) {
+    console.error('RESEND_API_KEY is not configured');
+    return NextResponse.json({ error: 'Email service not configured' }, { status: 503 });
+  }
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
+  const supabase = createServerClient();
+
   try {
-    const body = await request.json();
-    const { nombre, email, telefono, clase, mensaje } = body;
+    // ─────────────────────────────────────────────────────────────────────────
+    // 1. Authorization
+    // ─────────────────────────────────────────────────────────────────────────
+    const authHeader = request.headers.get('authorization');
+    const token = authHeader?.replace('Bearer ', '');
 
-    const currentYear = new Date().getFullYear();
-    const timestamp = new Date().toLocaleString('en-US', { 
-      timeZone: 'America/New_York',
-      dateStyle: 'full',
-      timeStyle: 'short'
-    });
+    let adminEmail: string | null = null;
+
+    if (token) {
+      const { data: { user } } = await supabase.auth.getUser(token);
+      adminEmail = user?.email || null;
+    }
+
+    if (!isAdmin(adminEmail)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 2. Parse and validate request body
+    // ─────────────────────────────────────────────────────────────────────────
+    let payload: SendEmailPayload;
+    try {
+      payload = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+    }
+
+    const { to, subject, body } = payload;
+
+    // Required fields
+    if (!to || typeof to !== 'string') {
+      return NextResponse.json({ error: 'Missing or invalid "to" field' }, { status: 400 });
+    }
+    if (!subject || typeof subject !== 'string') {
+      return NextResponse.json({ error: 'Missing or invalid "subject" field' }, { status: 400 });
+    }
+    if (!body || typeof body !== 'string') {
+      return NextResponse.json({ error: 'Missing or invalid "body" field' }, { status: 400 });
+    }
+
+    // Length limits
+    if (subject.length > MAX_SUBJECT_LENGTH) {
+      return NextResponse.json({ 
+        error: `Subject exceeds ${MAX_SUBJECT_LENGTH} characters` 
+      }, { status: 400 });
+    }
+    if (body.length > MAX_BODY_LENGTH) {
+      return NextResponse.json({ 
+        error: `Body exceeds ${MAX_BODY_LENGTH} characters` 
+      }, { status: 400 });
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(to.trim())) {
+      return NextResponse.json({ error: 'Invalid email address format' }, { status: 400 });
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 3. Generate and send email
+    // ─────────────────────────────────────────────────────────────────────────
+    const htmlBody = generateSupportEmailHTML(body);
 
     const { data, error } = await resend.emails.send({
-      from: 'Atención al Cliente <atencionalcliente@claseparapadres.com>',
-      to: ['hola@claseparapadres.com'],
-      subject: `📬 New Inquiry - ${nombre} - claseparapadres.com`,
-      html: `
+      from: 'Clase para Padres <info@claseparapadres.com>',
+      replyTo: 'info@claseparapadres.com',
+      to: to.trim(),
+      subject: subject.trim(),
+      html: htmlBody,
+    });
+
+    if (error) {
+      console.error('Resend error:', error);
+      return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 4. Audit log and success response
+    // ─────────────────────────────────────────────────────────────────────────
+    console.log(`[SUPPORT EMAIL] Admin: ${adminEmail} → Recipient: ${to.trim()} | Subject: "${subject.trim().substring(0, 50)}..."`);
+
+    return NextResponse.json({ 
+      success: true, 
+      messageId: data?.id,
+      message: `Email sent to ${to.trim()}` 
+    });
+
+  } catch (error) {
+    console.error('Send email error:', error);
+    return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Helper Functions
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Escape HTML special characters to prevent rendering issues.
+ */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
+ * Generate branded HTML email template for support responses.
+ */
+function generateSupportEmailHTML(body: string): string {
+  const formattedBody = escapeHtml(body)
+    .split('\n')
+    .map(line => line.trim() === '' ? '<br>' : `<p style="margin: 0 0 10px 0;">${line}</p>`)
+    .join('');
+
+  return `
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>New Inquiry from claseparapadres.com</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #1C1C1C; font-family: 'Courier Prime', Courier, monospace;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #1C1C1C;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #1C1C1C;">
     <tr>
       <td align="center" style="padding: 40px 20px;">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px;">
           
-          <!-- Header -->
+          <!-- Logo -->
           <tr>
-            <td align="center" style="padding-bottom: 24px;">
-              <p style="color: #FFFFFF; font-size: 20px; font-weight: 600; margin: 0; font-family: 'Short Stack', cursive, sans-serif;">
-                Putting Kids First<sup style="font-size: 10px; position: relative; top: -8px;">®</sup>
+            <td align="center" style="padding-bottom: 30px;">
+              <img src="https://www.claseparapadres.com/images/email/logo-email.png" 
+                   alt="Clase para Padres" 
+                   width="200" 
+                   style="display: block; max-width: 200px; height: auto;">
+            </td>
+          </tr>
+          
+          <!-- Content Card -->
+          <tr>
+            <td style="background-color: #2C2C2C; border-radius: 16px; padding: 40px; border: 1px solid rgba(255,255,255,0.1);">
+              
+              <!-- Body -->
+              <div style="color: #FFFFFF; font-size: 16px; line-height: 1.6;">
+                ${formattedBody}
+              </div>
+              
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top: 30px;">
+              <p style="color: rgba(255,255,255,0.5); font-size: 12px; margin: 0;">
+                © ${new Date().getFullYear()} Clase para Padres
               </p>
-              <p style="color: rgba(255,255,255,0.5); font-size: 12px; margin: 8px 0 0 0; font-family: 'Courier Prime', Courier, monospace;">
-                Internal Notification
-              </p>
-            </td>
-          </tr>
-          
-          <!-- Alert Badge -->
-          <tr>
-            <td align="center" style="padding-bottom: 24px;">
-              <table cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td style="background-color: #FFB347; border-radius: 20px; padding: 8px 20px;">
-                    <span style="color: #1C1C1C; font-size: 14px; font-weight: 700; font-family: 'Courier Prime', Courier, monospace;">
-                      📬 NEW INQUIRY
-                    </span>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          
-          <!-- Heading -->
-          <tr>
-            <td align="center" style="padding-bottom: 8px;">
-              <h1 style="color: #FFFFFF; font-size: 24px; font-weight: 700; margin: 0; font-family: 'Courier Prime', Courier, monospace;">
-                Contact Form Submission
-              </h1>
-            </td>
-          </tr>
-          
-          <tr>
-            <td align="center" style="padding-bottom: 24px;">
-              <p style="color: rgba(255,255,255,0.5); font-size: 12px; margin: 0; font-family: 'Courier Prime', Courier, monospace;">
-                from claseparapadres.com (Spanish Site)
-              </p>
-            </td>
-          </tr>
-          
-          <!-- Details Box -->
-          <tr>
-            <td>
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #2A2A2A; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-                <tr>
-                  <td style="padding: 24px;">
-                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 14px; font-family: 'Courier Prime', Courier, monospace;">
-                      <tr>
-                        <td style="padding: 10px 0; color: rgba(255,255,255,0.6); width: 30%; vertical-align: top;">Name:</td>
-                        <td style="padding: 10px 0; color: #77DD77; font-weight: 700;">${nombre}</td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 10px 0; color: rgba(255,255,255,0.6); vertical-align: top;">Email:</td>
-                        <td style="padding: 10px 0;">
-                          <a href="mailto:${email}" style="color: #7EC8E3; text-decoration: none;">${email}</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 10px 0; color: rgba(255,255,255,0.6); vertical-align: top;">Phone:</td>
-                        <td style="padding: 10px 0; color: #FFFFFF;">${telefono || 'Not provided'}</td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 10px 0; color: rgba(255,255,255,0.6); vertical-align: top;">Class:</td>
-                        <td style="padding: 10px 0; color: #FFB347; font-weight: 600;">${clase}</td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          
-          <!-- Message Box (if provided) -->
-          ${mensaje ? `
-          <tr>
-            <td style="padding-top: 16px;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #2A2A2A; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-                <tr>
-                  <td style="padding: 24px;">
-                    <p style="color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 700; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'Courier Prime', Courier, monospace;">
-                      Message:
-                    </p>
-                    <p style="color: #FFFFFF; font-size: 14px; line-height: 22px; margin: 0; font-family: 'Courier Prime', Courier, monospace; white-space: pre-wrap;">
-                      ${mensaje}
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          ` : ''}
-          
-          <!-- Reply Button -->
-          <tr>
-            <td align="center" style="padding: 32px 0;">
-              <table cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td style="background-color: #77DD77; border-radius: 12px;">
-                    <a 
-                      href="mailto:${email}?subject=Re: Su consulta - Putting Kids First" 
-                      style="display: inline-block; padding: 14px 28px; color: #1C1C1C; font-size: 14px; font-weight: 700; text-decoration: none; font-family: 'Courier Prime', Courier, monospace;"
-                    >
-                      Reply to ${nombre.split(' ')[0]} →
-                    </a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          
-          <!-- Divider -->
-          <tr>
-            <td style="padding-bottom: 16px;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td style="border-top: 1px solid rgba(255,255,255,0.1);"></td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          
-          <!-- Timestamp -->
-          <tr>
-            <td align="center">
-              <p style="color: rgba(255,255,255,0.3); font-size: 11px; margin: 0; line-height: 18px; font-family: 'Courier Prime', Courier, monospace;">
-                Received: ${timestamp} ET
-              </p>
-              <p style="color: rgba(255,255,255,0.2); font-size: 11px; margin: 8px 0 0 0; line-height: 18px; font-family: 'Courier Prime', Courier, monospace;">
-                This is an internal notification from claseparapadres.com
+              <p style="color: rgba(255,255,255,0.3); font-size: 11px; margin: 10px 0 0 0;">
+                claseparapadres.com
               </p>
             </td>
           </tr>
@@ -176,15 +202,5 @@ export async function POST(request: Request) {
   </table>
 </body>
 </html>
-      `.trim(),
-    });
-
-    if (error) {
-      return NextResponse.json({ error }, { status: 400 });
-    }
-
-    return NextResponse.json({ success: true, data });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
-  }
+  `.trim();
 }

@@ -264,7 +264,7 @@ function ToastItem({
               {/* Help Link (auto-included for errors) */}
               {toast.showHelpLink && (
                 <a 
-                  href="mailto:hola@claseparapadres.com?subject=Necesito%20ayuda&body=Hola%2C%20necesito%20ayuda%20con..."
+                  href="mailto:info@claseparapadres.com?subject=Necesito%20ayuda&body=Hola%2C%20necesito%20ayuda%20con..."
                   className="text-[#7EC8E3] text-sm hover:underline"
                   onClick={(e) => e.stopPropagation()}
                 >

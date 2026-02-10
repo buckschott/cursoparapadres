@@ -16,13 +16,13 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const EMAIL_CONFIG = {
   // Spanish site - customer-facing emails
   spanish: {
-    from: 'Clase para Padres <hola@claseparapadres.com>',
-    replyTo: 'hola@claseparapadres.com',
+    from: 'Clase para Padres <info@claseparapadres.com>',
+    replyTo: 'info@claseparapadres.com',
   },
   // Attorney emails stay in English with PKF branding
   attorney: {
     from: 'Putting Kids First <certificates@claseparapadres.com>',
-    replyTo: 'hola@claseparapadres.com',
+    replyTo: 'info@claseparapadres.com',
   },
 };
 

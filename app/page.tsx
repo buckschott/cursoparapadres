@@ -529,7 +529,7 @@ export default function Home() {
             <h2 className="scroll-reveal text-2xl md:text-4xl font-bold text-white mb-4">
               Comience Hoy
             </h2>
-            <p className="scroll-reveal text-lg md:text-xl text-white/70 mb-10">
+            <p className="scroll-reveal text-lg md:text-xl text-white/70 mb-10 md:mb-20">
               Online. A su ritmo. Certificado instantáneo.
             </p>
             <CTAButton href="#precios" showArrow={true}>

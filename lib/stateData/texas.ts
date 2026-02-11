@@ -1,6 +1,7 @@
 /**
  * Texas State Data
  * 254 counties - largest Hispanic market in the US
+ * SEO Content Expansion: February 2026 (v5 — polished)
  */
 
 import type { StateData } from './types';
@@ -12,32 +13,70 @@ export const texasStates: Record<string, StateData> = {
     nameEs: 'Texas',
     countyCount: 254,
     additionalContent: 'Texas tiene la segunda población hispana más grande del país. Los tribunales de familia en los 254 condados reconocen nuestro nombre y aceptan nuestros certificados. El Original.',
+
+    // === SEO Content Expansion ===
+
+    metaDescription: 'Clase para padres en Texas — curso online en español para los 254 condados. ¿El juez le ordenó una clase? Empiece hoy, certificado instantáneo. Putting Kids First® — El Original.',
+
+    introContent: `Si el tribunal le dijo que tiene que tomar una clase para padres como parte de su caso de divorcio, custodia, o modificación de una orden judicial, está en el lugar correcto. Nuestra clase para padres en línea es aceptada en los 254 condados de Texas — desde Houston y San Antonio hasta El Paso y el Valle del Río Grande. 100% en español. A su ritmo. Certificado instantáneo al terminar.
+
+El Código de Familia de Texas § 105.009 permite al juez ordenar una clase de educación parental en cualquier caso que involucre hijos menores. Putting Kids First® es el nombre más reconocido en educación parental — líderes desde hace décadas. Miles de padres en Texas ya han presentado nuestro certificado exitosamente. El Original. El Certificado Más Aceptado.`,
+
+    courtContext: 'En Texas, esta clase no es automática en todos los divorcios — el juez decide si la ordena según el mejor interés de los hijos. Pero si su orden judicial dice que debe completar una clase para padres, no hay excepción. Nuestro certificado es aceptado en los 254 condados, ya sea que necesite una clase de coparentalidad o una clase de crianza.',
+
     faqs: [
-  {
-    question: '¿Es aceptada en los tribunales de Texas?',
-    answer: 'Sí. Nuestro certificado es aceptado en tribunales de los 254 condados de Texas.'
-  },
-  {
-    question: '¿Cuándo recibo mi certificado?',
-    answer: 'Inmediatamente. En cuanto complete la clase, puede descargar su certificado. También se lo enviamos por correo electrónico y notificamos a su abogado automáticamente si proporciona su información.'
-  },
-  {
-    question: '¿Tengo que terminar en una sola sesión?',
-    answer: 'No. Puede comenzar, pausar y continuar cuando quiera. Su progreso se guarda automáticamente. La mayoría de los padres completan la clase en varios días, ajustándola a sus horarios de trabajo y familia.'
-  },
-  {
-    question: '¿Cuánto tiempo toma la clase?',
-    answer: 'La mayoría completa la clase en 4 horas, pero depende de usted. Puede calificar como una clase de 4-6 horas. Usted controla el ritmo — pause, rebobine, tome descansos cuando lo necesite.'
-  },
-  {
-    question: '¿Qué pasa después de pagar?',
-    answer: 'Comienza la clase inmediatamente. Avance a su propio ritmo, y su certificado estará listo al instante.'
-  },
-  {
-    question: '¿Cómo le entrego el certificado al tribunal?',
-    answer: 'Descargue el PDF e imprímalo, o su abogado puede enviarlo electrónicamente. El certificado incluye un código de verificación seguro y un código QR para que el tribunal pueda confirmar su autenticidad en línea.'
-  }
-],
+      {
+        question: '¿Qué clase necesito tomar?',
+        answer: `Depende de su situación:
+
+Si su caso es por divorcio, custodia, separación, o modificación de una orden existente → necesita la Clase de Coparentalidad. Es la clase que la gran mayoría de los tribunales en Texas piden.
+
+Si le pidieron una clase de habilidades para padres, o fue referido por un juez, DCFS, un terapeuta, o la escuela de sus hijos → necesita la Clase de Crianza.
+
+Si tiene su orden judicial en inglés y dice "parent education and family stabilization course" o "co-parenting class," necesita la Clase de Coparentalidad. Si dice "parenting skills class," necesita la Clase de Crianza.`
+      },
+      {
+        question: '¿Esta clase para padres es aceptada en los tribunales de Texas?',
+        answer: `Sí. Nuestro certificado es aceptado por tribunales en los 254 condados de Texas.
+
+Putting Kids First® es el nombre más reconocido en educación parental — líderes desde hace décadas. El Original. El Certificado Más Aceptado.`
+      },
+      {
+        question: '¿Qué pasa si no completo la clase a tiempo?',
+        answer: `El tribunal puede tomar acción seria. En Texas, un juez puede declararlo en desacato, modificar su custodia o tiempo de visitación, e incluso imponer sanciones. Lo más importante: el juez puede emitir una orden final sin esperarlo a usted — y eso puede afectar el resultado de su caso.
+
+No arriesgue su caso. Nuestra clase es de 4 horas y puede completarla desde su teléfono hoy mismo.`
+      },
+      {
+        question: '¿Puedo tomar la clase en español aunque mi caso sea en un tribunal en inglés?',
+        answer: `Sí. Nuestra clase es 100% en español, pero su certificado se emite en inglés — que es lo que los tribunales de Texas requieren. En condados fronterizos como El Paso, Webb, y Cameron, muchos empleados del tribunal hablan español, pero los documentos legales deben estar en inglés. Su certificado cumple con ese estándar.`
+      },
+      {
+        question: '¿Lo que digo en la clase puede usarse en mi contra?',
+        answer: `No. La ley de Texas protege la confidencialidad de la clase de educación parental. Nada de lo que usted comparta puede ser usado como evidencia en su caso de divorcio o custodia.
+
+Puede completar la clase con tranquilidad, enfocándose en aprender — no en protegerse.`
+      },
+      {
+        question: '¿Cuándo recibo mi certificado y cómo se lo entrego al tribunal?',
+        answer: `Su certificado se genera instantáneamente al completar la clase. Es un PDF que puede descargar, imprimir, o enviar por correo electrónico. Cada certificado incluye un código QR y un código de verificación único para que el tribunal confirme su autenticidad en segundos.
+
+En muchos condados de Texas, el certificado debe archivarse con el secretario del tribunal antes de la audiencia final. Lleve una copia impresa al tribunal o entréguelo en la oficina del secretario. Si tiene abogado, envíeselo para que lo incluya en su expediente.`
+      },
+      {
+        question: 'La clase tiene que ser de más de 4 horas. ¿Esta clase califica?',
+        answer: `La ley de Texas establece un mínimo de 4 horas y un máximo de 12 horas. Nuestra clase cumple con el requisito mínimo de 4 horas, que es lo que la gran mayoría de los tribunales en Texas aceptan.
+
+Si su orden judicial especifica un número de horas diferente, confirme con el tribunal o con su abogado si tiene uno.`
+      },
+      {
+        question: '¿Ambos padres tienen que tomar la clase?',
+        answer: `Revise su orden judicial — en la mayoría de los casos en Texas, ambos padres deben completar la clase por separado. Cada padre se inscribe con su propia cuenta y recibe su propio certificado.
+
+No necesitan coordinar horarios. Cada uno completa la clase a su propio ritmo, en cualquier momento.`
+      }
+    ],
+
     counties: [
       { name: 'Anderson', city: 'Palestine' },
       { name: 'Andrews', city: 'Andrews' },

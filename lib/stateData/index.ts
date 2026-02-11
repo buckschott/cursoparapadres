@@ -5,7 +5,9 @@
  * Structure:
  * - types.ts (shared interfaces)
  * - texas.ts (254 counties - biggest Hispanic market)
- * - south-atlantic.ts (DC, DE, FL, GA, MD, NC, SC, VA, WV)
+ * - florida.ts (67 counties - mandatory by law, 45-day deadline)
+ * - georgia.ts (159 counties - county-by-county rules, legitimation cases)
+ * - south-atlantic.ts (DC, DE, MD, NC, SC, VA, WV)
  * - south-central.ts (AL, AR, KY, LA, MS, OK, TN)
  * - midwest-east.ts (IL, IN, MI, OH, WI)
  * - midwest-west.ts (IA, KS, MN, MO, NE, ND, SD)
@@ -16,6 +18,8 @@
 
 import type { StateData } from './types';
 import { texasStates } from './texas';
+import { floridaStates } from './florida';
+import { georgiaStates } from './georgia';
 import { southAtlanticStates } from './south-atlantic';
 import { southCentralStates } from './south-central';
 import { midwestEastStates } from './midwest-east';
@@ -27,6 +31,8 @@ import { westPacificStates } from './west-pacific';
 // Combine all regions into single STATE_DATA object
 export const STATE_DATA: Record<string, StateData> = {
   ...texasStates,
+  ...floridaStates,
+  ...georgiaStates,
   ...southAtlanticStates,
   ...southCentralStates,
   ...midwestEastStates,

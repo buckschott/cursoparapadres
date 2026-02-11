@@ -201,7 +201,7 @@ export default function StatePageContent({ slug }: StatePageContentProps) {
             </h1>
 
             {/* Subtitle — No price. Authority first. */}
-            <p className="text-lg md:text-xl lg:text-2xl text-white/70 mb-10 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl lg:text-2xl text-white/70 mb-20 max-w-2xl mx-auto">
               Aceptado en los {state.countyCount} condados • 100% en español • Certificado instantáneo
             </p>
 

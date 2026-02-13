@@ -1,5 +1,5 @@
 // =============================================================================
-// CUSTOMER SERVICE PANEL COMPONENT — V2 (Perfect Rating)
+// CUSTOMER SERVICE PANEL COMPONENT â€” V2 (Perfect Rating)
 // =============================================================================
 // Path: /app/admin/support/components/CustomerServicePanel.tsx
 // =============================================================================
@@ -7,7 +7,7 @@
 // - Big push-button templates replace tiny dropdown
 // - Auto-suggests matching template when topic is detected
 // - "Open in Gmail" replaces "Open in Mac Mail"
-// - One-click send: select template → send instantly
+// - One-click send: select template â†’ send instantly
 // - Combined action+reply buttons (reset password + send email, etc.)
 // =============================================================================
 
@@ -40,7 +40,7 @@ interface CustomerServicePanelProps {
   onSendEmail: (to: string, subject: string, body: string) => void;
   onLookupCustomer: (email: string) => void;
 
-  // Combined action handlers (optional — available when customer is loaded)
+  // Combined action handlers (optional â€” available when customer is loaded)
   onResetPassword?: (email: string) => Promise<{ success: boolean; message: string }>;
   onGrantAccess?: () => Promise<{ success: boolean; message: string }>;
   onResendCertificateEmail?: () => Promise<{ success: boolean; message: string }>;
@@ -69,87 +69,87 @@ const TEMPLATES: TemplateConfig[] = [
   { 
     value: 'password', 
     label: 'Password Reset', 
-    icon: '🔑',
+    icon: 'ðŸ”‘',
     description: 'Send reset link + instructions',
     combinedAction: 'reset_password',
-    combinedActionLabel: '🔑 Reset Password & Send Email',
+    combinedActionLabel: 'ðŸ”‘ Reset Password & Send Email',
   },
   { 
     value: 'access', 
     label: 'Course Access', 
-    icon: '📚',
+    icon: 'ðŸ“š',
     description: 'Login instructions + access fix',
     combinedAction: 'grant_access',
-    combinedActionLabel: '🔓 Grant Access & Send Email',
+    combinedActionLabel: 'ðŸ”“ Grant Access & Send Email',
   },
   { 
     value: 'certificate', 
     label: 'Certificate Help', 
-    icon: '📜',
+    icon: 'ðŸ“œ',
     description: 'Download steps + attorney option',
   },
   { 
     value: 'certificate_resend', 
     label: 'Resend Certificate', 
-    icon: '📧',
+    icon: 'ðŸ“§',
     description: 'Re-send certificate email',
     combinedAction: 'resend_certificate',
-    combinedActionLabel: '📧 Resend Certificate & Send Email',
+    combinedActionLabel: 'ðŸ“§ Resend Certificate & Send Email',
   },
   { 
     value: 'exam', 
     label: 'Exam Help', 
-    icon: '📝',
+    icon: 'ðŸ“',
     description: 'Exam tips, retake info, passing score',
   },
   { 
     value: 'refund', 
     label: 'Refund Confirmation', 
-    icon: '💰',
+    icon: 'ðŸ’°',
     description: 'Confirm refund + timeline',
   },
   { 
     value: 'payment_issue', 
     label: 'Payment Issue', 
-    icon: '💳',
+    icon: 'ðŸ’³',
     description: 'Fix payment + restore access',
   },
   { 
     value: 'attorney_copy', 
     label: 'Attorney Copy', 
-    icon: '⚖️',
+    icon: 'âš–ï¸',
     description: 'Request attorney info for cert',
   },
   { 
     value: 'tech_support', 
     label: 'Tech Support', 
-    icon: '🔧',
+    icon: 'ðŸ”§',
     description: 'Browser/device troubleshooting',
   },
   { 
     value: 'deadline', 
     label: 'Deadline Question', 
-    icon: '⏰',
+    icon: 'â°',
     description: 'Completion time + instant cert',
   },
   { 
     value: 'duplicate_account', 
     label: 'Duplicate Account', 
-    icon: '👥',
+    icon: 'ðŸ‘¥',
     description: 'Merge accounts confirmation',
   },
   { 
     value: 'class_swap', 
     label: 'Class Swap', 
-    icon: '🔄',
+    icon: 'ðŸ”„',
     description: 'Switch class type',
     combinedAction: 'swap_class',
-    combinedActionLabel: '🔄 Swap Class & Send Email',
+    combinedActionLabel: 'ðŸ”„ Swap Class & Send Email',
   },
   { 
     value: 'general', 
     label: 'General Response', 
-    icon: '💬',
+    icon: 'ðŸ’¬',
     description: 'Custom response template',
   },
 ];
@@ -189,6 +189,11 @@ export default function CustomerServicePanel({
   const [mode, setMode] = useState<'template' | 'custom'>('template');
 
   // --------------------------------------------------------------------------
+  // RESOLVED RECIPIENT — detectedEmail (from incoming) OR customerEmail (from lookup)
+  // --------------------------------------------------------------------------
+  const recipientEmail = detectedEmail || customerEmail || '';
+
+  // --------------------------------------------------------------------------
   // AUTO-SELECT TEMPLATE WHEN TOPIC IS DETECTED
   // --------------------------------------------------------------------------
   useEffect(() => {
@@ -218,10 +223,10 @@ export default function CustomerServicePanel({
   };
 
   const handleOneClickSend = async () => {
-    if (!detectedEmail || !translatedOutgoing) return;
+    if (!recipientEmail || !translatedOutgoing) return;
     setSendingTemplate(true);
     try {
-      onSendEmail(detectedEmail, emailSubject, translatedOutgoing);
+      onSendEmail(recipientEmail, emailSubject, translatedOutgoing);
     } finally {
       setSendingTemplate(false);
       setSelectedTemplate(null);
@@ -237,8 +242,8 @@ export default function CustomerServicePanel({
 
       switch (template.combinedAction) {
         case 'reset_password':
-          if (onResetPassword && (customerEmail || detectedEmail)) {
-            result = await onResetPassword(customerEmail || detectedEmail);
+          if (onResetPassword && recipientEmail) {
+            result = await onResetPassword(recipientEmail);
           }
           break;
         case 'grant_access':
@@ -253,8 +258,8 @@ export default function CustomerServicePanel({
       }
 
       // If action succeeded, also send the template email
-      if (result?.success && detectedEmail && translatedOutgoing) {
-        onSendEmail(detectedEmail, emailSubject, translatedOutgoing);
+      if (result?.success && recipientEmail && translatedOutgoing) {
+        onSendEmail(recipientEmail, emailSubject, translatedOutgoing);
       }
     } finally {
       setExecutingAction(false);
@@ -281,7 +286,7 @@ export default function CustomerServicePanel({
 
   const handleOpenInGmail = () => {
     if (!translatedOutgoing) return;
-    const to = detectedEmail || '';
+    const to = recipientEmail;
     const subject = encodeURIComponent(emailSubject);
     const body = encodeURIComponent(translatedOutgoing);
     // Gmail compose URL
@@ -305,11 +310,11 @@ export default function CustomerServicePanel({
 
   const canUseCombinedAction = (template: TemplateConfig): boolean => {
     if (!template.combinedAction) return false;
-    if (!customerLoaded && !detectedEmail) return false;
+    if (!customerLoaded && !recipientEmail) return false;
 
     switch (template.combinedAction) {
       case 'reset_password':
-        return !!(onResetPassword && (customerEmail || detectedEmail));
+        return !!(onResetPassword && recipientEmail);
       case 'grant_access':
         return !!onGrantAccess;
       case 'resend_certificate':
@@ -331,13 +336,42 @@ export default function CustomerServicePanel({
       {/* HEADER                                                             */}
       {/* ================================================================== */}
       <div className="px-6 py-4 border-b border-white/10">
-        <h3 className="text-lg font-bold text-white">📧 Customer Service</h3>
+        <h3 className="text-lg font-bold text-white">ðŸ“§ Customer Service</h3>
         <p className="text-sm text-white/40 mt-1">
-          Translate → Choose Template → Send. One-click support.
+          Translate â†’ Choose Template â†’ Send. One-click support.
         </p>
       </div>
 
       <div className="p-6 space-y-6">
+        {/* ================================================================ */}
+        {/* PROACTIVE OUTREACH BANNER — when customer is loaded, no incoming */}
+        {/* ================================================================ */}
+        {customerLoaded && customerEmail && !incomingEmail.trim() && (
+          <div className="bg-[#7EC8E3]/10 border border-[#7EC8E3]/30 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-[#7EC8E3]">
+                  📨 Proactive Outreach
+                </p>
+                <p className="text-xs text-white/50 mt-0.5">
+                  Sending to <span className="text-white/80 font-medium">{customerName || customerEmail}</span>
+                  {customerName && <span className="text-white/40"> ({customerEmail})</span>}
+                </p>
+              </div>
+              <button
+                onClick={() => setMode('custom')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  mode === 'custom'
+                    ? 'bg-[#77DD77]/20 text-[#77DD77]'
+                    : 'bg-[#7EC8E3]/20 text-[#7EC8E3] hover:bg-[#7EC8E3]/30'
+                }`}
+              >
+                {mode === 'custom' ? '✓ Custom Mode Active' : '✏️ Write Custom Email'}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* ================================================================ */}
         {/* STEP 1: PASTE & TRANSLATE INCOMING EMAIL                        */}
         {/* ================================================================ */}
@@ -351,7 +385,7 @@ export default function CustomerServicePanel({
             {/* Original (Spanish) */}
             <div>
               <label className="text-xs text-white/50 block mb-1.5">
-                📩 Original (Spanish)
+                ðŸ“© Original (Spanish)
               </label>
               <textarea
                 value={incomingEmail}
@@ -367,7 +401,7 @@ export default function CustomerServicePanel({
                   loading={isTranslating}
                   variant="primary"
                 >
-                  🔄 Translate to English
+                  ðŸ”„ Translate to English
                 </ActionButton>
               </div>
             </div>
@@ -375,7 +409,7 @@ export default function CustomerServicePanel({
             {/* Translated (English) */}
             <div>
               <label className="text-xs text-white/50 block mb-1.5">
-                📤 Translation (English)
+                ðŸ“¤ Translation (English)
               </label>
               <div className="w-full p-3 rounded-lg bg-white/5 border border-white/10 text-white/80 min-h-[132px] text-sm">
                 {translatedIncoming || (
@@ -391,12 +425,12 @@ export default function CustomerServicePanel({
                       onClick={() => onLookupCustomer(detectedEmail)}
                       className="px-2.5 py-1 bg-[#7EC8E3]/20 text-[#7EC8E3] rounded-md text-xs font-medium hover:bg-[#7EC8E3]/30 transition-colors"
                     >
-                      📧 {detectedEmail} → Look up
+                      ðŸ“§ {detectedEmail} â†’ Look up
                     </button>
                   )}
                   {detectedTopic && (
                     <span className="px-2.5 py-1 bg-[#77DD77]/20 text-[#77DD77] rounded-md text-xs font-medium">
-                      🎯 Detected: {TEMPLATES.find(t => t.value === detectedTopic)?.label || detectedTopic}
+                      ðŸŽ¯ Detected: {TEMPLATES.find(t => t.value === detectedTopic)?.label || detectedTopic}
                     </span>
                   )}
                 </div>
@@ -428,7 +462,7 @@ export default function CustomerServicePanel({
                     : 'text-white/40 hover:text-white/60'
                 }`}
               >
-                📋 Templates
+                ðŸ“‹ Templates
               </button>
               <button
                 onClick={() => setMode('custom')}
@@ -438,13 +472,13 @@ export default function CustomerServicePanel({
                     : 'text-white/40 hover:text-white/60'
                 }`}
               >
-                ✏️ Custom Reply
+                âœï¸ Custom Reply
               </button>
             </div>
           </div>
 
           {/* ============================================================== */}
-          {/* TEMPLATE MODE — Big Push Buttons                               */}
+          {/* TEMPLATE MODE â€” Big Push Buttons                               */}
           {/* ============================================================== */}
           {mode === 'template' && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
@@ -469,12 +503,12 @@ export default function CustomerServicePanel({
                     {/* Match indicator */}
                     {isMatch && !isSelected && (
                       <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center w-5 h-5 bg-[#7EC8E3] rounded-full text-[10px]">
-                        ⭐
+                        â­
                       </span>
                     )}
                     {isSelected && (
                       <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center w-5 h-5 bg-[#77DD77] rounded-full text-[10px]">
-                        ✓
+                        âœ“
                       </span>
                     )}
 
@@ -494,13 +528,13 @@ export default function CustomerServicePanel({
           )}
 
           {/* ============================================================== */}
-          {/* CUSTOM MODE — Type in English, translate to Spanish            */}
+          {/* CUSTOM MODE â€” Type in English, translate to Spanish            */}
           {/* ============================================================== */}
           {mode === 'custom' && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs text-white/50 block mb-1.5">
-                  ✏️ Type in English
+                  âœï¸ Type in English
                 </label>
                 <textarea
                   value={outgoingResponse}
@@ -516,14 +550,14 @@ export default function CustomerServicePanel({
                     loading={isTranslating}
                     variant="primary"
                   >
-                    🔄 Translate to Spanish
+                    ðŸ”„ Translate to Spanish
                   </ActionButton>
                 </div>
               </div>
 
               <div>
                 <label className="text-xs text-white/50 block mb-1.5">
-                  📤 Spanish Translation
+                  ðŸ“¤ Spanish Translation
                 </label>
                 <div className="w-full p-3 rounded-lg bg-white/5 border border-white/10 text-white/80 min-h-[132px] whitespace-pre-wrap text-sm">
                   {translatedOutgoing || (
@@ -555,10 +589,10 @@ export default function CustomerServicePanel({
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3 pb-3 border-b border-white/10">
                     <div>
                       <label className="text-[10px] text-white/30 uppercase tracking-wider block mb-0.5">To</label>
-                      {detectedEmail ? (
-                        <span className="text-sm text-white font-medium">{detectedEmail}</span>
+                      {recipientEmail ? (
+                        <span className="text-sm text-white font-medium">{recipientEmail}</span>
                       ) : (
-                        <span className="text-sm text-white/30 italic">No email detected — use Gmail or Copy</span>
+                        <span className="text-sm text-white/30 italic">No email detected â€” use Gmail or Copy</span>
                       )}
                     </div>
                     <div className="lg:col-span-2">
@@ -584,13 +618,13 @@ export default function CustomerServicePanel({
               {/* ======================================================== */}
               <div className="flex flex-wrap gap-2">
                 {/* PRIMARY: Send via Resend (branded email) */}
-                {detectedEmail && translatedOutgoing && (
+                {recipientEmail && translatedOutgoing && (
                   <button
                     onClick={handleOneClickSend}
                     disabled={sendingTemplate}
                     className="px-5 py-2.5 rounded-lg font-medium text-sm bg-[#77DD77] text-[#1C1C1C] hover:bg-[#88EE88] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {sendingTemplate ? '⏳ Sending...' : '📤 Send via Resend'}
+                    {sendingTemplate ? 'â³ Sending...' : 'ðŸ“¤ Send via Resend'}
                   </button>
                 )}
 
@@ -604,7 +638,7 @@ export default function CustomerServicePanel({
                         disabled={executingAction}
                         className="px-5 py-2.5 rounded-lg font-medium text-sm bg-[#FFB347]/90 text-[#1C1C1C] hover:bg-[#FFB347] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {executingAction ? '⏳ Processing...' : template.combinedActionLabel}
+                        {executingAction ? 'â³ Processing...' : template.combinedActionLabel}
                       </button>
                     );
                   }
@@ -617,7 +651,7 @@ export default function CustomerServicePanel({
                     onClick={handleOpenInGmail}
                     className="px-5 py-2.5 rounded-lg font-medium text-sm bg-[#7EC8E3]/20 text-[#7EC8E3] hover:bg-[#7EC8E3]/30 transition-all"
                   >
-                    📧 Open in Gmail
+                    ðŸ“§ Open in Gmail
                   </button>
                 )}
 
@@ -631,21 +665,21 @@ export default function CustomerServicePanel({
                         : 'bg-white/10 text-white/70 hover:bg-white/20'
                     }`}
                   >
-                    {copySuccess ? '✅ Copied!' : '📋 Copy'}
+                    {copySuccess ? 'âœ… Copied!' : 'ðŸ“‹ Copy'}
                   </button>
                 )}
               </div>
 
               {/* Helpful tips */}
-              {!detectedEmail && translatedOutgoing && (
+              {!recipientEmail && translatedOutgoing && (
                 <p className="mt-3 text-xs text-white/30">
-                  💡 No recipient detected. Use &quot;Open in Gmail&quot; to compose manually, or &quot;Copy&quot; to paste into any email client.
+                  ðŸ’¡ No recipient detected. Use &quot;Open in Gmail&quot; to compose manually, or &quot;Copy&quot; to paste into any email client.
                 </p>
               )}
 
               {selectedTemplate && !translatedOutgoing && (
                 <p className="mt-3 text-xs text-white/30 animate-pulse">
-                  ⏳ Loading template...
+                  â³ Loading template...
                 </p>
               )}
             </div>
